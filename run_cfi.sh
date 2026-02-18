@@ -34,7 +34,7 @@ if ! command -v llvm-objdump &> /dev/null; then
 fi
 
 echo -e "${GREEN}=== 步骤1：生成反汇编文件 e1000_disassembly.txt ===${NC}"
-llvm-objdump -d "$KO_FILE" > e1000_disassembly.txt
+objdump -d "$KO_FILE" > e1000_disassembly.txt
 echo "生成完成。"
 
 echo -e "${GREEN}=== 步骤2：生成跳转分析 CSV e1000_jump_analysis.csv ===${NC}"

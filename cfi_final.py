@@ -453,7 +453,7 @@ def handle_jump_event(cpu, data, size):
 # ... 其他函数如 attach_probes, trigger_network_events, main 等保持不变 ...
 
 def attach_probes(b, module_name="e1000"):
-    """附加BPF探测点到内核模块函数"""
+
     try:
         print(f"查找 {module_name} 模块的函数...")
         
@@ -583,11 +583,11 @@ def main():
     base = get_module_base(module_name)
     if base is None:
         print(f"警告: 无法获取 {module_name} 模块基址，使用默认值 0xffffffffc0000000")
-        base = 0xffffffffc0348000
+        base = 0xffffffffc0000000
     else:
         print(f"检测到 {module_name} 基址: 0x{base:x}")
 
-    base=0xffffffffc0348000
+    
 
     # 存储模块基址
     b['module_base'][ctypes.c_uint64(0)] = ctypes.c_uint64(base)
@@ -614,34 +614,6 @@ def main():
         loaded_count += 1
     
     print(f"已加载 {loaded_count} 个CFI规则")
-    
-    # 附加到特定偏移
-    # 查找CFI表中所有可能的偏移并附加
-    for src_addr in cfi_dict.keys():
-        try:
-            # 计算实际地址
-            actual_addr = base + src_addr
-            # 尝试查找对应的符号
-            with open('/proc/kallsyms', 'r') as f:
-                for line in f:
-                    parts = line.strip().split()
-                    if len(parts) >= 3:
-                        try:
-                            sym_addr = int(parts[0], 16)
-                            if sym_addr == actual_addr:
-                                func_name = parts[2]
-                                b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
-                                print(f"附加到函数: {func_name} (地址: 0x{actual_addr:x})")
-                                break
-                        except:
-                            continue
-        except:
-            # 如果找不到符号，直接附加到地址
-            try:
-                b.attach_kprobe(event=f"0x{actual_addr:x}", fn_name="trace_all_jumps")
-                print(f"附加到地址: 0x{actual_addr:x}")
-            except:
-                pass
     
     # 设置perf buffer
     b["jump_events"].open_perf_buffer(handle_jump_event)

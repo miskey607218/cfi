@@ -1,0 +1,271 @@
+jump_instr_address,jump_instr,instr_len,instr_content,instr_bytes,jump_type,parent_function_name,parent_function_start,target_address,target_function_name,target_function_start
+0x0,callq,5,callq 5 <nfnl_lock>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x5,nfnl_lock,0x0
+0x15,ja,2,ja 2e <nfnl_lock>,77 17,条件跳转,cleanup_module,0x0,0x2e,nfnl_lock,0x0
+0x23,callq,5,callq 28 <nfnl_lock>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x28,nfnl_lock,0x0
+0x3c,callq,5,callq 41 <nfnl_lock>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x41,nfnl_lock,0x0
+0x45,jmp,2,jmp 17 <nfnl_lock>,eb d0,无条件跳转,cleanup_module,0x0,0x17,nfnl_lock,0x0
+0x50,callq,5,callq 55 <nfnl_unlock>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x55,nfnl_unlock,0x50
+0x65,ja,2,ja 7e <nfnl_unlock>,77 17,条件跳转,nfnl_unlock,0x50,0x7e,nfnl_unlock,0x50
+0x73,callq,5,callq 78 <nfnl_unlock>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x78,nfnl_unlock,0x50
+0x8c,callq,5,callq 91 <nfnl_unlock>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x91,nfnl_unlock,0x50
+0x95,jmp,2,jmp 67 <nfnl_unlock>,eb d0,无条件跳转,nfnl_unlock,0x50,0x67,nfnl_unlock,0x50
+0xa0,callq,5,callq a5 <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0xa5,nfnetlink_subsys_unregister,0xa0
+0xba,ja,2,ja 119 <nfnetlink_subsys_unregister>,77 5d,条件跳转,nfnetlink_subsys_unregister,0xa0,0x119,nfnetlink_subsys_unregister,0xa0
+0xc8,callq,5,callq cd <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0xcd,nfnetlink_subsys_unregister,0xa0
+0xd7,ja,2,ja 135 <nfnetlink_subsys_unregister>,77 5c,条件跳转,nfnetlink_subsys_unregister,0xa0,0x135,nfnetlink_subsys_unregister,0xa0
+0xf6,ja,2,ja 127 <nfnetlink_subsys_unregister>,77 2f,条件跳转,nfnetlink_subsys_unregister,0xa0,0x127,nfnetlink_subsys_unregister,0xa0
+0x104,callq,5,callq 109 <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0x109,nfnetlink_subsys_unregister,0xa0
+0x109,callq,5,callq 10e <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0x10e,nfnetlink_subsys_unregister,0xa0
+0x120,callq,5,callq 125 <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0x125,nfnetlink_subsys_unregister,0xa0
+0x125,jmp,2,jmp bc <nfnetlink_subsys_unregister>,eb 95,无条件跳转,nfnetlink_subsys_unregister,0xa0,0xbc,nfnetlink_subsys_unregister,0xa0
+0x12e,callq,5,callq 133 <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0x133,nfnetlink_subsys_unregister,0xa0
+0x133,jmp,2,jmp f8 <nfnetlink_subsys_unregister>,eb c3,无条件跳转,nfnetlink_subsys_unregister,0xa0,0xf8,nfnetlink_subsys_unregister,0xa0
+0x13f,callq,5,callq 144 <nfnetlink_subsys_unregister>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0x144,nfnetlink_subsys_unregister,0xa0
+0x144,jmp,2,jmp d9 <nfnetlink_subsys_unregister>,eb 93,无条件跳转,nfnetlink_subsys_unregister,0xa0,0xd9,nfnetlink_subsys_unregister,0xa0
+0x150,callq,5,callq 155 <nfnetlink_has_listeners>,e8 00 00 00 00,函数调用,nfnetlink_has_listeners,0x150,0x155,nfnetlink_has_listeners,0x150
+0x170,callq,5,callq 175 <nfnetlink_has_listeners>,e8 00 00 00 00,函数调用,nfnetlink_has_listeners,0x150,0x175,nfnetlink_has_listeners,0x150
+0x17b,callq,5,callq 180 <nfnetlink_has_listeners>,e8 00 00 00 00,函数调用,nfnetlink_has_listeners,0x150,0x180,nfnetlink_has_listeners,0x150
+0x190,callq,5,callq 195 <nfnetlink_send>,e8 00 00 00 00,函数调用,nfnetlink_send,0x190,0x195,nfnetlink_send,0x190
+0x1ca,callq,5,callq 1cf <nfnetlink_send>,e8 00 00 00 00,函数调用,nfnetlink_send,0x190,0x1cf,nfnetlink_send,0x190
+0x1e5,callq,5,callq 1ea <nfnetlink_send>,e8 00 00 00 00,函数调用,nfnetlink_send,0x190,0x1ea,nfnetlink_send,0x190
+0x200,callq,5,callq 205 <nfnetlink_set_err>,e8 00 00 00 00,函数调用,nfnetlink_set_err,0x200,0x205,nfnetlink_set_err,0x200
+0x22a,callq,5,callq 22f <nfnetlink_set_err>,e8 00 00 00 00,函数调用,nfnetlink_set_err,0x200,0x22f,nfnetlink_set_err,0x200
+0x23b,callq,5,callq 240 <nfnetlink_set_err>,e8 00 00 00 00,函数调用,nfnetlink_set_err,0x200,0x240,nfnetlink_set_err,0x200
+0x250,callq,5,callq 255 <nfnetlink_unicast>,e8 00 00 00 00,函数调用,nfnetlink_unicast,0x250,0x255,nfnetlink_unicast,0x250
+0x275,callq,5,callq 27a <nfnetlink_unicast>,e8 00 00 00 00,函数调用,nfnetlink_unicast,0x250,0x27a,nfnetlink_unicast,0x250
+0x288,callq,5,callq 28d <nfnetlink_unicast>,e8 00 00 00 00,函数调用,nfnetlink_unicast,0x250,0x28d,nfnetlink_unicast,0x250
+0x2b0,callq,5,callq 2b5 <nfnetlink_broadcast>,e8 00 00 00 00,函数调用,nfnetlink_broadcast,0x2b0,0x2b5,nfnetlink_broadcast,0x2b0
+0x2df,callq,5,callq 2e4 <nfnetlink_broadcast>,e8 00 00 00 00,函数调用,nfnetlink_broadcast,0x2b0,0x2e4,nfnetlink_broadcast,0x2b0
+0x2f3,callq,5,callq 2f8 <nfnetlink_broadcast>,e8 00 00 00 00,函数调用,nfnetlink_broadcast,0x2b0,0x2f8,nfnetlink_broadcast,0x2b0
+0x310,callq,5,callq 315 <nfnetlink_net_exit_batch>,e8 00 00 00 00,函数调用,nfnetlink_net_exit_batch,0x310,0x315,nfnetlink_net_exit_batch,0x310
+0x31b,je,2,je 364 <nfnetlink_net_exit_batch>,74 47,条件跳转,nfnetlink_net_exit_batch,0x310,0x364,nfnetlink_net_exit_batch,0x310
+0x33e,callq,5,callq 343 <nfnetlink_net_exit_batch>,e8 00 00 00 00,函数调用,nfnetlink_net_exit_batch,0x310,0x343,nfnetlink_net_exit_batch,0x310
+0x347,callq,5,callq 34c <nfnetlink_net_exit_batch>,e8 00 00 00 00,函数调用,nfnetlink_net_exit_batch,0x310,0x34c,nfnetlink_net_exit_batch,0x310
+0x357,jne,2,jne 32d <nfnetlink_net_exit_batch>,75 d4,条件跳转,nfnetlink_net_exit_batch,0x310,0x32d,nfnetlink_net_exit_batch,0x310
+0x370,callq,5,callq 375 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x375,nfnetlink_rcv_msg,0x370
+0x3a9,jbe,6,jbe 527 <nfnetlink_rcv_msg>,0f 86 78 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x527,nfnetlink_rcv_msg,0x370
+0x40b,jg,6,jg 54d <nfnetlink_rcv_msg>,0f 8f 3c 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x54d,nfnetlink_rcv_msg,0x370
+0x415,ja,6,ja 698 <nfnetlink_rcv_msg>,0f 87 7d 02 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x698,nfnetlink_rcv_msg,0x370
+0x429,je,6,je 54d <nfnetlink_rcv_msg>,0f 84 1e 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x54d,nfnetlink_rcv_msg,0x370
+0x43a,jae,6,jae 51d <nfnetlink_rcv_msg>,0f 83 dd 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x51d,nfnetlink_rcv_msg,0x370
+0x44b,je,6,je 51d <nfnetlink_rcv_msg>,0f 84 cc 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x51d,nfnetlink_rcv_msg,0x370
+0x470,callq,5,callq 475 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x475,nfnetlink_rcv_msg,0x370
+0x4db,ja,6,ja 673 <nfnetlink_rcv_msg>,0f 87 92 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x673,nfnetlink_rcv_msg,0x370
+0x4f5,callq,5,callq 4fa <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x4fa,nfnetlink_rcv_msg,0x370
+0x4fd,js,6,js 682 <nfnetlink_rcv_msg>,0f 88 7f 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x682,nfnetlink_rcv_msg,0x370
+0x509,je,2,je 51d <nfnetlink_rcv_msg>,74 12,条件跳转,nfnetlink_rcv_msg,0x370,0x51d,nfnetlink_rcv_msg,0x370
+0x512,je,6,je 5c5 <nfnetlink_rcv_msg>,0f 84 ad 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x5c5,nfnetlink_rcv_msg,0x370
+0x51b,je,2,je 58c <nfnetlink_rcv_msg>,74 6f,条件跳转,nfnetlink_rcv_msg,0x370,0x58c,nfnetlink_rcv_msg,0x370
+0x51d,callq,5,callq 522 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x522,nfnetlink_rcv_msg,0x370
+0x534,jne,6,jne 6ac <nfnetlink_rcv_msg>,0f 85 72 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x6ac,nfnetlink_rcv_msg,0x370
+0x54d,callq,5,callq 552 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x552,nfnetlink_rcv_msg,0x370
+0x561,callq,5,callq 566 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x566,nfnetlink_rcv_msg,0x370
+0x56a,jg,2,jg 51d <nfnetlink_rcv_msg>,7f b1,条件跳转,nfnetlink_rcv_msg,0x370,0x51d,nfnetlink_rcv_msg,0x370
+0x570,ja,6,ja 6b1 <nfnetlink_rcv_msg>,0f 87 3b 01 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x6b1,nfnetlink_rcv_msg,0x370
+0x584,jne,6,jne 42f <nfnetlink_rcv_msg>,0f 85 a5 fe ff ff,条件跳转,nfnetlink_rcv_msg,0x370,0x42f,nfnetlink_rcv_msg,0x370
+0x58a,jmp,2,jmp 51d <nfnetlink_rcv_msg>,eb 91,无条件跳转,nfnetlink_rcv_msg,0x370,0x51d,nfnetlink_rcv_msg,0x370
+0x5a1,callq,5,callq 5a6 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x5a6,nfnetlink_rcv_msg,0x370
+0x5ac,callq,5,callq 5b1 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x5b1,nfnetlink_rcv_msg,0x370
+0x5ba,je,6,je 407 <nfnetlink_rcv_msg>,0f 84 47 fe ff ff,条件跳转,nfnetlink_rcv_msg,0x370,0x407,nfnetlink_rcv_msg,0x370
+0x5c5,callq,5,callq 5ca <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x5ca,nfnetlink_rcv_msg,0x370
+0x5ce,ja,6,ja 6c5 <nfnetlink_rcv_msg>,0f 87 f1 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x6c5,nfnetlink_rcv_msg,0x370
+0x5db,callq,5,callq 5e0 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x5e0,nfnetlink_rcv_msg,0x370
+0x5e4,ja,6,ja 6d9 <nfnetlink_rcv_msg>,0f 87 ef 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x6d9,nfnetlink_rcv_msg,0x370
+0x5f5,jne,2,jne 658 <nfnetlink_rcv_msg>,75 61,条件跳转,nfnetlink_rcv_msg,0x370,0x658,nfnetlink_rcv_msg,0x370
+0x602,jae,2,jae 658 <nfnetlink_rcv_msg>,73 54,条件跳转,nfnetlink_rcv_msg,0x370,0x658,nfnetlink_rcv_msg,0x370
+0x612,jne,2,jne 658 <nfnetlink_rcv_msg>,75 44,条件跳转,nfnetlink_rcv_msg,0x370,0x658,nfnetlink_rcv_msg,0x370
+0x62c,callq,5,callq 631 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x631,nfnetlink_rcv_msg,0x370
+0x635,ja,6,ja 701 <nfnetlink_rcv_msg>,0f 87 c6 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x701,nfnetlink_rcv_msg,0x370
+0x648,callq,5,callq 64d <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x64d,nfnetlink_rcv_msg,0x370
+0x65c,ja,6,ja 6ed <nfnetlink_rcv_msg>,0f 87 8b 00 00 00,条件跳转,nfnetlink_rcv_msg,0x370,0x6ed,nfnetlink_rcv_msg,0x370
+0x669,callq,5,callq 66e <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x66e,nfnetlink_rcv_msg,0x370
+0x673,callq,5,callq 678 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x678,nfnetlink_rcv_msg,0x370
+0x688,callq,5,callq 68d <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x68d,nfnetlink_rcv_msg,0x370
+0x6a2,callq,5,callq 6a7 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6a7,nfnetlink_rcv_msg,0x370
+0x6ac,callq,5,callq 6b1 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6b1,nfnetlink_rcv_msg,0x370
+0x6bb,callq,5,callq 6c0 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6c0,nfnetlink_rcv_msg,0x370
+0x6cf,callq,5,callq 6d4 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6d4,nfnetlink_rcv_msg,0x370
+0x6e3,callq,5,callq 6e8 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6e8,nfnetlink_rcv_msg,0x370
+0x6f7,callq,5,callq 6fc <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x6fc,nfnetlink_rcv_msg,0x370
+0x711,callq,5,callq 716 <nfnetlink_rcv_msg>,e8 00 00 00 00,函数调用,nfnetlink_rcv_msg,0x370,0x716,nfnetlink_rcv_msg,0x370
+0x730,callq,5,callq 735 <nfnl_err_reset>,e8 00 00 00 00,函数调用,nfnl_err_reset,0x730,0x735,nfnl_err_reset,0x730
+0x74c,je,2,je 784 <nfnl_err_reset>,74 36,条件跳转,nfnl_err_reset,0x730,0x784,nfnl_err_reset,0x730
+0x774,callq,5,callq 779 <nfnl_err_reset>,e8 00 00 00 00,函数调用,nfnl_err_reset,0x730,0x779,nfnl_err_reset,0x730
+0x782,jne,2,jne 762 <nfnl_err_reset>,75 de,条件跳转,nfnl_err_reset,0x730,0x762,nfnl_err_reset,0x730
+0x7a0,callq,5,callq 7a5 <nfnetlink_net_init>,e8 00 00 00 00,函数调用,nfnetlink_net_init,0x7a0,0x7a5,nfnetlink_net_init,0x7a0
+0x7d3,callq,5,callq 7d8 <nfnetlink_net_init>,e8 00 00 00 00,函数调用,nfnetlink_net_init,0x7a0,0x7d8,nfnetlink_net_init,0x7a0
+0x810,callq,5,callq 815 <nfnetlink_net_init>,e8 00 00 00 00,函数调用,nfnetlink_net_init,0x7a0,0x815,nfnetlink_net_init,0x7a0
+0x82e,jne,2,jne 83d <nfnetlink_net_init>,75 0d,条件跳转,nfnetlink_net_init,0x7a0,0x83d,nfnetlink_net_init,0x7a0
+0x83d,callq,5,callq 842 <nfnetlink_net_init>,e8 00 00 00 00,函数调用,nfnetlink_net_init,0x7a0,0x842,nfnetlink_net_init,0x7a0
+0x850,callq,5,callq 855 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x855,nfnetlink_subsys_register,0x850
+0x867,je,2,je 8a3 <nfnetlink_subsys_register>,74 3a,条件跳转,nfnetlink_subsys_register,0x850,0x8a3,nfnetlink_subsys_register,0x850
+0x880,jmp,2,jmp 88b <nfnetlink_subsys_register>,eb 09,无条件跳转,nfnetlink_subsys_register,0x850,0x88b,nfnetlink_subsys_register,0x850
+0x889,je,2,je 8a3 <nfnetlink_subsys_register>,74 18,条件跳转,nfnetlink_subsys_register,0x850,0x8a3,nfnetlink_subsys_register,0x850
+0x88f,jbe,2,jbe 882 <nfnetlink_subsys_register>,76 f1,条件跳转,nfnetlink_subsys_register,0x850,0x882,nfnetlink_subsys_register,0x850
+0x8ae,ja,6,ja 95f <nfnetlink_subsys_register>,0f 87 ab 00 00 00,条件跳转,nfnetlink_subsys_register,0x850,0x95f,nfnetlink_subsys_register,0x850
+0x8c0,callq,5,callq 8c5 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x8c5,nfnetlink_subsys_register,0x850
+0x8d1,ja,6,ja 970 <nfnetlink_subsys_register>,0f 87 99 00 00 00,条件跳转,nfnetlink_subsys_register,0x850,0x970,nfnetlink_subsys_register,0x850
+0x8e5,jne,2,jne 92d <nfnetlink_subsys_register>,75 46,条件跳转,nfnetlink_subsys_register,0x850,0x92d,nfnetlink_subsys_register,0x850
+0x8f0,ja,2,ja 94e <nfnetlink_subsys_register>,77 5c,条件跳转,nfnetlink_subsys_register,0x850,0x94e,nfnetlink_subsys_register,0x850
+0x90d,ja,2,ja 984 <nfnetlink_subsys_register>,77 75,条件跳转,nfnetlink_subsys_register,0x850,0x984,nfnetlink_subsys_register,0x850
+0x91b,callq,5,callq 920 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x920,nfnetlink_subsys_register,0x850
+0x931,ja,2,ja 995 <nfnetlink_subsys_register>,77 62,条件跳转,nfnetlink_subsys_register,0x850,0x995,nfnetlink_subsys_register,0x850
+0x93f,callq,5,callq 944 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x944,nfnetlink_subsys_register,0x850
+0x958,callq,5,callq 95d <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x95d,nfnetlink_subsys_register,0x850
+0x95d,jmp,2,jmp 8f2 <nfnetlink_subsys_register>,eb 93,无条件跳转,nfnetlink_subsys_register,0x850,0x8f2,nfnetlink_subsys_register,0x850
+0x966,callq,5,callq 96b <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x96b,nfnetlink_subsys_register,0x850
+0x97a,callq,5,callq 97f <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x97f,nfnetlink_subsys_register,0x850
+0x98b,callq,5,callq 990 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x990,nfnetlink_subsys_register,0x850
+0x99f,callq,5,callq 9a4 <nfnetlink_subsys_register>,e8 00 00 00 00,函数调用,nfnetlink_subsys_register,0x850,0x9a4,nfnetlink_subsys_register,0x850
+0x9a4,jmp,2,jmp 933 <nfnetlink_subsys_register>,eb 8d,无条件跳转,nfnetlink_subsys_register,0x850,0x933,nfnetlink_subsys_register,0x850
+0x9b0,callq,5,callq 9b5 <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0x9b5,nfnetlink_bind,0x9b0
+0x9bb,ja,2,ja a12 <nfnetlink_bind>,77 55,条件跳转,nfnetlink_bind,0x9b0,0xa12,nfnetlink_bind,0x9b0
+0x9cf,ja,2,ja a3e <nfnetlink_bind>,77 6d,条件跳转,nfnetlink_bind,0x9b0,0xa3e,nfnetlink_bind,0x9b0
+0x9e0,jg,2,jg a19 <nfnetlink_bind>,7f 37,条件跳转,nfnetlink_bind,0x9b0,0xa19,nfnetlink_bind,0x9b0
+0x9e7,ja,2,ja a57 <nfnetlink_bind>,77 6e,条件跳转,nfnetlink_bind,0x9b0,0xa57,nfnetlink_bind,0x9b0
+0x9f9,callq,5,callq 9fe <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0x9fe,nfnetlink_bind,0x9b0
+0xa01,je,2,je a1e <nfnetlink_bind>,74 1b,条件跳转,nfnetlink_bind,0x9b0,0xa1e,nfnetlink_bind,0x9b0
+0xa19,callq,5,callq a1e <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0xa1e,nfnetlink_bind,0x9b0
+0xa2a,callq,5,callq a2f <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0xa2f,nfnetlink_bind,0x9b0
+0xa49,callq,5,callq a4e <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0xa4e,nfnetlink_bind,0x9b0
+0xa61,callq,5,callq a66 <nfnetlink_bind>,e8 00 00 00 00,函数调用,nfnetlink_bind,0x9b0,0xa66,nfnetlink_bind,0x9b0
+0xa66,jmp,2,jmp 9e9 <nfnetlink_bind>,eb 81,无条件跳转,nfnetlink_bind,0x9b0,0x9e9,nfnetlink_bind,0x9b0
+0xa70,callq,5,callq a75 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xa75,nfnetlink_rcv_batch,0xa70
+0xacc,ja,6,ja 1197 <nfnetlink_rcv_batch>,0f 87 c5 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1197,nfnetlink_rcv_batch,0xa70
+0xb23,callq,5,callq b28 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xb28,nfnetlink_rcv_batch,0xa70
+0xb2e,je,6,je 1180 <nfnetlink_rcv_batch>,0f 84 4c 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1180,nfnetlink_rcv_batch,0xa70
+0xb3b,callq,5,callq b40 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xb40,nfnetlink_rcv_batch,0xa70
+0xb42,je,2,je b4c <nfnetlink_rcv_batch>,74 08,条件跳转,nfnetlink_rcv_batch,0xa70,0xb4c,nfnetlink_rcv_batch,0xa70
+0xb54,ja,6,ja 1270 <nfnetlink_rcv_batch>,0f 87 16 07 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1270,nfnetlink_rcv_batch,0xa70
+0xb61,callq,5,callq b66 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xb66,nfnetlink_rcv_batch,0xa70
+0xb6e,ja,6,ja 12a0 <nfnetlink_rcv_batch>,0f 87 2c 07 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x12a0,nfnetlink_rcv_batch,0xa70
+0xb85,je,6,je 10ee <nfnetlink_rcv_batch>,0f 84 63 05 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x10ee,nfnetlink_rcv_batch,0xa70
+0xb90,je,6,je 11ca <nfnetlink_rcv_batch>,0f 84 34 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x11ca,nfnetlink_rcv_batch,0xa70
+0xb9b,je,6,je 11ca <nfnetlink_rcv_batch>,0f 84 29 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x11ca,nfnetlink_rcv_batch,0xa70
+0xba6,je,6,je 11ca <nfnetlink_rcv_batch>,0f 84 1e 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x11ca,nfnetlink_rcv_batch,0xa70
+0xbb0,callq,5,callq bb5 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xbb5,nfnetlink_rcv_batch,0xa70
+0xbb7,je,6,je 1208 <nfnetlink_rcv_batch>,0f 84 4b 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1208,nfnetlink_rcv_batch,0xa70
+0xbce,callq,5,callq bd3 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xbd3,nfnetlink_rcv_batch,0xa70
+0xbd5,je,6,je 122a <nfnetlink_rcv_batch>,0f 84 4f 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x122a,nfnetlink_rcv_batch,0xa70
+0xbe3,ja,6,ja 1288 <nfnetlink_rcv_batch>,0f 87 9f 06 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1288,nfnetlink_rcv_batch,0xa70
+0xbf0,callq,5,callq bf5 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xbf5,nfnetlink_rcv_batch,0xa70
+0xbfc,jbe,6,jbe ce6 <nfnetlink_rcv_batch>,0f 86 e4 00 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xce6,nfnetlink_rcv_batch,0xa70
+0xc11,jne,6,jne df4 <nfnetlink_rcv_batch>,0f 85 dd 01 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xdf4,nfnetlink_rcv_batch,0xa70
+0xc39,jbe,6,jbe e61 <nfnetlink_rcv_batch>,0f 86 22 02 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xe61,nfnetlink_rcv_batch,0xa70
+0xc41,ja,6,ja e61 <nfnetlink_rcv_batch>,0f 87 1a 02 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xe61,nfnetlink_rcv_batch,0xa70
+0xc4d,je,2,je c9e <nfnetlink_rcv_batch>,74 4f,条件跳转,nfnetlink_rcv_batch,0xa70,0xc9e,nfnetlink_rcv_batch,0xa70
+0xc5b,je,6,je e61 <nfnetlink_rcv_batch>,0f 84 00 02 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xe61,nfnetlink_rcv_batch,0xa70
+0xc64,je,6,je 11a8 <nfnetlink_rcv_batch>,0f 84 3e 05 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x11a8,nfnetlink_rcv_batch,0xa70
+0xc6d,jle,2,jle c9e <nfnetlink_rcv_batch>,7e 2f,条件跳转,nfnetlink_rcv_batch,0xa70,0xc9e,nfnetlink_rcv_batch,0xa70
+0xc78,jne,2,jne c9e <nfnetlink_rcv_batch>,75 24,条件跳转,nfnetlink_rcv_batch,0xa70,0xc9e,nfnetlink_rcv_batch,0xa70
+0xc7d,jae,2,jae c9e <nfnetlink_rcv_batch>,73 1f,条件跳转,nfnetlink_rcv_batch,0xa70,0xc9e,nfnetlink_rcv_batch,0xa70
+0xc91,je,2,je c9e <nfnetlink_rcv_batch>,74 0b,条件跳转,nfnetlink_rcv_batch,0xa70,0xc9e,nfnetlink_rcv_batch,0xa70
+0xc98,je,6,je e79 <nfnetlink_rcv_batch>,0f 84 db 01 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xe79,nfnetlink_rcv_batch,0xa70
+0xcaf,callq,5,callq cb4 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xcb4,nfnetlink_rcv_batch,0xa70
+0xcb7,jne,6,jne d4d <nfnetlink_rcv_batch>,0f 85 90 00 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0xd4d,nfnetlink_rcv_batch,0xa70
+0xcc4,callq,5,callq 730 <nfnl_err_reset>,e8 67 fa ff ff,函数调用,nfnetlink_rcv_batch,0xa70,0x730,nfnl_err_reset,0x730
+0xcda,callq,5,callq cdf <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xcdf,nfnetlink_rcv_batch,0xa70
+0xced,jne,6,jne 11b4 <nfnetlink_rcv_batch>,0f 85 c1 04 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x11b4,nfnetlink_rcv_batch,0xa70
+0xd07,callq,5,callq d0c <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xd0c,nfnetlink_rcv_batch,0xa70
+0xd0f,jne,6,jne 1014 <nfnetlink_rcv_batch>,0f 85 ff 02 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1014,nfnetlink_rcv_batch,0xa70
+0xd24,callq,5,callq d29 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xd29,nfnetlink_rcv_batch,0xa70
+0xd30,callq,5,callq 730 <nfnl_err_reset>,e8 fb f9 ff ff,函数调用,nfnetlink_rcv_batch,0xa70,0x730,nfnl_err_reset,0x730
+0xd3a,callq,5,callq d3f <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xd3f,nfnetlink_rcv_batch,0xa70
+0xd43,callq,5,callq d48 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xd48,nfnetlink_rcv_batch,0xa70
+0xdd6,callq,5,callq ddb <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xddb,nfnetlink_rcv_batch,0xa70
+0xde2,jbe,6,jbe ce6 <nfnetlink_rcv_batch>,0f 86 fe fe ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xce6,nfnetlink_rcv_batch,0xa70
+0xdee,je,6,je c17 <nfnetlink_rcv_batch>,0f 84 23 fe ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xc17,nfnetlink_rcv_batch,0xa70
+0xdfc,je,6,je c17 <nfnetlink_rcv_batch>,0f 84 15 fe ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xc17,nfnetlink_rcv_batch,0xa70
+0xe09,callq,5,callq 730 <nfnl_err_reset>,e8 22 f9 ff ff,函数调用,nfnetlink_rcv_batch,0xa70,0x730,nfnl_err_reset,0x730
+0xe28,callq,5,callq e2d <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xe2d,nfnetlink_rcv_batch,0xa70
+0xe30,jne,6,jne 1259 <nfnetlink_rcv_batch>,0f 85 23 04 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1259,nfnetlink_rcv_batch,0xa70
+0xe3d,callq,5,callq 730 <nfnl_err_reset>,e8 ee f8 ff ff,函数调用,nfnetlink_rcv_batch,0xa70,0x730,nfnl_err_reset,0x730
+0xe47,callq,5,callq e4c <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xe4c,nfnetlink_rcv_batch,0xa70
+0xe50,callq,5,callq e55 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xe55,nfnetlink_rcv_batch,0xa70
+0xe68,callq,5,callq 730 <nfnl_err_reset>,e8 c3 f8 ff ff,函数调用,nfnetlink_rcv_batch,0xa70,0x730,nfnl_err_reset,0x730
+0xe9f,callq,5,callq ea4 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xea4,nfnetlink_rcv_batch,0xa70
+0xf02,ja,6,ja cbd <nfnetlink_rcv_batch>,0f 87 b5 fd ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xcbd,nfnetlink_rcv_batch,0xa70
+0xf20,callq,5,callq f25 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xf25,nfnetlink_rcv_batch,0xa70
+0xf2a,js,2,js f6b <nfnetlink_rcv_batch>,78 3f,条件跳转,nfnetlink_rcv_batch,0xa70,0xf6b,nfnetlink_rcv_batch,0xa70
+0xf47,callq,5,callq f4c <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xf4c,nfnetlink_rcv_batch,0xa70
+0xf51,je,6,je 1261 <nfnetlink_rcv_batch>,0f 84 0a 03 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1261,nfnetlink_rcv_batch,0xa70
+0xf65,je,6,je dc0 <nfnetlink_rcv_batch>,0f 84 55 fe ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xdc0,nfnetlink_rcv_batch,0xa70
+0xf74,je,6,je cbd <nfnetlink_rcv_batch>,0f 84 43 fd ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xcbd,nfnetlink_rcv_batch,0xa70
+0xf8b,callq,5,callq f90 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0xf90,nfnetlink_rcv_batch,0xa70
+0xf93,je,6,je cbd <nfnetlink_rcv_batch>,0f 84 24 fd ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xcbd,nfnetlink_rcv_batch,0xa70
+0x1009,je,6,je dc0 <nfnetlink_rcv_batch>,0f 84 b1 fd ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xdc0,nfnetlink_rcv_batch,0xa70
+0x1019,jne,6,jne 10c0 <nfnetlink_rcv_batch>,0f 85 a1 00 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x10c0,nfnetlink_rcv_batch,0xa70
+0x1033,je,2,je 1087 <nfnetlink_rcv_batch>,74 52,条件跳转,nfnetlink_rcv_batch,0xa70,0x1087,nfnetlink_rcv_batch,0xa70
+0x1044,callq,5,callq 1049 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1049,nfnetlink_rcv_batch,0xa70
+0x1072,callq,5,callq 1077 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1077,nfnetlink_rcv_batch,0xa70
+0x1085,jne,2,jne 1035 <nfnetlink_rcv_batch>,75 ae,条件跳转,nfnetlink_rcv_batch,0xa70,0x1035,nfnetlink_rcv_batch,0xa70
+0x108c,callq,5,callq 1091 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1091,nfnetlink_rcv_batch,0xa70
+0x1095,callq,5,callq 109a <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x109a,nfnetlink_rcv_batch,0xa70
+0x10a7,jne,6,jne 12e8 <nfnetlink_rcv_batch>,0f 85 3b 02 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x12e8,nfnetlink_rcv_batch,0xa70
+0x10d0,callq,5,callq 10d5 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x10d5,nfnetlink_rcv_batch,0xa70
+0x10e4,callq,5,callq 10e9 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x10e9,nfnetlink_rcv_batch,0xa70
+0x10f6,ja,6,ja 12ed <nfnetlink_rcv_batch>,0f 87 f1 01 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x12ed,nfnetlink_rcv_batch,0xa70
+0x1103,callq,5,callq 1108 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1108,nfnetlink_rcv_batch,0xa70
+0x111a,callq,5,callq 111f <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x111f,nfnetlink_rcv_batch,0xa70
+0x1127,ja,6,ja 12d0 <nfnetlink_rcv_batch>,0f 87 a3 01 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x12d0,nfnetlink_rcv_batch,0xa70
+0x1134,callq,5,callq 1139 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1139,nfnetlink_rcv_batch,0xa70
+0x1141,ja,6,ja 1305 <nfnetlink_rcv_batch>,0f 87 be 01 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x1305,nfnetlink_rcv_batch,0xa70
+0x1158,jne,6,jne b8b <nfnetlink_rcv_batch>,0f 85 2d fa ff ff,条件跳转,nfnetlink_rcv_batch,0xa70,0xb8b,nfnetlink_rcv_batch,0xa70
+0x1169,jbe,2,jbe 11db <nfnetlink_rcv_batch>,76 70,条件跳转,nfnetlink_rcv_batch,0xa70,0x11db,nfnetlink_rcv_batch,0xa70
+0x1179,callq,5,callq 117e <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x117e,nfnetlink_rcv_batch,0xa70
+0x117e,jmp,2,jmp 11db <nfnetlink_rcv_batch>,eb 5b,无条件跳转,nfnetlink_rcv_batch,0xa70,0x11db,nfnetlink_rcv_batch,0xa70
+0x118d,callq,5,callq 1192 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1192,nfnetlink_rcv_batch,0xa70
+0x119e,callq,5,callq 11a3 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x11a3,nfnetlink_rcv_batch,0xa70
+0x11d5,ja,6,ja 12b8 <nfnetlink_rcv_batch>,0f 87 dd 00 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x12b8,nfnetlink_rcv_batch,0xa70
+0x11e2,callq,5,callq 11e7 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x11e7,nfnetlink_rcv_batch,0xa70
+0x11f4,callq,5,callq 11f9 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x11f9,nfnetlink_rcv_batch,0xa70
+0x11fe,callq,5,callq 1203 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1203,nfnetlink_rcv_batch,0xa70
+0x1213,jbe,2,jbe 11db <nfnetlink_rcv_batch>,76 c6,条件跳转,nfnetlink_rcv_batch,0xa70,0x11db,nfnetlink_rcv_batch,0xa70
+0x1223,callq,5,callq 1228 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1228,nfnetlink_rcv_batch,0xa70
+0x1228,jmp,2,jmp 11db <nfnetlink_rcv_batch>,eb b1,无条件跳转,nfnetlink_rcv_batch,0xa70,0x11db,nfnetlink_rcv_batch,0xa70
+0x1231,callq,5,callq 1236 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1236,nfnetlink_rcv_batch,0xa70
+0x123e,ja,6,ja 131d <nfnetlink_rcv_batch>,0f 87 d9 00 00 00,条件跳转,nfnetlink_rcv_batch,0xa70,0x131d,nfnetlink_rcv_batch,0xa70
+0x124b,callq,5,callq 1250 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1250,nfnetlink_rcv_batch,0xa70
+0x1257,jmp,2,jmp 11ee <nfnetlink_rcv_batch>,eb 95,无条件跳转,nfnetlink_rcv_batch,0xa70,0x11ee,nfnetlink_rcv_batch,0xa70
+0x127e,callq,5,callq 1283 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1283,nfnetlink_rcv_batch,0xa70
+0x1296,callq,5,callq 129b <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x129b,nfnetlink_rcv_batch,0xa70
+0x12ae,callq,5,callq 12b3 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x12b3,nfnetlink_rcv_batch,0xa70
+0x12c6,callq,5,callq 12cb <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x12cb,nfnetlink_rcv_batch,0xa70
+0x12de,callq,5,callq 12e3 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x12e3,nfnetlink_rcv_batch,0xa70
+0x12e8,callq,5,callq 12ed <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x12ed,nfnetlink_rcv_batch,0xa70
+0x12fb,callq,5,callq 1300 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1300,nfnetlink_rcv_batch,0xa70
+0x1313,callq,5,callq 1318 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1318,nfnetlink_rcv_batch,0xa70
+0x132b,callq,5,callq 1330 <nfnetlink_rcv_batch>,e8 00 00 00 00,函数调用,nfnetlink_rcv_batch,0xa70,0x1330,nfnetlink_rcv_batch,0xa70
+0x1340,callq,5,callq 1345 <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x1345,nfnetlink_rcv,0x1340
+0x136a,jbe,2,jbe 13ac <nfnetlink_rcv>,76 40,条件跳转,nfnetlink_rcv,0x1340,0x13ac,nfnetlink_rcv,0x1340
+0x137d,jbe,2,jbe 13ac <nfnetlink_rcv>,76 2d,条件跳转,nfnetlink_rcv,0x1340,0x13ac,nfnetlink_rcv,0x1340
+0x1381,jb,2,jb 13ac <nfnetlink_rcv>,72 29,条件跳转,nfnetlink_rcv,0x1340,0x13ac,nfnetlink_rcv,0x1340
+0x1388,callq,5,callq 138d <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x138d,nfnetlink_rcv,0x1340
+0x138f,je,6,je 145f <nfnetlink_rcv>,0f 84 ca 00 00 00,条件跳转,nfnetlink_rcv,0x1340,0x145f,nfnetlink_rcv,0x1340
+0x139b,je,2,je 13d1 <nfnetlink_rcv>,74 34,条件跳转,nfnetlink_rcv,0x1340,0x13d1,nfnetlink_rcv,0x1340
+0x13a7,callq,5,callq 13ac <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x13ac,nfnetlink_rcv,0x1340
+0x13b9,jne,6,jne 148a <nfnetlink_rcv>,0f 85 cb 00 00 00,条件跳转,nfnetlink_rcv,0x1340,0x148a,nfnetlink_rcv,0x1340
+0x13ec,jbe,2,jbe 13ac <nfnetlink_rcv>,76 be,条件跳转,nfnetlink_rcv,0x1340,0x13ac,nfnetlink_rcv,0x1340
+0x140a,callq,5,callq 140f <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x140f,nfnetlink_rcv,0x1340
+0x1412,js,2,js 1476 <nfnetlink_rcv>,78 62,条件跳转,nfnetlink_rcv,0x1340,0x1476,nfnetlink_rcv,0x1340
+0x141e,je,2,je 1427 <nfnetlink_rcv>,74 07,条件跳转,nfnetlink_rcv,0x1340,0x1427,nfnetlink_rcv,0x1340
+0x142d,callq,5,callq 1432 <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x1432,nfnetlink_rcv,0x1340
+0x1455,callq,5,callq a70 <nfnetlink_rcv_batch>,e8 16 f6 ff ff,函数调用,nfnetlink_rcv,0x1340,0xa70,nfnetlink_rcv_batch,0xa70
+0x146c,callq,5,callq 1471 <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x1471,nfnetlink_rcv,0x1340
+0x1480,callq,5,callq 1485 <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x1485,nfnetlink_rcv,0x1340
+0x148a,callq,5,callq 148f <nfnetlink_rcv>,e8 00 00 00 00,函数调用,nfnetlink_rcv,0x1340,0x148f,nfnetlink_rcv,0x1340
+0x0,callq,5,callq 5 <init_module>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x5,init_module,0x0
+0x1c,jbe,2,jbe 2a <init_module>,76 0c,条件跳转,cleanup_module,0x0,0x2a,init_module,0x0
+0x25,callq,5,callq 2a <init_module>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x2a,init_module,0x0
+0x32,jne,2,jne 36 <init_module>,75 02,条件跳转,cleanup_module,0x0,0x36,init_module,0x0
+0x3d,jne,2,jne 15 <init_module>,75 d6,条件跳转,cleanup_module,0x0,0x15,init_module,0x0
+0x52,jbe,2,jbe 60 <init_module>,76 0c,条件跳转,nfnl_unlock,0x50,0x60,init_module,0x50
+0x5b,callq,5,callq 60 <init_module>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x60,init_module,0x50
+0x64,jbe,2,jbe 75 <init_module>,76 0f,条件跳转,nfnl_unlock,0x50,0x75,init_module,0x50
+0x70,callq,5,callq 75 <init_module>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x75,init_module,0x50
+0x81,jbe,2,jbe 92 <init_module>,76 0f,条件跳转,nfnl_unlock,0x50,0x92,init_module,0x50
+0x8d,callq,5,callq 92 <init_module>,e8 00 00 00 00,函数调用,nfnl_unlock,0x50,0x92,init_module,0x50
+0xa2,callq,5,callq a7 <init_module>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0xa7,init_module,0xa0
+0xaf,jne,2,jne 48 <init_module>,75 97,条件跳转,nfnetlink_subsys_unregister,0xa0,0x48,init_module,0x0
+0xb8,callq,5,callq bd <init_module>,e8 00 00 00 00,函数调用,nfnetlink_subsys_unregister,0xa0,0xbd,init_module,0xa0
+0xb,callq,5,callq 10 <cleanup_module>,e8 00 00 00 00,函数调用,cleanup_module,0x0,0x10,cleanup_module,0x0

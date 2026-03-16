@@ -76,7 +76,7 @@ class JumpEvent(ctypes.Structure):
     ]
 
 def parse_cfi_table(file_path):
-    """从 e1000_jump_analysis.csv 读取静态跳转规则"""
+    """从 nfnetlink_jump_analysis.csv 读取静态跳转规则"""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"文件未找到: {file_path}")
 
@@ -97,15 +97,34 @@ def parse_cfi_table(file_path):
                 src_func_addr  = to_offset(row['parent_function_start'])
                 dst_addr       = to_offset(row['target_address'])
 
-                jump_instr = row.get('jump_instr', '').strip()
-                if jump_instr == 'callq':
-                    jump_type = 2
-                elif jump_instr == 'jmp':
-                    jump_type = 0
-                else:
-                    jump_type = 1
+                # 读取新增的字段
+                instr_len = int(row.get('instr_len', 0)) if row.get('instr_len') else 0
+                instr_content = row.get('instr_content', '').strip()
+                instr_bytes = row.get('instr_bytes', '').strip()
 
+                jump_instr = row.get('jump_instr', '').strip()
+                if jump_instr == 'callq' or jump_instr == 'call':
+                    jump_type = 2  # CALL
+                elif jump_instr == 'jmp':
+                    jump_type = 0  # JMP
+                elif jump_instr in ['ret', 'retq']:
+                    jump_type = 3  # RET
+                else:
+                    jump_type = 1  # JCC (条件跳转)
+
+                # 判断是否为间接跳转（根据指令内容中的 '*' 或指令助记符）
                 is_indirect = 0
+                if '*' in instr_content:
+                    is_indirect = 1
+                elif jump_instr in ['callq', 'jmp'] and '*' in instr_content:
+                    is_indirect = 1
+                
+                # 如果是间接跳转，调整 jump_type
+                if is_indirect:
+                    if jump_type == 2:  # CALL
+                        jump_type = 4  # INDIRECT_CALL
+                    elif jump_type == 0:  # JMP
+                        jump_type = 5  # INDIRECT_JMP
 
                 src_func = row.get('parent_function_name', 'unknown').encode('utf-8')[:63]
                 dst_func = row.get('target_function_name', 'unknown').encode('utf-8')[:63]
@@ -118,12 +137,37 @@ def parse_cfi_table(file_path):
                     'is_indirect': is_indirect,
                     'src_func': src_func,
                     'dst_func': dst_func,
+                    # 新增字段
+                    'instr_len': instr_len,
+                    'instr_content': instr_content,
+                    'instr_bytes': instr_bytes,
                 }
                 table.append(entry)
-            except Exception:
+            except Exception as e:
+                print(f"解析行出错: {e}")
                 continue
 
     print(f"✅ 从 CSV 成功解析 {len(table)} 个静态跳转规则")
+    
+    # 统计跳转类型分布
+    type_counts = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0}
+    for entry in table:
+        type_counts[entry['jump_type']] += 1
+    
+    print("跳转类型分布:")
+    type_names = {0:"JMP", 1:"JCC", 2:"CALL", 3:"RET", 4:"INDIRECT_CALL", 5:"INDIRECT_JMP"}
+    for t, count in type_counts.items():
+        if count > 0:
+            print(f"  {type_names[t]}: {count}")
+    
+    # 显示前几条记录的指令信息作为示例
+    if len(table) > 0:
+        print("\n前3条记录的指令信息:")
+        for i, entry in enumerate(table[:3]):
+            print(f"  {i+1}. 指令: {entry['instr_content']}")
+            print(f"     长度: {entry['instr_len']} 字节")
+            print(f"     字节: {entry['instr_bytes']}")
+    
     return table
 
 # 将BPF代码定义为一个函数，这样可以在需要时才编译
@@ -228,18 +272,6 @@ int trace_all_jumps(struct pt_regs *ctx) {
    
     bpf_probe_read(&event.insn_bytes, sizeof(event.insn_bytes), (void *)ip);
 
-    bpf_trace_printk("Insn bytes: %x %x\\n",
-    event.insn_bytes[0], event.insn_bytes[1]);
-
-    bpf_trace_printk("Insn bytes: %x %x\\n",
-    event.insn_bytes[2], event.insn_bytes[3]);
-
-    bpf_trace_printk("Insn bytes: %x %x\\n",
-    event.insn_bytes[4], event.insn_bytes[5]);
-
-    bpf_trace_printk("Insn bytes: %x %x\\n",
-    event.insn_bytes[6], event.insn_bytes[7]);
-
     if (entry->dst_addr != 0) {
         expected_target = entry->dst_addr + base;
     }
@@ -319,13 +351,15 @@ def print_debug_stats(debug_map):
 # 全局变量用于统计
 event_count = 0
 violation_count = 0
+cfi_lookup = {}  # 用于通过src_addr快速查找CFI条目
 
 def handle_jump_event(cpu, data, size):
-    """处理跳转事件"""
-    global event_count, violation_count
+    """处理跳转事件 - 输出完整的CFI信息"""
+    global event_count, violation_count, base, cfi_lookup
    
     event = b["jump_events"].event(data)
-       
+    
+    # 跳转类型名称映射（与BPF中的定义一致）
     jump_type_names = {
         0: "JMP",
         1: "JCC",
@@ -334,42 +368,144 @@ def handle_jump_event(cpu, data, size):
         4: "INDIRECT_CALL",
         5: "INDIRECT_JMP"
     }
-       
+    
     jump_type_name = jump_type_names.get(event.jump_type, f"UNKNOWN({event.jump_type})")
     status = "✓" if event.is_correct else "✗ VIOLATION"
-    print(jump_type_name)   
     
     if not event.is_correct:
         violation_count += 1
-       
+    
+    # 解码函数名字符串
     try:
-        src_func_str = event.src_func.decode('utf-8', errors='ignore').strip()
+        src_func_str = event.src_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
     except:
         src_func_str = str(event.src_func)
-           
+    
     try:
-        dst_func_str = event.dst_func.decode('utf-8', errors='ignore').strip()
+        dst_func_str = event.dst_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
     except:
         dst_func_str = str(event.dst_func)
-       
-    print("CFI 条目信息:")
-    print(f" src_addr: 0x{event.src_addr:x} (CFI表中的源地址)")
-    print(f" src_offset: 0x{event.src_offset:x} (运行时源偏移)")
-    print(f" src_func_addr: 0x{event.src_func_addr:x} (源函数地址)")
-    print(f" src_func: {src_func_str}")
-    print(f" dst_func: {dst_func_str}")
-    print(f" cfi_dst_addr: 0x{event.cfi_dst_addr:x} (CFI表中的目标地址)")
-       
-    print("\n寄存器状态:")
-    print(f" RAX: 0x{event.reg_rax:x}")
+    
+    # 从cfi_lookup中获取指令信息
+    src_addr_key = event.src_addr
+    cfi_info = cfi_lookup.get(src_addr_key, {})
+    
+    instr_len = cfi_info.get('instr_len', 0)
+    instr_content = cfi_info.get('instr_content', '未知')
+    instr_bytes = cfi_info.get('instr_bytes', '未知')
+    
+    # 输出事件头部
+    print("\n" + "="*80)
+    print(f"CFI 事件 #{event_count + 1} - {status}")
+    print(f"跳转类型: {jump_type_name} ({event.jump_type})")
+    print(f"事件时间: {event.timestamp_ns} ns")
+    print(f"事件CPU: {event.cpu}")
+    print(f"事件PID: {event.pid}")
+    print("="*80)
+    
+    # CFI条目信息
+    print("\n📋 CFI 条目信息:")
+    print(f"  • 源地址(CFI表): 0x{event.src_addr:016x}")
+    print(f"  • 源函数地址: 0x{event.src_func_addr:016x}")
+    print(f"  • 目标地址(CFI表): 0x{event.cfi_dst_addr:016x}")
+    print(f"  • 源函数: {src_func_str}")
+    print(f"  • 目标函数: {dst_func_str}")
+    
+    # 运行时信息
+    print("\n🔄 运行时信息:")
+    print(f"  • 运行时源偏移: 0x{event.src_offset:016x}")
+    print(f"  • 运行时目标偏移: 0x{event.dst_offset:016x}")
+    print(f"  • 预期目标地址: 0x{(event.expected_dst-base):016x}")
+    
+    # 计算实际目标地址（如果有）
+    if event.dst_offset != 0:
+        actual_target = base + event.dst_offset
+        print(f"  • 实际目标地址: 0x{actual_target:016x}")
+    
+    # 指令信息 - 从CFI表中获取的字段
+    print("\n💻 指令信息 (来自CSV):")
+    print(f"  • 指令长度: {instr_len} 字节")
+    print(f"  • 指令内容: {instr_content}")
+    print(f"  • 指令字节: {instr_bytes}")
+    
+    # 指令字节（原始）
+    insn_bytes = bytes(event.insn_bytes)
+    insn_hex = ' '.join([f"{b:02x}" for b in insn_bytes[:16]])
+    print(f"  • 原始指令字节: {insn_hex}")
+    
+    # 寄存器状态
+    print("\n📝 寄存器状态:")
+    print(f"  • RAX: 0x{event.reg_rax:016x} (返回值/间接跳转目标)")
+    print(f"  • RCX: 0x{event.reg_rcx:016x} (第4个参数)")
+    print(f"  • RDX: 0x{event.reg_rdx:016x} (第3个参数)")
+    print(f"  • RBX: 0x{event.reg_rbx:016x} (被调用者保存)")
+    print(f"  • RSP: 0x{event.reg_rsp:016x} (栈指针)")
+    print(f"  • RBP: 0x{event.reg_rbp:016x} (帧指针)")
+    print(f"  • RSI: 0x{event.reg_rsi:016x} (第2个参数)")
+    print(f"  • RDI: 0x{event.reg_rdi:016x} (第1个参数)")
+    
+    # 根据跳转类型进行专门分析
+    print("\n🔍 跳转分析:")
+    
+    if event.jump_type in [0, 1, 2]:  # 直接跳转
+        print(f"  • 直接跳转指令")
+        print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
+        
+        # 检查RAX是否可能包含目标（有时间接跳转也会使用RAX）
+        if event.reg_rax != 0:
+            print(f"  • RAX中的值: 0x{event.reg_rax:016x}")
+            if event.reg_rax == event.expected_dst:
+                print(f"    └─ RAX中的值与预期目标一致")
+        
+    elif event.jump_type in [4, 5]:  # 间接跳转
+        print(f"  • 间接跳转指令")
+        print(f"  • RAX中的目标: 0x{event.reg_rax:016x}")
+        print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
+        
+        if event.expected_dst != 0:
+            if event.reg_rax == event.expected_dst:
+                print(f"    └─ ✓ 目标匹配")
+            else:
+                diff = event.reg_rax - event.expected_dst
+                print(f"    └─ ✗ 目标不匹配 (差值: 0x{diff:x})")
+        else:
+            # 检查目标是否在模块内
+            in_module = (event.reg_rax >= base and event.reg_rax < base + 0x1000000)
+            print(f"    └─ 目标是否在模块内: {'是' if in_module else '否'}")
+    
+    elif event.jump_type == 3:  # 返回指令
+        print(f"  • 返回指令")
+        print(f"  • 栈指针(RSP): 0x{event.reg_rsp:016x}")
+        print(f"  • 模块范围: [0x{base:016x}, 0x{base + 0x1000000:016x}]")
+    
+    # 验证结果
+    print("\n✅ 验证结果:")
+    if event.is_correct:
+        print(f"  ✓ 此跳转符合CFI规则")
+    else:
+        print(f"  ✗ 此跳转违反CFI规则")
+        
+        # 违规原因分析
+        print(f"  🔴 可能的原因:")
+        if event.jump_type in [4, 5] and event.expected_dst != 0 and event.reg_rax != event.expected_dst:
+            print(f"     • 间接跳转目标与预期不符")
+        elif event.jump_type in [4, 5] and event.expected_dst == 0:
+            if event.reg_rax < base or event.reg_rax >= base + 0x1000000:
+                print(f"     • 间接跳转目标超出模块范围")
+        elif event.jump_type == 3:
+            print(f"     • 返回地址异常")
+        else:
+            print(f"     • 指令类型不匹配或其他原因")
+    
+    print("\n" + "-"*80)
     
     event_count += 1
 
-def attach_probes(b, module_name="e1000"):
+def attach_probes(b, module_name="nfnetlink"):
     """附加探测点到模块函数"""
     try:
         print(f"查找 {module_name} 模块的函数...")
-        
+        b.attach_kprobe(event=f"nfnetlink_has_listeners+0x20", fn_name="trace_all_jumps")
         try:
             with open('/proc/kallsyms', 'r') as f:
                 lines = f.readlines()
@@ -387,7 +523,7 @@ def attach_probes(b, module_name="e1000"):
                     try:
                         if func_name.startswith(f"{module_name}_"):
                             print(func_name)
-                            b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
+                            #b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
                             
                             func_count += 1
                             if func_count <= 5:
@@ -404,56 +540,11 @@ def attach_probes(b, module_name="e1000"):
         print(f"附加探测点失败: {e}")
         return False
 
-def trigger_network_events():
-    """触发网络事件以产生跳转"""
-    print("触发网络事件...")
-    
-    interfaces = []
-    try:
-        result = subprocess.run(["ip", "link", "show"], capture_output=True, text=True)
-        for line in result.stdout.split('\n'):
-            if 'state UP' in line or 'state DOWN' in line:
-                parts = line.split(':')
-                if len(parts) >= 2:
-                    iface = parts[1].strip()
-                    if iface and iface != 'lo':
-                        interfaces.append(iface)
-    except:
-        interfaces = ["ens33", "eth0", "enp0s3"]
-    
-    for iface in interfaces:
-        try:
-            print(f"操作接口: {iface}")
-            
-            result = subprocess.run(["ip", "link", "show", iface], capture_output=True, text=True)
-            if result.returncode != 0:
-                continue
-            
-            print(f"  关闭 {iface}")
-            subprocess.run(["ip", "link", "set", iface, "down"], capture_output=True)
-            time.sleep(0.3)
-            
-            print(f"  开启 {iface}")
-            subprocess.run(["ip", "link", "set", iface, "up"], capture_output=True)
-            time.sleep(0.5)
-            
-            print(f"  发送测试数据包")
-            subprocess.Popen(["ping", "-c", "2", "8.8.8.8"], 
-                           stdout=subprocess.DEVNULL, 
-                           stderr=subprocess.DEVNULL)
-            
-            time.sleep(1)
-            break
-            
-        except Exception as e:
-            print(f"  操作接口 {iface} 失败: {e}")
-            continue
-
 def main():
-    global b, event_count, violation_count, base
+    global b, event_count, violation_count, base, cfi_lookup
     
     # 首先解析CFI表
-    cfi_file = "data/csv/e1000_jump_analysis.csv"
+    cfi_file = "data/csv/nfnetlink_jump_analysis.csv"
     print("解析CFI表...")
     table = parse_cfi_table(cfi_file)
     
@@ -473,6 +564,10 @@ def main():
         if count > 0:
             print(f"  {type_names.get(jump_type, f'UNKNOWN({jump_type})')}: {count}")
     
+    # 构建查找表
+    for entry in table:
+        cfi_lookup[entry['src_addr']] = entry
+    
     # 然后加载BPF程序
     print("\n加载BPF程序...")
     try:
@@ -490,7 +585,7 @@ def main():
         print(f"BPF加载失败: {e}")
         return
     
-    module_name = "e1000"
+    module_name = "nfnetlink"
     base = get_module_base(module_name)
     if base is None:
         print(f"警告: 无法获取 {module_name} 模块基址，使用默认值 0xffffffffc0000000")
@@ -505,7 +600,6 @@ def main():
     # 加载CFI规则
     print("\n加载CFI规则...")
     loaded_count = 0
-    cfi_dict = {}
     
     for entry_dict in table:
         offset = ctypes.c_uint64(entry_dict['src_addr'])
@@ -519,7 +613,6 @@ def main():
             dst_func=entry_dict['dst_func']
         )
         b['cfi_map'][offset] = cfi_entry
-        cfi_dict[entry_dict['src_addr']] = entry_dict
         loaded_count += 1
     
     print(f"已加载 {loaded_count} 个CFI规则")
@@ -535,15 +628,7 @@ def main():
     print("\n=== CFI监控已启动 ===")
     print("正在监控跳转指令并输出完整的CFI信息...")
     print("按 Ctrl+C 停止\n")
-    
-    # 启动触发事件的线程
-    def trigger_thread_func():
-        time.sleep(2)
-        trigger_network_events()
-    
-    trigger_thread = threading.Thread(target=trigger_thread_func)
-    trigger_thread.daemon = True
-    trigger_thread.start()
+    print("请在另一个终端运行: sudo python3 network_trigger.py 来触发网络事件")
     
     try:
         last_stat_time = time.time()

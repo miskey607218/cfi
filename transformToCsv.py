@@ -2,8 +2,8 @@ import re
 import csv
 
 # ===================== 配置项 =====================
-DISASM_FILE = "data/txt/e1000_disassembly.txt"  # 你的反汇编文件路径
-OUTPUT_CSV = "data/csv/e1000_jump_analysis.csv"  # 输出的CSV文件路径
+DISASM_FILE = "data/txt/nfnetlink_disassembly.txt"  # 你的反汇编文件路径
+OUTPUT_CSV = "data/csv/nfnetlink_jump_analysis.csv"  # 输出的CSV文件路径
 
 # 跳转指令类型映射（按类型分类）
 JUMP_TYPE_MAP = {
@@ -96,12 +96,12 @@ def clean_hex_address(hex_str):
 
 
 def parse_jump_instructions(disasm_lines, function_map):
-    """解析所有跳转指令，返回结构化数据列表（新增目标地址所属函数起始地址）"""
+    """解析所有跳转指令，返回结构化数据列表（包含指令长度和完整指令内容）"""
     jump_data = []
     # 匹配跳转指令行：格式如 "c0001050:   74 12   je     c0001064 <e1000_intr+0x64>"
-    # 分组：1=指令地址, 2=指令码, 3=跳转指令, 4=目标地址, 5=目标函数偏移（可选）
+    # 分组：1=指令地址, 2=完整指令内容, 3=跳转指令, 4=目标地址, 5=目标函数偏移（可选）
     jump_pattern = re.compile(
-        r'^([0-9a-fA-F]+):\s+[0-9a-fA-F\s]+\s+(' +
+        r'^([0-9a-fA-F]+):\s+((?:[0-9a-fA-F]{2}\s*)+?)\s+(' +
         '|'.join(JUMP_TYPE_MAP.keys()) +
         r')\s+([0-9a-fA-F]+)(?:\s+<([^+>]+)(?:\+0x[0-9a-fA-F]+)?>)?'
     )
@@ -116,9 +116,19 @@ def parse_jump_instructions(disasm_lines, function_map):
             try:
                 # 提取基础信息
                 instr_addr = match.group(1)  # 跳转指令地址
-                jump_instr = match.group(2)  # 跳转指令（如je）
-                target_addr = match.group(3)  # 目标地址
-                target_func_name = match.group(4) or "UNKNOWN"  # 目标函数名（可选）
+                instr_bytes_str = match.group(2).strip()  # 完整指令字节
+                jump_instr = match.group(3)  # 跳转指令（如je）
+                target_addr = match.group(4)  # 目标地址
+                target_func_name = match.group(5) or "UNKNOWN"  # 目标函数名（可选）
+
+                # 计算指令长度（字节数）
+                instr_bytes = instr_bytes_str.split()
+                instr_len = len(instr_bytes)
+
+                # 完整指令内容（包括操作码和操作数）
+                instr_content = f"{jump_instr} {target_addr}"
+                if target_func_name != "UNKNOWN":
+                    instr_content += f" <{target_func_name}>"
 
                 # 补充跳转指令所属函数信息
                 parent_func_name, parent_func_start = get_parent_function(instr_addr, function_map)
@@ -135,18 +145,21 @@ def parse_jump_instructions(disasm_lines, function_map):
                 full_instr_addr = clean_hex_address(instr_addr)
                 full_target_addr = clean_hex_address(target_addr)
                 full_parent_start = clean_hex_address(parent_func_start)
-                full_target_func_start = clean_hex_address(target_func_start)  # 清理目标函数起始地址
+                full_target_func_start = clean_hex_address(target_func_start)
 
-                # 组装结构化数据（新增target_function_start字段）
+                # 组装结构化数据
                 jump_data.append({
                     "jump_instr_address": full_instr_addr,
                     "jump_instr": jump_instr,
+                    "instr_len": instr_len,  # 新增：指令长度（字节数）
+                    "instr_content": instr_content,  # 新增：完整指令内容
+                    "instr_bytes": instr_bytes_str,  # 新增：原始指令字节
                     "jump_type": jump_type,
                     "parent_function_name": parent_func_name,
                     "parent_function_start": full_parent_start,
                     "target_address": full_target_addr,
                     "target_function_name": final_target_func_name,
-                    "target_function_start": full_target_func_start  # 新增字段：目标地址所在函数开始地址
+                    "target_function_start": full_target_func_start
                 })
             except Exception as e:
                 # 打印异常行，不中断整体解析
@@ -177,12 +190,21 @@ if __name__ == "__main__":
     jump_data = parse_jump_instructions(disasm_lines, function_map)
     print(f"✅ 解析到{len(jump_data)}条跳转指令")
 
-    # 4. 写入CSV文件（新增target_function_start表头）
+    # 4. 统计跳转指令类型分布
+    jump_type_count = {}
+    for item in jump_data:
+        jtype = item['jump_type']
+        jump_type_count[jtype] = jump_type_count.get(jtype, 0) + 1
+    
+    print("跳转指令类型分布:")
+    for jtype, count in jump_type_count.items():
+        print(f"  {jtype}: {count}条")
+
+    # 5. 写入CSV文件（新增字段表头）
     headers = [
-        "jump_instr_address", "jump_instr", "jump_type",
-        "parent_function_name", "parent_function_start",
-        "target_address", "target_function_name",
-        "target_function_start"  # 新增表头字段
+        "jump_instr_address", "jump_instr", "instr_len", "instr_content", "instr_bytes",
+        "jump_type", "parent_function_name", "parent_function_start",
+        "target_address", "target_function_name", "target_function_start"
     ]
     try:
         with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
@@ -190,6 +212,15 @@ if __name__ == "__main__":
             writer.writeheader()
             writer.writerows(jump_data)
         print(f"✅ 结构化数据已保存到 {OUTPUT_CSV}")
+        
+        # 显示前几条数据作为示例
+        print("\n前5条数据示例:")
+        for i, item in enumerate(jump_data[:5]):
+            print(f"{i+1}. 地址: {item['jump_instr_address']}, "
+                  f"指令: {item['jump_instr']}, "
+                  f"长度: {item['instr_len']}字节, "
+                  f"内容: {item['instr_content']}")
+            
     except Exception as e:
         print(f"❌ 写入CSV出错：{e}")
         exit(1)

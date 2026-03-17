@@ -76,7 +76,7 @@ class JumpEvent(ctypes.Structure):
     ]
 
 def parse_cfi_table(file_path):
-    """从 nfnetlink_jump_analysis.csv 读取静态跳转规则"""
+    """从 e1000_jump_analysis.csv 读取静态跳转规则"""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"文件未找到: {file_path}")
 
@@ -427,12 +427,77 @@ def handle_jump_event(cpu, data, size):
     print(f"  • 指令长度: {instr_len} 字节")
     print(f"  • 指令内容: {instr_content}")
     print(f"  • 指令字节: {instr_bytes}")
-    
-    # 指令字节（原始）
+
+    # 从CSV指令字节中提取第一个字节
+    csv_first_byte = None
+    if instr_bytes and instr_bytes != '未知':
+        bytes_list = instr_bytes.split()
+        if bytes_list:
+            csv_first_byte = bytes_list[0]
+            print(f"  • CSV第一个字节: {csv_first_byte}")
+    else:
+        print(f"  • CSV第一个字节: 未知")
+
+    # 原始指令字节
     insn_bytes = bytes(event.insn_bytes)
     insn_hex = ' '.join([f"{b:02x}" for b in insn_bytes[:16]])
+
+    # 从原始指令字节中提取第一个字节
+    first_byte = insn_bytes[0] if insn_bytes else 0
+    print(f"  • 原始第一个字节: 0x{first_byte:02x}")
     print(f"  • 原始指令字节: {insn_hex}")
-    
+
+    # 生成新指令：CSV第一个字节 + 原始字节的后 instr_len-1 个字节
+    if csv_first_byte and instr_len > 1 and len(insn_bytes) >= instr_len:
+        # 取 CSV 第一个字节
+        new_insn_bytes = [int(csv_first_byte, 16)]
+        
+        # 从原始字节中取后面的 instr_len-1 个字节
+        for i in range(0, instr_len-1):
+            if i < len(insn_bytes):
+                new_insn_bytes.append(insn_bytes[i])
+            else:
+                new_insn_bytes.append(0)  # 如果不够长度，补0
+        
+        # 生成新指令的十六进制字符串
+        new_insn_hex = ' '.join([f"{b:02x}" for b in new_insn_bytes])
+        print(f"\n  🔧 合成指令 (CSV第一个字节 + 原始字节后{instr_len-1}字节):")
+        print(f"     指令字节: {new_insn_hex}")
+        
+        # 尝试反汇编这个合成指令
+        try:
+            md = Cs(CS_ARCH_X86, CS_MODE_64)
+            md.detail = True
+            new_insn_bytes_array = bytes(new_insn_bytes)
+            for i, insn in enumerate(md.disasm(new_insn_bytes_array, event.src_offset)):
+                if i == 0:  # 只显示第一条指令
+                    print(f"     反汇编结果: {insn.mnemonic} {insn.op_str}")
+                    
+                    # 如果是跳转指令，计算目标地址
+                    if insn.mnemonic.startswith('j') or insn.mnemonic == 'call':
+                        if len(insn.operands) > 0:
+                            op = insn.operands[0]
+                            if op.type == 1:  # 立即数
+                                target_offset = op.imm
+                                target_abs = base + target_offset
+                                print(f"         目标偏移: 0x{target_offset:x}")
+                                print(f"         目标绝对地址: 0x{target_abs:x}")
+                                
+                                # 检查是否与CFI预期一致
+                                if target_abs == event.expected_dst:
+                                    print(f"         ✓ 与CFI预期目标一致")
+                                else:
+                                    print(f"         ✗ 与CFI预期目标不一致 (预期: 0x{event.expected_dst:x})")
+                else:
+                    break
+        except Exception as e:
+            print(f"     反汇编失败: {e}")
+    elif csv_first_byte and instr_len == 1:
+        # 单字节指令
+        print(f"\n  🔧 单字节指令: {csv_first_byte}")
+    else:
+        print(f"\n  🔧 无法合成指令: 参数不足")
+
     # 寄存器状态
     print("\n📝 寄存器状态:")
     print(f"  • RAX: 0x{event.reg_rax:016x} (返回值/间接跳转目标)")
@@ -501,11 +566,11 @@ def handle_jump_event(cpu, data, size):
     
     event_count += 1
 
-def attach_probes(b, module_name="nfnetlink"):
+def attach_probes(b, module_name="e1000"):
     """附加探测点到模块函数"""
     try:
         print(f"查找 {module_name} 模块的函数...")
-        b.attach_kprobe(event=f"nfnetlink_has_listeners+0x20", fn_name="trace_all_jumps")
+        b.attach_kprobe(event=f"e1000_maybe_stop_tx+0x87", fn_name="trace_all_jumps")
         try:
             with open('/proc/kallsyms', 'r') as f:
                 lines = f.readlines()
@@ -523,7 +588,7 @@ def attach_probes(b, module_name="nfnetlink"):
                     try:
                         if func_name.startswith(f"{module_name}_"):
                             print(func_name)
-                            #b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
+                            b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
                             
                             func_count += 1
                             if func_count <= 5:
@@ -544,7 +609,7 @@ def main():
     global b, event_count, violation_count, base, cfi_lookup
     
     # 首先解析CFI表
-    cfi_file = "data/csv/nfnetlink_jump_analysis.csv"
+    cfi_file = "data/csv/e1000_jump_analysis.csv"
     print("解析CFI表...")
     table = parse_cfi_table(cfi_file)
     
@@ -585,7 +650,7 @@ def main():
         print(f"BPF加载失败: {e}")
         return
     
-    module_name = "nfnetlink"
+    module_name = "e1000"
     base = get_module_base(module_name)
     if base is None:
         print(f"警告: 无法获取 {module_name} 模块基址，使用默认值 0xffffffffc0000000")

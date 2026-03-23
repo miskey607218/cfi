@@ -1,229 +1,5312 @@
-ffffffffc053b010 t e1000_alloc_dummy_rx_buffers	[e1000]
-ffffffffc053b030 t e1000_fix_features	[e1000]
-ffffffffc053b070 t e1000_regdump	[e1000]
-ffffffffc053b4e0 t e1000_dump	[e1000]
-ffffffffc0553d60 d e1000_driver_string	[e1000]
-ffffffffc0560c20 r e1000_copyright	[e1000]
-ffffffffc0553c40 d e1000_driver	[e1000]
-ffffffffc053b7c0 t e1000_update_itr	[e1000]
-ffffffffc053b910 t e1000_request_irq	[e1000]
-ffffffffc053e630 t e1000_intr	[e1000]
-ffffffffc053b9c0 t e1000_down_and_stop	[e1000]
-ffffffffc053ba40 t e1000_update_phy_info_task	[e1000]
-ffffffffc053ba80 t e1000_smartspeed	[e1000]
-ffffffffc053bc50 t e1000_power_down_phy	[e1000]
-ffffffffc0550e80 t e1000_exit_module	[e1000]
-ffffffffc053bd30 t e1000_configure_tx	[e1000]
-ffffffffc053bf50 t e1000_setup_rctl	[e1000]
-ffffffffc0550e98 t e1000_setup_rctl.cold	[e1000]
-ffffffffc053c050 t e1000_configure_rx	[e1000]
-ffffffffc053c670 t e1000_alloc_jumbo_rx_buffers	[e1000]
-ffffffffc053cf20 t e1000_clean_rx_irq	[e1000]
-ffffffffc053f0f0 t e1000_alloc_rx_buffers	[e1000]
-ffffffffc053f8f0 t e1000_clean_jumbo_rx_irq	[e1000]
-ffffffffc0550ead t e1000_configure_rx.cold	[e1000]
-ffffffffc053c2c0 t e1000_tbi_should_accept	[e1000]
-ffffffffc0550ec2 t e1000_tbi_should_accept.cold	[e1000]
-ffffffffc053c4f0 t e1000_unmap_and_free_tx_resource	[e1000]
-ffffffffc0550eea t e1000_unmap_and_free_tx_resource.cold	[e1000]
-ffffffffc053c590 t e1000_clean_tx_ring	[e1000]
-ffffffffc053c860 t e1000_dump_eeprom.isra.0	[e1000]
-ffffffffc053ca50 t e1000_tso.constprop.0	[e1000]
-ffffffffc053ccf0 t e1000_copybreak	[e1000]
-ffffffffc053cdb0 t e1000_tx_timeout	[e1000]
-ffffffffc053ce00 t e1000_remove	[e1000]
-ffffffffc0550f02 t e1000_clean_rx_irq.cold	[e1000]
-ffffffffc053d3f0 t e1000_maybe_stop_tx	[e1000]
-ffffffffc053d4a0 t e1000_82547_tx_fifo_stall_task	[e1000]
-ffffffffc053d6a0 t e1000_tx_map	[e1000]
-ffffffffc0550f35 t e1000_tx_map.cold	[e1000]
-ffffffffc053dca0 t e1000_xmit_frame	[e1000]
-ffffffffc0550fbb t e1000_xmit_frame.cold	[e1000]
-ffffffffc053e750 t e1000_netpoll	[e1000]
-ffffffffc053e7c0 t e1000_leave_82542_rst	[e1000]
-ffffffffc053e8e0 t e1000_sw_init	[e1000]
-ffffffffc053ea10 t e1000_clean_tx_irq	[e1000]
-ffffffffc0551178 t e1000_clean_tx_irq.cold	[e1000]
-ffffffffc053ee70 t e1000_clean	[e1000]
-ffffffffc055119e t e1000_alloc_rx_buffers.cold	[e1000]
-ffffffffc053f4e0 t e1000_vlan_rx_kill_vid	[e1000]
-ffffffffc053f6e0 t e1000_vlan_filter_on_off	[e1000]
-ffffffffc053f600 t e1000_update_mng_vlan	[e1000]
-ffffffffc053f820 t e1000_vlan_rx_add_vid	[e1000]
-ffffffffc0540180 t e1000_setup_tx_resources	[e1000]
-ffffffffc0540380 t e1000_clean_rx_ring	[e1000]
-ffffffffc05405a0 t e1000_enter_82542_rst	[e1000]
-ffffffffc0540680 t e1000_set_rx_mode	[e1000]
-ffffffffc0540a20 t e1000_configure	[e1000]
-ffffffffc0540b60 t e1000_set_mac	[e1000]
-ffffffffc05511c1 t e1000_set_mac.cold	[e1000]
-ffffffffc0540d20 t e1000_setup_rx_resources	[e1000]
-ffffffffc0540fe0 t e1000_io_resume	[e1000]
-ffffffffc0541410 t e1000_io_slot_reset	[e1000]
-ffffffffc05414f0 t e1000_probe	[e1000]
-ffffffffc0560200 r e1000_netdev_ops	[e1000]
-ffffffffc0543dc0 t e1000_watchdog	[e1000]
-ffffffffc0542890 t e1000_reset_task	[e1000]
-ffffffffc05423f0 t e1000_io_error_detected	[e1000]
-ffffffffc05426e0 t e1000_suspend	[e1000]
-ffffffffc05511e4 t e1000_suspend.cold	[e1000]
-ffffffffc0542770 t e1000_shutdown	[e1000]
-ffffffffc05511f8 t e1000_shutdown.cold	[e1000]
-ffffffffc0542900 t e1000_resume	[e1000]
-ffffffffc0542ab0 t e1000_change_mtu	[e1000]
-ffffffffc055120d t e1000_change_mtu.cold	[e1000]
-ffffffffc0542c30 t e1000_set_features	[e1000]
-ffffffffc0551221 t e1000_has_link.cold	[e1000]
-ffffffffc055126b t e1000_update_stats.cold	[e1000]
-ffffffffc0544450 t e1000_mii_ioctl	[e1000]
-ffffffffc05446b0 t e1000_ioctl	[e1000]
-ffffffffc0560620 r e1000_pci_tbl	[e1000]
-ffffffffc05605c0 r e1000_err_handler	[e1000]
-ffffffffc0560500 r e1000_pm_ops	[e1000]
-ffffffffc0544700 t e1000_clear_hw_cntrs	[e1000]
-ffffffffc0544950 t e1000_acquire_eeprom	[e1000]
-ffffffffc0544a50 t e1000_shift_out_ee_bits	[e1000]
-ffffffffc0551295 t e1000_shift_out_ee_bits.cold	[e1000]
-ffffffffc0544b60 t e1000_standby_eeprom	[e1000]
-ffffffffc0544c50 t e1000_release_eeprom	[e1000]
-ffffffffc0544d00 t e1000_write_eeprom_microwire	[e1000]
-ffffffffc0544e70 t e1000_shift_out_mdi_bits	[e1000]
-ffffffffc0544f40 t e1000_write_phy_reg_ex	[e1000]
-ffffffffc0545090 t e1000_shift_in_ee_bits	[e1000]
-ffffffffc0545140 t e1000_spi_eeprom_ready	[e1000]
-ffffffffc05451e0 t e1000_do_write_eeprom	[e1000]
-ffffffffc0545400 t e1000_do_read_eeprom	[e1000]
-ffffffffc0545610 t e1000_read_phy_reg_ex	[e1000]
-ffffffffc05458e0 t e1000_id_led_init	[e1000]
-ffffffffc05541c0 d e1000_eeprom_lock	[e1000]
-ffffffffc0545b00 t e1000_detect_gig_phy	[e1000]
-ffffffffc0556d48 b e1000_phy_lock	[e1000]
-ffffffffc0546520 t e1000_copper_link_autoneg	[e1000]
-ffffffffc05512b4 t e1000_get_speed_and_duplex.cold	[e1000]
-ffffffffc0546bd0 t e1000_config_fc_after_link_up	[e1000]
-ffffffffc05512c9 t e1000_config_fc_after_link_up.cold	[e1000]
-ffffffffc0547030 t e1000_check_for_serdes_link_generic.isra.0	[e1000]
-ffffffffc05473e0 t e1000_config_mac_to_phy	[e1000]
-ffffffffc05475b0 t e1000_get_cable_length	[e1000]
-ffffffffc0561180 r e1000_igp_cable_length_table	[e1000]
-ffffffffc0547820 t e1000_check_polarity	[e1000]
-ffffffffc05479b0 t e1000_phy_init_script	[e1000]
-ffffffffc0547f50 t e1000_polarity_reversal_workaround	[e1000]
-ffffffffc05481f0 t e1000_phy_force_speed_duplex	[e1000]
-ffffffffc0548850 t e1000_config_dsp_after_link_change	[e1000]
-ffffffffc0548db0 t e1000_copper_link_postconfig	[e1000]
-ffffffffc05512de t e1000_check_for_link.cold	[e1000]
-ffffffffc0549340 t e1000_setup_fiber_serdes_link	[e1000]
-ffffffffc0549790 t e1000_set_d3_lplu_state.constprop.0	[e1000]
-ffffffffc05499d0 t e1000_copper_link_preconfig	[e1000]
-ffffffffc0549d20 t e1000_copper_link_igp_setup	[e1000]
-ffffffffc055133d t e1000_copper_link_igp_setup.cold	[e1000]
-ffffffffc054a0f0 t e1000_copper_link_mgp_setup	[e1000]
-ffffffffc0551352 t e1000_copper_link_mgp_setup.cold	[e1000]
-ffffffffc054a2b0 t e1000_copper_link_rtl_setup	[e1000]
-ffffffffc054a470 t e1000_setup_copper_link	[e1000]
-ffffffffc0551380 t e1000_setup_link.cold	[e1000]
-ffffffffc05513aa t e1000_phy_get_info.cold	[e1000]
-ffffffffc05513d2 t e1000_reset_adaptive.cold	[e1000]
-ffffffffc05513fc t e1000_update_adaptive.cold	[e1000]
-ffffffffc054c170 t e1000_get_pauseparam	[e1000]
-ffffffffc054c200 t e1000_get_msglevel	[e1000]
-ffffffffc054c230 t e1000_set_msglevel	[e1000]
-ffffffffc054c260 t e1000_get_regs_len	[e1000]
-ffffffffc054c290 t e1000_get_eeprom_len	[e1000]
-ffffffffc054c2c0 t e1000_get_ringparam	[e1000]
-ffffffffc054c320 t e1000_test_intr	[e1000]
-ffffffffc054c360 t e1000_get_sset_count	[e1000]
-ffffffffc054c3a0 t e1000_get_coalesce	[e1000]
-ffffffffc054c400 t e1000_set_coalesce	[e1000]
-ffffffffc054c760 t e1000_reg_test	[e1000]
-ffffffffc054ccf0 t e1000_set_link_ksettings	[e1000]
-ffffffffc054ceb0 t e1000_get_link_ksettings	[e1000]
-ffffffffc054d030 t e1000_set_phys_id	[e1000]
-ffffffffc054d0a0 t e1000_intr_test	[e1000]
-ffffffffc054d3b0 t e1000_phy_reset_clk_and_crs	[e1000]
-ffffffffc054d470 t e1000_get_regs	[e1000]
-ffffffffc054d880 t e1000_free_desc_rings	[e1000]
-ffffffffc054dae0 t e1000_set_pauseparam	[e1000]
-ffffffffc054dbf0 t e1000_nway_reset	[e1000]
-ffffffffc054dc40 t e1000_get_drvinfo	[e1000]
-ffffffffc054dd20 t e1000_wol_exclusion	[e1000]
-ffffffffc0551426 t e1000_wol_exclusion.cold	[e1000]
-ffffffffc054de00 t e1000_set_wol	[e1000]
-ffffffffc054df30 t e1000_get_ethtool_stats	[e1000]
-ffffffffc05615c0 r e1000_gstrings_stats	[e1000]
-ffffffffc055143b t e1000_get_ethtool_stats.cold	[e1000]
-ffffffffc054e0d0 t e1000_get_strings	[e1000]
-ffffffffc0561520 r e1000_gstrings_test	[e1000]
-ffffffffc054e210 t e1000_link_test	[e1000]
-ffffffffc0551477 t e1000_link_test.cold	[e1000]
-ffffffffc054e2f0 t e1000_set_eeprom	[e1000]
-ffffffffc054e510 t e1000_get_wol	[e1000]
-ffffffffc054e5f0 t e1000_run_loopback_test	[e1000]
-ffffffffc054e930 t e1000_get_link	[e1000]
-ffffffffc054e980 t e1000_set_phy_loopback	[e1000]
-ffffffffc054ed00 t e1000_get_eeprom	[e1000]
-ffffffffc054ee70 t e1000_set_ringparam	[e1000]
-ffffffffc054f170 t e1000_setup_desc_rings	[e1000]
-ffffffffc055148b t e1000_setup_desc_rings.cold	[e1000]
-ffffffffc054f860 t e1000_diag_test	[e1000]
-ffffffffc05612e0 r e1000_ethtool_ops	[e1000]
-ffffffffc054fc90 t e1000_validate_option.isra.0	[e1000]
-ffffffffc054fe10 t e1000_check_copper_options	[e1000]
-ffffffffc0545ea0 t e1000_set_mac_type	[e1000]
-ffffffffc054b430 t e1000_read_mac_addr	[e1000]
-ffffffffc0546160 t e1000_phy_setup_autoneg	[e1000]
-ffffffffc054fc60 t e1000_set_ethtool_ops	[e1000]
-ffffffffc0541120 t e1000_reset	[e1000]
-ffffffffc0544210 t e1000_pci_clear_mwi	[e1000]
-ffffffffc0540f50 t e1000_up	[e1000]
-ffffffffc05421d0 t e1000_down	[e1000]
-ffffffffc05441a0 t e1000_pci_set_mwi	[e1000]
-ffffffffc0548f00 t e1000_check_for_link	[e1000]
-ffffffffc05435b0 t e1000_update_stats	[e1000]
-ffffffffc0553d81 d e1000_driver_name	[e1000]
-ffffffffc054b6c0 t e1000_rar_set	[e1000]
-ffffffffc054bac0 t e1000_write_vfta	[e1000]
-ffffffffc0543490 t e1000_has_link	[e1000]
-ffffffffc0542d70 t e1000_setup_all_tx_resources	[e1000]
-ffffffffc054bcf0 t e1000_led_on	[e1000]
-ffffffffc0544290 t e1000_pcix_set_mmrbc	[e1000]
-ffffffffc0546840 t e1000_force_mac_fc	[e1000]
-ffffffffc05467e0 t e1000_config_collision_dist	[e1000]
-ffffffffc0540f20 t e1000_get_hw_dev	[e1000]
-ffffffffc0549c00 t e1000_phy_reset	[e1000]
-ffffffffc05498c0 t e1000_phy_hw_reset	[e1000]
-ffffffffc054ae60 t e1000_validate_mdi_setting	[e1000]
-ffffffffc054b160 t e1000_validate_eeprom_checksum	[e1000]
-ffffffffc0547c70 t e1000_reset_hw	[e1000]
-ffffffffc054bd80 t e1000_led_off	[e1000]
-ffffffffc0544300 t e1000_set_spd_dplx	[e1000]
-ffffffffc0546900 t e1000_get_speed_and_duplex	[e1000]
-ffffffffc054c030 t e1000_get_bus_info	[e1000]
-ffffffffc05431c0 t e1000_close	[e1000]
-ffffffffc054bef0 t e1000_update_adaptive	[e1000]
-ffffffffc0542810 t e1000_reinit_locked	[e1000]
-ffffffffc054b600 t e1000_hash_mc_addr	[e1000]
-ffffffffc05460a0 t e1000_set_media_type	[e1000]
-ffffffffc054be10 t e1000_reset_adaptive	[e1000]
-ffffffffc0543020 t e1000_free_all_tx_resources	[e1000]
-ffffffffc054aef0 t e1000_init_eeprom_params	[e1000]
-ffffffffc054b750 t e1000_init_hw	[e1000]
-ffffffffc0547910 t e1000_write_phy_reg	[e1000]
-ffffffffc0544250 t e1000_pcix_get_mmrbc	[e1000]
-ffffffffc054b3c0 t e1000_write_eeprom	[e1000]
-ffffffffc054b0f0 t e1000_read_eeprom	[e1000]
-ffffffffc0541080 t e1000_power_up_phy	[e1000]
-ffffffffc054a6f0 t e1000_setup_link	[e1000]
-ffffffffc05442d0 t e1000_io_write	[e1000]
-ffffffffc054b270 t e1000_update_eeprom_checksum	[e1000]
-ffffffffc05504b0 t e1000_check_options	[e1000]
-ffffffffc0542ec0 t e1000_setup_all_rx_resources	[e1000]
-ffffffffc0547340 t e1000_read_phy_reg	[e1000]
-ffffffffc054bbb0 t e1000_setup_led	[e1000]
-ffffffffc05432e0 t e1000_open	[e1000]
-ffffffffc054c110 t e1000_enable_mng_pass_thru	[e1000]
-ffffffffc054bc80 t e1000_cleanup_led	[e1000]
-ffffffffc05430f0 t e1000_free_all_rx_resources	[e1000]
-ffffffffc054aa30 t e1000_phy_get_info	[e1000]
-ffffffffc056b010 T e1000_init_module	[e1000]
+解析CFI表...
+✅ 从 CSV 成功解析 4683 个静态跳转规则
+跳转类型分布:
+  JMP: 1137
+  JCC: 1805
+  CALL: 1741
+
+前3条记录的指令信息:
+  1. 指令: call 15 <e1000_alloc_dummy_rx_buffers>
+     长度: 5 字节
+     字节: e8 00 00 00 00
+  2. 指令: jmp 1f <e1000_alloc_dummy_rx_buffers>
+     长度: 5 字节
+     字节: e9 00 00 00 00
+  3. 指令: call 35 <e1000_fix_features>
+     长度: 5 字节
+     字节: e8 00 00 00 00
+
+跳转类型统计:
+  JMP: 1137
+  JCC: 1805
+  CALL: 1741
+
+加载BPF程序...
+BPF程序加载成功
+检测到 e1000 基址: 0xffffffffc04c0000
+设置的模块基址: 0xffffffffc04c0000
+
+加载CFI规则...
+已加载 4683 个CFI规则
+
+附加探测点...
+查找 e1000 模块的函数...
+e1000_alloc_dummy_rx_buffers
+  附加到: e1000_alloc_dummy_rx_buffers
+e1000_fix_features
+  附加到: e1000_fix_features
+e1000_regdump
+  附加到: e1000_regdump
+e1000_dump
+  附加到: e1000_dump
+e1000_driver_string
+e1000_copyright
+e1000_driver
+e1000_update_itr
+  附加到: e1000_update_itr
+e1000_request_irq
+e1000_intr
+e1000_down_and_stop
+e1000_update_phy_info_task
+e1000_smartspeed
+e1000_power_down_phy
+e1000_exit_module
+e1000_configure_tx
+e1000_setup_rctl
+e1000_configure_rx
+e1000_alloc_jumbo_rx_buffers
+e1000_clean_rx_irq
+e1000_alloc_rx_buffers
+e1000_clean_jumbo_rx_irq
+e1000_tbi_should_accept
+e1000_unmap_and_free_tx_resource
+e1000_clean_tx_ring
+e1000_copybreak
+e1000_tx_timeout
+e1000_remove
+e1000_maybe_stop_tx
+e1000_82547_tx_fifo_stall_task
+e1000_tx_map
+e1000_xmit_frame
+e1000_netpoll
+e1000_leave_82542_rst
+e1000_sw_init
+e1000_clean_tx_irq
+e1000_clean
+e1000_vlan_rx_kill_vid
+e1000_vlan_filter_on_off
+e1000_update_mng_vlan
+e1000_vlan_rx_add_vid
+e1000_setup_tx_resources
+e1000_clean_rx_ring
+e1000_enter_82542_rst
+e1000_set_rx_mode
+e1000_configure
+e1000_set_mac
+e1000_setup_rx_resources
+e1000_io_resume
+e1000_io_slot_reset
+e1000_probe
+e1000_netdev_ops
+e1000_watchdog
+e1000_reset_task
+e1000_io_error_detected
+e1000_suspend
+e1000_shutdown
+e1000_resume
+e1000_change_mtu
+e1000_set_features
+e1000_mii_ioctl
+e1000_ioctl
+e1000_pci_tbl
+e1000_err_handler
+e1000_pm_ops
+e1000_clear_hw_cntrs
+e1000_acquire_eeprom
+e1000_shift_out_ee_bits
+e1000_standby_eeprom
+e1000_release_eeprom
+e1000_write_eeprom_microwire
+e1000_shift_out_mdi_bits
+e1000_write_phy_reg_ex
+e1000_shift_in_ee_bits
+e1000_spi_eeprom_ready
+e1000_do_write_eeprom
+e1000_do_read_eeprom
+e1000_read_phy_reg_ex
+e1000_id_led_init
+e1000_eeprom_lock
+e1000_detect_gig_phy
+e1000_phy_lock
+e1000_copper_link_autoneg
+e1000_config_fc_after_link_up
+e1000_config_mac_to_phy
+e1000_get_cable_length
+e1000_igp_cable_length_table
+e1000_check_polarity
+e1000_phy_init_script
+e1000_polarity_reversal_workaround
+e1000_phy_force_speed_duplex
+e1000_config_dsp_after_link_change
+e1000_copper_link_postconfig
+e1000_setup_fiber_serdes_link
+e1000_copper_link_preconfig
+e1000_copper_link_igp_setup
+e1000_copper_link_mgp_setup
+e1000_copper_link_rtl_setup
+e1000_setup_copper_link
+e1000_get_pauseparam
+e1000_get_msglevel
+e1000_set_msglevel
+e1000_get_regs_len
+e1000_get_eeprom_len
+e1000_get_ringparam
+e1000_test_intr
+e1000_get_sset_count
+e1000_get_coalesce
+e1000_set_coalesce
+e1000_reg_test
+e1000_set_link_ksettings
+e1000_get_link_ksettings
+e1000_set_phys_id
+e1000_intr_test
+e1000_phy_reset_clk_and_crs
+e1000_get_regs
+e1000_free_desc_rings
+e1000_set_pauseparam
+e1000_nway_reset
+e1000_get_drvinfo
+e1000_wol_exclusion
+e1000_set_wol
+e1000_get_ethtool_stats
+e1000_gstrings_stats
+e1000_get_strings
+e1000_gstrings_test
+e1000_link_test
+e1000_set_eeprom
+e1000_get_wol
+e1000_run_loopback_test
+e1000_get_link
+e1000_set_phy_loopback
+e1000_get_eeprom
+e1000_set_ringparam
+e1000_setup_desc_rings
+e1000_diag_test
+e1000_ethtool_ops
+e1000_check_copper_options
+e1000_set_mac_type
+e1000_read_mac_addr
+e1000_phy_setup_autoneg
+e1000_set_ethtool_ops
+e1000_reset
+e1000_pci_clear_mwi
+e1000_up
+e1000_down
+e1000_pci_set_mwi
+e1000_check_for_link
+e1000_update_stats
+e1000_driver_name
+e1000_rar_set
+e1000_write_vfta
+e1000_has_link
+e1000_setup_all_tx_resources
+e1000_led_on
+e1000_pcix_set_mmrbc
+e1000_force_mac_fc
+e1000_config_collision_dist
+e1000_get_hw_dev
+e1000_phy_reset
+e1000_phy_hw_reset
+e1000_validate_mdi_setting
+e1000_validate_eeprom_checksum
+e1000_reset_hw
+e1000_led_off
+e1000_set_spd_dplx
+e1000_get_speed_and_duplex
+e1000_get_bus_info
+e1000_close
+e1000_update_adaptive
+e1000_reinit_locked
+e1000_hash_mc_addr
+e1000_set_media_type
+e1000_reset_adaptive
+e1000_free_all_tx_resources
+e1000_init_eeprom_params
+e1000_init_hw
+e1000_write_phy_reg
+e1000_pcix_get_mmrbc
+e1000_write_eeprom
+e1000_read_eeprom
+e1000_power_up_phy
+e1000_setup_link
+e1000_io_write
+e1000_update_eeprom_checksum
+e1000_check_options
+e1000_setup_all_rx_resources
+e1000_read_phy_reg
+e1000_setup_led
+e1000_open
+e1000_enable_mng_pass_thru
+e1000_cleanup_led
+e1000_free_all_rx_resources
+e1000_phy_get_info
+e1000_init_module
+成功附加到 179 个函数
+
+=== CFI监控已启动 ===
+正在监控跳转指令并输出完整的CFI信息...
+按 Ctrl+C 停止
+
+请在另一个终端运行: sudo python3 network_trigger.py 来触发网络事件
+开始事件循环...
+
+================================================================================
+CFI 事件 #1 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094144530656 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008dc1
+  • 源函数地址: 0x0000000000008dc0
+  • 目标地址(CFI表): 0x0000000000008dc5
+  • 源函数: e1000_watchdog
+  • 目标函数: e1000_watchdog
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008dc1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008dc5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8dc1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8dc5 <e1000_watchdog>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b 72 5e 00 55 48 89 e5 41 57 4c 8d bf e0 fb ff
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b 72 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e723b
+  • 计算目标地址: 0xffffffffc04c8dc5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc47e07f00 (被调用者保存)
+  • RSP: 0xffffd14013147e48 (栈指针)
+  • RBP: 0xffffd14013147e88 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54893288 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8dc5
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #2 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094144644836 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008491
+  • 源函数地址: 0x0000000000008490
+  • 目标地址(CFI表): 0x0000000000008495
+  • 源函数: e1000_has_link
+  • 目标函数: e1000_has_link
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008491
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008495
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8491
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8495 <e1000_has_link>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x6b
+  • 原始指令字节: 6b 7b 5e 00 55 48 89 e5 41 55 41 54 4c 8d a7 88
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 6b 7b 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7b6b
+  • 计算目标地址: 0xffffffffc04c8495
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8495
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #3 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094144680029 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000085b1
+  • 源函数地址: 0x00000000000085b0
+  • 目标地址(CFI表): 0x00000000000085b5
+  • 源函数: e1000_update_stats
+  • 目标函数: e1000_update_stats
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000085b1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000085b5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c85b1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 85b5 <e1000_update_stats>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x4b
+  • 原始指令字节: 4b 7a 5e 00 55 31 c9 48 89 e5 41 57 41 56 41 55
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 4b 7a 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7a4b
+  • 计算目标地址: 0xffffffffc04c85b5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c85b5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #4 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145253027 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #5 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145297919 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x000000000000000a (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #6 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145529278 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #7 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145565771 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x0000000000000015 (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #8 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145824525 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000010ef1
+  • 源函数地址: 0x0000000000010ef0
+  • 目标地址(CFI表): 0x0000000000010ef5
+  • 源函数: e1000_update_adaptive
+  • 目标函数: e1000_update_adaptive
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000010ef1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000010ef5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04d0ef1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 10ef5 <e1000_update_adaptive>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x0b
+  • 原始指令字节: 0b f1 5d 00 55 48 89 e5 41 54 53 44 0f b6 a7 16
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 0b f1 5d 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005df10b
+  • 计算目标地址: 0xffffffffc04d0ef5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x000000000033e7ef (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04d0ef5
+  • RAX中的值: 0x000000000033e7ef
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #9 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094145890413 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003631
+  • 源函数地址: 0x0000000000003630
+  • 目标地址(CFI表): 0x0000000000003635
+  • 源函数: e1000_intr
+  • 目标函数: e1000_intr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003631
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003635
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3631
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3635 <e1000_intr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xcb
+  • 原始指令字节: cb c9 5e 00 48 8b 86 68 0e 00 00 48 05 c0 00 00
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 cb c9 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec9cb
+  • 计算目标地址: 0xffffffffc04c3635
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3630 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbcf73a9100 (被调用者保存)
+  • RSP: 0xffffd14007edfe68 (栈指针)
+  • RBP: 0xffffd14007edfea0 (帧指针)
+  • RSI: 0xffff8bbc54892000 (第2个参数)
+  • RDI: 0x0000000000000013 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3635
+  • RAX中的值: 0xffffffffc04c3630
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #10 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094146123672 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003e71
+  • 源函数地址: 0x0000000000003e70
+  • 目标地址(CFI表): 0x0000000000003e75
+  • 源函数: e1000_clean
+  • 目标函数: e1000_clean
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003e71
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003e75
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3e71
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3e75 <e1000_clean>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x8b
+  • 原始指令字节: 8b c1 5e 00 55 48 89 e5 41 57 41 56 4c 8d b7 50
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 8b c1 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec18b
+  • 计算目标地址: 0xffffffffc04c3e75
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3e70 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfdc8 (栈指针)
+  • RBP: 0xffffd14007edfdf8 (帧指针)
+  • RSI: 0x0000000000000040 (第2个参数)
+  • RDI: 0xffff8bbc54892c90 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3e75
+  • RAX中的值: 0xffffffffc04c3e70
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #11 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094146158565 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003a11
+  • 源函数地址: 0x0000000000003a10
+  • 目标地址(CFI表): 0x0000000000003a15
+  • 源函数: e1000_clean_tx_irq
+  • 目标函数: e1000_clean_tx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003a11
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003a15
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3a11
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3a15 <e1000_clean_tx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb c5 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb c5 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec5eb
+  • 计算目标地址: 0xffffffffc04c3a15
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc4230ca00 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3a15
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #12 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094146192760 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000001f21
+  • 源函数地址: 0x0000000000001f20
+  • 目标地址(CFI表): 0x0000000000001f25
+  • 源函数: e1000_clean_rx_irq
+  • 目标函数: e1000_clean_rx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000001f21
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000001f25
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c1f21
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 1f25 <e1000_clean_rx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xdb
+  • 原始指令字节: db e0 5e 00 55 48 89 e5 41 57 41 56 41 55 49 89
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 db e0 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ee0db
+  • 计算目标地址: 0xffffffffc04c1f25
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c1f20 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000040 (第4个参数)
+  • RDX: 0xffffd14007edfd8c (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc40fb17c0 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c1f25
+  • RAX中的值: 0xffffffffc04c1f20
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #13 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094146226854 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #14 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22094146261547 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #15 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22094146293541 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #16 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22094146322936 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #17 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096192574291 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008dc1
+  • 源函数地址: 0x0000000000008dc0
+  • 目标地址(CFI表): 0x0000000000008dc5
+  • 源函数: e1000_watchdog
+  • 目标函数: e1000_watchdog
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008dc1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008dc5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8dc1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8dc5 <e1000_watchdog>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b 72 5e 00 55 48 89 e5 41 57 4c 8d bf e0 fb ff
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b 72 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e723b
+  • 计算目标地址: 0xffffffffc04c8dc5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc47e07f00 (被调用者保存)
+  • RSP: 0xffffd14013147e48 (栈指针)
+  • RBP: 0xffffd14013147e88 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54893288 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8dc5
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #18 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096192680172 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008491
+  • 源函数地址: 0x0000000000008490
+  • 目标地址(CFI表): 0x0000000000008495
+  • 源函数: e1000_has_link
+  • 目标函数: e1000_has_link
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008491
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008495
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8491
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8495 <e1000_has_link>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x6b
+  • 原始指令字节: 6b 7b 5e 00 55 48 89 e5 41 55 41 54 4c 8d a7 88
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 6b 7b 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7b6b
+  • 计算目标地址: 0xffffffffc04c8495
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8495
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #19 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096192715366 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000085b1
+  • 源函数地址: 0x00000000000085b0
+  • 目标地址(CFI表): 0x00000000000085b5
+  • 源函数: e1000_update_stats
+  • 目标函数: e1000_update_stats
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000085b1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000085b5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c85b1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 85b5 <e1000_update_stats>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x4b
+  • 原始指令字节: 4b 7a 5e 00 55 31 c9 48 89 e5 41 57 41 56 41 55
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 4b 7a 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7a4b
+  • 计算目标地址: 0xffffffffc04c85b5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c85b5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #20 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193078802 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #21 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193113196 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x000000000000000a (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #22 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193251071 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #23 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193278566 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x0000000000000015 (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #24 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193492328 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000010ef1
+  • 源函数地址: 0x0000000000010ef0
+  • 目标地址(CFI表): 0x0000000000010ef5
+  • 源函数: e1000_update_adaptive
+  • 目标函数: e1000_update_adaptive
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000010ef1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000010ef5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04d0ef1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 10ef5 <e1000_update_adaptive>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x0b
+  • 原始指令字节: 0b f1 5d 00 55 48 89 e5 41 54 53 44 0f b6 a7 16
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 0b f1 5d 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005df10b
+  • 计算目标地址: 0xffffffffc04d0ef5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x000000000033e7ef (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04d0ef5
+  • RAX中的值: 0x000000000033e7ef
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #25 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193558116 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003631
+  • 源函数地址: 0x0000000000003630
+  • 目标地址(CFI表): 0x0000000000003635
+  • 源函数: e1000_intr
+  • 目标函数: e1000_intr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003631
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003635
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3631
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3635 <e1000_intr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xcb
+  • 原始指令字节: cb c9 5e 00 48 8b 86 68 0e 00 00 48 05 c0 00 00
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 cb c9 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec9cb
+  • 计算目标地址: 0xffffffffc04c3635
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3630 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbcf73a9100 (被调用者保存)
+  • RSP: 0xffffd14007edfe68 (栈指针)
+  • RBP: 0xffffd14007edfea0 (帧指针)
+  • RSI: 0xffff8bbc54892000 (第2个参数)
+  • RDI: 0x0000000000000013 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3635
+  • RAX中的值: 0xffffffffc04c3630
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #26 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193697392 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003e71
+  • 源函数地址: 0x0000000000003e70
+  • 目标地址(CFI表): 0x0000000000003e75
+  • 源函数: e1000_clean
+  • 目标函数: e1000_clean
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003e71
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003e75
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3e71
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3e75 <e1000_clean>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x8b
+  • 原始指令字节: 8b c1 5e 00 55 48 89 e5 41 57 41 56 4c 8d b7 50
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 8b c1 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec18b
+  • 计算目标地址: 0xffffffffc04c3e75
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3e70 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfdc8 (栈指针)
+  • RBP: 0xffffd14007edfdf8 (帧指针)
+  • RSI: 0x0000000000000040 (第2个参数)
+  • RDI: 0xffff8bbc54892c90 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3e75
+  • RAX中的值: 0xffffffffc04c3e70
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #27 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193732186 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003a11
+  • 源函数地址: 0x0000000000003a10
+  • 目标地址(CFI表): 0x0000000000003a15
+  • 源函数: e1000_clean_tx_irq
+  • 目标函数: e1000_clean_tx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003a11
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003a15
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3a11
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3a15 <e1000_clean_tx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb c5 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb c5 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec5eb
+  • 计算目标地址: 0xffffffffc04c3a15
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc4230ca00 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3a15
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #28 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193766480 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000001f21
+  • 源函数地址: 0x0000000000001f20
+  • 目标地址(CFI表): 0x0000000000001f25
+  • 源函数: e1000_clean_rx_irq
+  • 目标函数: e1000_clean_rx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000001f21
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000001f25
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c1f21
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 1f25 <e1000_clean_rx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xdb
+  • 原始指令字节: db e0 5e 00 55 48 89 e5 41 57 41 56 41 55 49 89
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 db e0 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ee0db
+  • 计算目标地址: 0xffffffffc04c1f25
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c1f20 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000040 (第4个参数)
+  • RDX: 0xffffd14007edfd8c (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc40fb17c0 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c1f25
+  • RAX中的值: 0xffffffffc04c1f20
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #29 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193800074 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #30 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22096193834768 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #31 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22096193866562 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #32 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22096193895857 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+=== 调试统计 ===
+偏移量          次数      
+-------------------------
+0x7d4        4       
+0xc341       4       
+0x7c1        4       
+0xa611       4       
+0x10ef1      2       
+0x8dc1       2       
+0x3a11       2       
+0x85b1       2       
+0x3631       2       
+0x8491       2       
+0x1f21       2       
+0x3e71       2       
+
+统计: 总事件数=32, 新增事件=32, 违规数=32
+----------------------------------------
+
+================================================================================
+CFI 事件 #33 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098240508506 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008dc1
+  • 源函数地址: 0x0000000000008dc0
+  • 目标地址(CFI表): 0x0000000000008dc5
+  • 源函数: e1000_watchdog
+  • 目标函数: e1000_watchdog
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008dc1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008dc5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8dc1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8dc5 <e1000_watchdog>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b 72 5e 00 55 48 89 e5 41 57 4c 8d bf e0 fb ff
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b 72 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e723b
+  • 计算目标地址: 0xffffffffc04c8dc5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc47e07f00 (被调用者保存)
+  • RSP: 0xffffd14013147e48 (栈指针)
+  • RBP: 0xffffd14013147e88 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54893288 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8dc5
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #34 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098240662479 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008491
+  • 源函数地址: 0x0000000000008490
+  • 目标地址(CFI表): 0x0000000000008495
+  • 源函数: e1000_has_link
+  • 目标函数: e1000_has_link
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008491
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008495
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8491
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8495 <e1000_has_link>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x6b
+  • 原始指令字节: 6b 7b 5e 00 55 48 89 e5 41 55 41 54 4c 8d a7 88
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 6b 7b 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7b6b
+  • 计算目标地址: 0xffffffffc04c8495
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8495
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #35 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098240709770 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000085b1
+  • 源函数地址: 0x00000000000085b0
+  • 目标地址(CFI表): 0x00000000000085b5
+  • 源函数: e1000_update_stats
+  • 目标函数: e1000_update_stats
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000085b1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000085b5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c85b1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 85b5 <e1000_update_stats>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x4b
+  • 原始指令字节: 4b 7a 5e 00 55 31 c9 48 89 e5 41 57 41 56 41 55
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 4b 7a 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7a4b
+  • 计算目标地址: 0xffffffffc04c85b5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c85b5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #36 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241232978 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #37 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241281669 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x000000000000000a (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #38 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241449140 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #39 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241491932 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x0000000000000015 (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #40 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241780581 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000010ef1
+  • 源函数地址: 0x0000000000010ef0
+  • 目标地址(CFI表): 0x0000000000010ef5
+  • 源函数: e1000_update_adaptive
+  • 目标函数: e1000_update_adaptive
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000010ef1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000010ef5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04d0ef1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 10ef5 <e1000_update_adaptive>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x0b
+  • 原始指令字节: 0b f1 5d 00 55 48 89 e5 41 54 53 44 0f b6 a7 16
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 0b f1 5d 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005df10b
+  • 计算目标地址: 0xffffffffc04d0ef5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x000000000033e7ef (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04d0ef5
+  • RAX中的值: 0x000000000033e7ef
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #41 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098241872565 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003631
+  • 源函数地址: 0x0000000000003630
+  • 目标地址(CFI表): 0x0000000000003635
+  • 源函数: e1000_intr
+  • 目标函数: e1000_intr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003631
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003635
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3631
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3635 <e1000_intr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xcb
+  • 原始指令字节: cb c9 5e 00 48 8b 86 68 0e 00 00 48 05 c0 00 00
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 cb c9 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec9cb
+  • 计算目标地址: 0xffffffffc04c3635
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3630 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbcf73a9100 (被调用者保存)
+  • RSP: 0xffffd14007edfe68 (栈指针)
+  • RBP: 0xffffd14007edfea0 (帧指针)
+  • RSI: 0xffff8bbc54892000 (第2个参数)
+  • RDI: 0x0000000000000013 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3635
+  • RAX中的值: 0xffffffffc04c3630
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #42 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098242202407 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003e71
+  • 源函数地址: 0x0000000000003e70
+  • 目标地址(CFI表): 0x0000000000003e75
+  • 源函数: e1000_clean
+  • 目标函数: e1000_clean
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003e71
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003e75
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3e71
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3e75 <e1000_clean>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x8b
+  • 原始指令字节: 8b c1 5e 00 55 48 89 e5 41 57 41 56 4c 8d b7 50
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 8b c1 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec18b
+  • 计算目标地址: 0xffffffffc04c3e75
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3e70 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfdc8 (栈指针)
+  • RBP: 0xffffd14007edfdf8 (帧指针)
+  • RSI: 0x0000000000000040 (第2个参数)
+  • RDI: 0xffff8bbc54892c90 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3e75
+  • RAX中的值: 0xffffffffc04c3e70
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #43 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098242240800 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003a11
+  • 源函数地址: 0x0000000000003a10
+  • 目标地址(CFI表): 0x0000000000003a15
+  • 源函数: e1000_clean_tx_irq
+  • 目标函数: e1000_clean_tx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003a11
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003a15
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3a11
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3a15 <e1000_clean_tx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb c5 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb c5 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec5eb
+  • 计算目标地址: 0xffffffffc04c3a15
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc4230ca00 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3a15
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #44 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098242280293 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000001f21
+  • 源函数地址: 0x0000000000001f20
+  • 目标地址(CFI表): 0x0000000000001f25
+  • 源函数: e1000_clean_rx_irq
+  • 目标函数: e1000_clean_rx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000001f21
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000001f25
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c1f21
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 1f25 <e1000_clean_rx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xdb
+  • 原始指令字节: db e0 5e 00 55 48 89 e5 41 57 41 56 41 55 49 89
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 db e0 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ee0db
+  • 计算目标地址: 0xffffffffc04c1f25
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c1f20 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000040 (第4个参数)
+  • RDX: 0xffffd14007edfd8c (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc40fb17c0 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c1f25
+  • RAX中的值: 0xffffffffc04c1f20
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #45 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098242320186 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #46 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22098242360479 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #47 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22098242396273 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #48 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22098242429866 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #49 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100288437569 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008dc1
+  • 源函数地址: 0x0000000000008dc0
+  • 目标地址(CFI表): 0x0000000000008dc5
+  • 源函数: e1000_watchdog
+  • 目标函数: e1000_watchdog
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008dc1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008dc5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8dc1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8dc5 <e1000_watchdog>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b 72 5e 00 55 48 89 e5 41 57 4c 8d bf e0 fb ff
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b 72 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e723b
+  • 计算目标地址: 0xffffffffc04c8dc5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc47e07f00 (被调用者保存)
+  • RSP: 0xffffd14013147e48 (栈指针)
+  • RBP: 0xffffd14013147e88 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54893288 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8dc5
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #50 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100288562746 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008491
+  • 源函数地址: 0x0000000000008490
+  • 目标地址(CFI表): 0x0000000000008495
+  • 源函数: e1000_has_link
+  • 目标函数: e1000_has_link
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008491
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008495
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8491
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8495 <e1000_has_link>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x6b
+  • 原始指令字节: 6b 7b 5e 00 55 48 89 e5 41 55 41 54 4c 8d a7 88
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 6b 7b 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7b6b
+  • 计算目标地址: 0xffffffffc04c8495
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8495
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #51 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100288606739 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000085b1
+  • 源函数地址: 0x00000000000085b0
+  • 目标地址(CFI表): 0x00000000000085b5
+  • 源函数: e1000_update_stats
+  • 目标函数: e1000_update_stats
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000085b1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000085b5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c85b1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 85b5 <e1000_update_stats>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x4b
+  • 原始指令字节: 4b 7a 5e 00 55 31 c9 48 89 e5 41 57 41 56 41 55
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 4b 7a 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7a4b
+  • 计算目标地址: 0xffffffffc04c85b5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c85b5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #52 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289300817 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #53 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289347608 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x000000000000000a (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #54 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289492583 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #55 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289524077 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x0000000000000015 (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #56 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289822325 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000010ef1
+  • 源函数地址: 0x0000000000010ef0
+  • 目标地址(CFI表): 0x0000000000010ef5
+  • 源函数: e1000_update_adaptive
+  • 目标函数: e1000_update_adaptive
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000010ef1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000010ef5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04d0ef1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 10ef5 <e1000_update_adaptive>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x0b
+  • 原始指令字节: 0b f1 5d 00 55 48 89 e5 41 54 53 44 0f b6 a7 16
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 0b f1 5d 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005df10b
+  • 计算目标地址: 0xffffffffc04d0ef5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x000000000033e7ef (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04d0ef5
+  • RAX中的值: 0x000000000033e7ef
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #57 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100289899311 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003631
+  • 源函数地址: 0x0000000000003630
+  • 目标地址(CFI表): 0x0000000000003635
+  • 源函数: e1000_intr
+  • 目标函数: e1000_intr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003631
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003635
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3631
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3635 <e1000_intr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xcb
+  • 原始指令字节: cb c9 5e 00 48 8b 86 68 0e 00 00 48 05 c0 00 00
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 cb c9 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec9cb
+  • 计算目标地址: 0xffffffffc04c3635
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3630 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbcf73a9100 (被调用者保存)
+  • RSP: 0xffffd14007edfe68 (栈指针)
+  • RBP: 0xffffd14007edfea0 (帧指针)
+  • RSI: 0xffff8bbc54892000 (第2个参数)
+  • RDI: 0x0000000000000013 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3635
+  • RAX中的值: 0xffffffffc04c3630
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #58 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100290224254 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003e71
+  • 源函数地址: 0x0000000000003e70
+  • 目标地址(CFI表): 0x0000000000003e75
+  • 源函数: e1000_clean
+  • 目标函数: e1000_clean
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003e71
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003e75
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3e71
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3e75 <e1000_clean>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x8b
+  • 原始指令字节: 8b c1 5e 00 55 48 89 e5 41 57 41 56 4c 8d b7 50
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 8b c1 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec18b
+  • 计算目标地址: 0xffffffffc04c3e75
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3e70 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfdc8 (栈指针)
+  • RBP: 0xffffd14007edfdf8 (帧指针)
+  • RSI: 0x0000000000000040 (第2个参数)
+  • RDI: 0xffff8bbc54892c90 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3e75
+  • RAX中的值: 0xffffffffc04c3e70
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #59 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100290266747 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003a11
+  • 源函数地址: 0x0000000000003a10
+  • 目标地址(CFI表): 0x0000000000003a15
+  • 源函数: e1000_clean_tx_irq
+  • 目标函数: e1000_clean_tx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003a11
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003a15
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3a11
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3a15 <e1000_clean_tx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb c5 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb c5 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec5eb
+  • 计算目标地址: 0xffffffffc04c3a15
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc4230ca00 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3a15
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #60 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100290303140 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000001f21
+  • 源函数地址: 0x0000000000001f20
+  • 目标地址(CFI表): 0x0000000000001f25
+  • 源函数: e1000_clean_rx_irq
+  • 目标函数: e1000_clean_rx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000001f21
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000001f25
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c1f21
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 1f25 <e1000_clean_rx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xdb
+  • 原始指令字节: db e0 5e 00 55 48 89 e5 41 57 41 56 41 55 49 89
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 db e0 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ee0db
+  • 计算目标地址: 0xffffffffc04c1f25
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c1f20 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000040 (第4个参数)
+  • RDX: 0xffffd14007edfd8c (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc40fb17c0 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c1f25
+  • RAX中的值: 0xffffffffc04c1f20
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #61 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100290338934 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #62 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22100290375728 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #63 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22100290409421 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #64 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22100290440416 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #65 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102336294788 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008dc1
+  • 源函数地址: 0x0000000000008dc0
+  • 目标地址(CFI表): 0x0000000000008dc5
+  • 源函数: e1000_watchdog
+  • 目标函数: e1000_watchdog
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008dc1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008dc5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8dc1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8dc5 <e1000_watchdog>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b 72 5e 00 55 48 89 e5 41 57 4c 8d bf e0 fb ff
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b 72 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e723b
+  • 计算目标地址: 0xffffffffc04c8dc5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc47e07f00 (被调用者保存)
+  • RSP: 0xffffd14013147e48 (栈指针)
+  • RBP: 0xffffd14013147e88 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54893288 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8dc5
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #66 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102336399269 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000008491
+  • 源函数地址: 0x0000000000008490
+  • 目标地址(CFI表): 0x0000000000008495
+  • 源函数: e1000_has_link
+  • 目标函数: e1000_has_link
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000008491
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000008495
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c8491
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 8495 <e1000_has_link>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x6b
+  • 原始指令字节: 6b 7b 5e 00 55 48 89 e5 41 55 41 54 4c 8d a7 88
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 6b 7b 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7b6b
+  • 计算目标地址: 0xffffffffc04c8495
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c8dc0 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c8495
+  • RAX中的值: 0xffffffffc04c8dc0
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #67 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102336436863 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000085b1
+  • 源函数地址: 0x00000000000085b0
+  • 目标地址(CFI表): 0x00000000000085b5
+  • 源函数: e1000_update_stats
+  • 目标函数: e1000_update_stats
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000085b1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000085b5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c85b1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 85b5 <e1000_update_stats>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x4b
+  • 原始指令字节: 4b 7a 5e 00 55 31 c9 48 89 e5 41 57 41 56 41 55
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 4b 7a 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e7a4b
+  • 计算目标地址: 0xffffffffc04c85b5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c85b5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #68 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102336836893 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #69 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102336873486 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x000000000000000a (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x000000000000000a (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #70 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337014861 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000c341
+  • 源函数地址: 0x000000000000c340
+  • 目标地址(CFI表): 0x000000000000c345
+  • 源函数: e1000_read_phy_reg
+  • 目标函数: e1000_read_phy_reg
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000c341
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000c345
+  • 运行时指令指针(IP/RIP): 0xffffffffc04cc341
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call c345 <e1000_read_phy_reg>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xbb
+  • 原始指令字节: bb 3c 5e 00 55 48 89 e5 41 57 41 56 49 89 d6 41
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 bb 3c 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e3cbb
+  • 计算目标地址: 0xffffffffc04cc345
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0xffff8bbc548929e0 (被调用者保存)
+  • RSP: 0xffffd14013147dc8 (栈指针)
+  • RBP: 0xffffd14013147e08 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04cc345
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #71 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337044756 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x000000000000a611
+  • 源函数地址: 0x000000000000a610
+  • 目标地址(CFI表): 0x000000000000a615
+  • 源函数: e1000_read_phy_reg_ex
+  • 目标函数: e1000_read_phy_reg_ex
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x000000000000a611
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x000000000000a615
+  • 运行时指令指针(IP/RIP): 0xffffffffc04ca611
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call a615 <e1000_read_phy_reg_ex>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb 59 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb 59 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005e59eb
+  • 计算目标地址: 0xffffffffc04ca615
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000046 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0xffffd14013147dd6 (第3个参数)
+  • RBX: 0x0000000000000015 (被调用者保存)
+  • RSP: 0xffffd14013147d90 (栈指针)
+  • RBP: 0xffffd14013147dc0 (帧指针)
+  • RSI: 0x0000000000000015 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04ca615
+  • RAX中的值: 0x0000000000000046
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #72 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337258719 ns
+事件CPU: 6
+事件PID: 17090
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000010ef1
+  • 源函数地址: 0x0000000000010ef0
+  • 目标地址(CFI表): 0x0000000000010ef5
+  • 源函数: e1000_update_adaptive
+  • 目标函数: e1000_update_adaptive
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000010ef1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000010ef5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04d0ef1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 10ef5 <e1000_update_adaptive>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x0b
+  • 原始指令字节: 0b f1 5d 00 55 48 89 e5 41 54 53 44 0f b6 a7 16
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 0b f1 5d 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005df10b
+  • 计算目标地址: 0xffffffffc04d0ef5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x000000000033e7ef (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54893288 (被调用者保存)
+  • RSP: 0xffffd14013147e10 (栈指针)
+  • RBP: 0xffffd14013147e40 (帧指针)
+  • RSI: 0x0000000000000000 (第2个参数)
+  • RDI: 0xffff8bbc54892e68 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04d0ef5
+  • RAX中的值: 0x000000000033e7ef
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #73 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337328906 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003631
+  • 源函数地址: 0x0000000000003630
+  • 目标地址(CFI表): 0x0000000000003635
+  • 源函数: e1000_intr
+  • 目标函数: e1000_intr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003631
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003635
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3631
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3635 <e1000_intr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xcb
+  • 原始指令字节: cb c9 5e 00 48 8b 86 68 0e 00 00 48 05 c0 00 00
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 cb c9 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec9cb
+  • 计算目标地址: 0xffffffffc04c3635
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3630 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbcf73a9100 (被调用者保存)
+  • RSP: 0xffffd14007edfe68 (栈指针)
+  • RBP: 0xffffd14007edfea0 (帧指针)
+  • RSI: 0xffff8bbc54892000 (第2个参数)
+  • RDI: 0x0000000000000013 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3635
+  • RAX中的值: 0xffffffffc04c3630
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #74 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337472981 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003e71
+  • 源函数地址: 0x0000000000003e70
+  • 目标地址(CFI表): 0x0000000000003e75
+  • 源函数: e1000_clean
+  • 目标函数: e1000_clean
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003e71
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003e75
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3e71
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3e75 <e1000_clean>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x8b
+  • 原始指令字节: 8b c1 5e 00 55 48 89 e5 41 57 41 56 4c 8d b7 50
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 8b c1 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec18b
+  • 计算目标地址: 0xffffffffc04c3e75
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c3e70 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfdc8 (栈指针)
+  • RBP: 0xffffd14007edfdf8 (帧指针)
+  • RSI: 0x0000000000000040 (第2个参数)
+  • RDI: 0xffff8bbc54892c90 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3e75
+  • RAX中的值: 0xffffffffc04c3e70
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #75 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337507475 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000003a11
+  • 源函数地址: 0x0000000000003a10
+  • 目标地址(CFI表): 0x0000000000003a15
+  • 源函数: e1000_clean_tx_irq
+  • 目标函数: e1000_clean_tx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000003a11
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000003a15
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c3a11
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 3a15 <e1000_clean_tx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xeb
+  • 原始指令字节: eb c5 5e 00 55 48 89 e5 41 57 41 56 41 55 41 54
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 eb c5 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ec5eb
+  • 计算目标地址: 0xffffffffc04c3a15
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000000 (返回值/间接跳转目标)
+  • RCX: 0xffff8bbc54892c90 (第4个参数)
+  • RDX: 0xffffd14007edfe30 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc4230ca00 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c3a15
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #76 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337541169 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x0000000000001f21
+  • 源函数地址: 0x0000000000001f20
+  • 目标地址(CFI表): 0x0000000000001f25
+  • 源函数: e1000_clean_rx_irq
+  • 目标函数: e1000_clean_rx_irq
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x0000000000001f21
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x0000000000001f25
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c1f21
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 1f25 <e1000_clean_rx_irq>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0xdb
+  • 原始指令字节: db e0 5e 00 55 48 89 e5 41 57 41 56 41 55 49 89
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 db e0 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ee0db
+  • 计算目标地址: 0xffffffffc04c1f25
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0xffffffffc04c1f20 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000040 (第4个参数)
+  • RDX: 0xffffd14007edfd8c (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0xffff8bbc40fb17c0 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c1f25
+  • RAX中的值: 0xffffffffc04c1f20
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #77 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337575063 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #78 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22102337609757 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #79 - ✗ VIOLATION
+跳转类型: CALL (2)
+事件时间: 22102337641751 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007c1
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007c5
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007c1
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007c5
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07c1
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 5 字节
+  • 指令内容: call 7c5 <e1000_update_itr>
+  • 指令字节: e8 00 00 00 00
+  • CSV第一个字节: e8
+  • 原始第一个字节: 0x3b
+  • 原始指令字节: 3b f8 5e 00 55 83 bf a0 04 00 00 04 0f b7 c6 48
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后4字节):
+     指令字节: e8 3b f8 5e 00
+     反汇编结果: call 0x5f0001
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0xe8
+  • 直接调用 (call rel32) 偏移量: 0x005ef83b
+  • 计算目标地址: 0xffffffffc04c07c5
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd78 (栈指针)
+  • RBP: 0xffffd14007edfdc0 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07c5
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+================================================================================
+CFI 事件 #80 - ✗ VIOLATION
+跳转类型: JCC (1)
+事件时间: 22102337670446 ns
+事件CPU: 7
+事件PID: 18705
+================================================================================
+
+📋 CFI 条目信息:
+  • 源地址(CFI表): 0x00000000000007d4
+  • 源函数地址: 0x00000000000007c0
+  • 目标地址(CFI表): 0x00000000000007ec
+  • 源函数: e1000_update_itr
+  • 目标函数: e1000_update_itr
+
+🔄 运行时信息:
+  • 运行时源偏移: 0x00000000000007d4
+  • 运行时目标偏移: 0x0000000000000000
+  • 预期目标地址: 0x00000000000007ec
+  • 运行时指令指针(IP/RIP): 0xffffffffc04c07d4
+  • 模块加载基址(module_base): 0xffffffffc04c0000
+
+💻 指令信息 (来自CSV):
+  • 指令长度: 2 字节
+  • 指令内容: jbe 7ec <e1000_update_itr>
+  • 指令字节: 76 17
+  • CSV第一个字节: 76
+  • 原始第一个字节: 0x17
+  • 原始指令字节: 17 89 d7 85 d2 74 11 66 83 fe 01 74 7c 66 83 fe
+
+  🔧 合成指令 (CSV第一个字节 + 原始字节后1字节):
+     指令字节: 76 17
+     反汇编结果: jbe 0x7ed
+
+🎯 【根据 CSV 第一字节计算目标地址】
+  • 解析出的操作码: 0x76
+  • 短条件跳转 (0x76) 偏移量: 0x17
+  • 计算目标地址: 0xffffffffc04c07ec
+  • 与 CFI 预期对比: ✓ 一致
+  🎯 最终计算结果: ✓ 一致
+
+📝 寄存器状态:
+  • RAX: 0x0000000000000001 (返回值/间接跳转目标)
+  • RCX: 0x0000000000000000 (第4个参数)
+  • RDX: 0x0000000000000000 (第3个参数)
+  • RBX: 0xffff8bbc54892c90 (被调用者保存)
+  • RSP: 0xffffd14007edfd70 (栈指针)
+  • RBP: 0xffffd14007edfd70 (帧指针)
+  • RSI: 0x0000000000000001 (第2个参数)
+  • RDI: 0xffff8bbc548929e0 (第1个参数)
+
+🔍 跳转分析:
+  • 直接跳转指令
+  • CFI预期目标: 0xffffffffc04c07ec
+  • RAX中的值: 0x0000000000000001
+
+✅ 验证结果:
+  ✗ 此跳转违反CFI规则
+  🔴 可能的原因:
+     • 指令类型不匹配或其他原因
+
+--------------------------------------------------------------------------------
+
+正在停止监控...
+
+=== 最终统计 ===
+
+=== 调试统计 ===
+偏移量          次数      
+-------------------------
+0x7d4        10      
+0xc341       10      
+0x7c1        10      
+0xa611       10      
+0x10ef1      5       
+0x8dc1       5       
+0x3a11       5       
+0x85b1       5       
+0x3631       5       
+0x8491       5       
+0x1f21       5       
+0x3e71       5       
+
+监控总结:
+- CFI规则数: 4683
+- 加载规则数: 4683
+- 处理事件数: 80
+- CFI违规数: 80
+- 违规率: 100.00%

@@ -240,7 +240,7 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
     *len = 1;
     *target = 0;
     
-    // 返回指令
+    // 返回指令 *
     if (first == 0xC3 || first == 0xCB) {
         *len = 1;
         bpf_probe_read(target, sizeof(*target), (void *)ctx->sp);
@@ -266,8 +266,8 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
         if (cond >= 0x80 && cond <= 0x8F) {
             *len = 6;
             s32 offset;
-            bpf_probe_read(&offset, sizeof(offset), &insn_bytes[2]);
-            *target = ip + 6 + offset;
+            bpf_probe_read(&offset, sizeof(offset), &insn_bytes[1]);
+            *target = ip + 5 + offset;
             return 1;
         }
         return 0;
@@ -277,7 +277,7 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
     if (first == 0xEB) {
         *len = 2;
         s8 offset = (s8)insn_bytes[0];
-        *target = ip + 2 + offset;
+        *target = ip + 1 + offset;
         return 1;
     }
     
@@ -286,7 +286,7 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
         *len = 5;
         s32 offset;
         bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
-        *target = ip + 5 + offset;
+        *target = ip + 4;
         return 1;
     }
     
@@ -636,7 +636,7 @@ def handle_jump_event(cpu, data, size):
         elif opcode == 0xE9:
             if len(insn_bytes) >= 5:  # E9 + 4字节偏移 = 5字节指令
                 offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
-                computed_target = base + event.src_offset + 5 + offset
+                computed_target = base + event.src_offset + 4
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接跳转 (jmp rel32) 偏移量: 0x{offset:08x}")
@@ -650,7 +650,7 @@ def handle_jump_event(cpu, data, size):
             if len(insn_bytes) >= 2:  # EB + 1字节偏移 = 2字节指令
                 # 正确解析8位有符号偏移（适配原程序的insn_bytes格式）
                 offset = int.from_bytes(insn_bytes[0:1], 'little', signed=True)
-                computed_target = base + event.src_offset + 2 + offset
+                computed_target = base + event.src_offset + 1 + offset
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 短跳转 (jmp rel8) 偏移量: 0x{offset:02x}")
@@ -676,10 +676,10 @@ def handle_jump_event(cpu, data, size):
         # ---------- 5. 长条件跳转 (0x0F 0x80-0x8F rel32) ----------
         elif opcode == 0x0F:
             if len(insn_bytes) >= 6:  # 0x0F + 0x80-0x8F + 4字节偏移 = 6字节指令
-                second_byte = insn_bytes[1]
+                second_byte = insn_bytes[0]
                 if 0x80 <= second_byte <= 0x8F:
-                    offset = int.from_bytes(insn_bytes[2:6], 'little', signed=True)
-                    computed_target = base + event.src_offset + 6 + offset
+                    offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
+                    computed_target = base + event.src_offset + 5 + offset
                     match = computed_target == event.expected_dst
                     comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                     print(f"  • 长条件跳转 (0x0F {second_byte:02x}) 偏移量: 0x{offset:08x}")
@@ -815,7 +815,7 @@ def attach_probes(b, module_name="e1000"):
     """附加探测点到模块函数"""
     try:
         print(f"查找 {module_name} 模块的函数...")
-        b.attach_kprobe(event=f"e1000_clean_tx_irq", fn_name="trace_all_jumps")
+        b.attach_kprobe(event=f"e1000_update_itr+0x38", fn_name="trace_all_jumps")
 
         try:
             with open('/proc/kallsyms', 'r') as f:

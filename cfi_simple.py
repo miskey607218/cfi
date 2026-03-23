@@ -10,7 +10,7 @@ bpf_text = """
 
 struct event {
     u64 ip;
-    u8 bytes[16];
+    u8 bytes[128];
 };
 
 BPF_PERF_OUTPUT(events);
@@ -28,7 +28,7 @@ int trace_insn(struct pt_regs *ctx) {
 class Event(ctypes.Structure):
     _fields_ = [
         ("ip", ctypes.c_uint64),
-        ("bytes", ctypes.c_uint8 * 16),
+        ("bytes", ctypes.c_uint8 * 128),
     ]
 
 def print_event(cpu, data, size):
@@ -41,7 +41,7 @@ def print_event(cpu, data, size):
 b = BPF(text=bpf_text)
 
 # 挂载 kprobe 到指定函数
-b.attach_kprobe(event=f"e1000_clean_tx_irq+0x9", fn_name="trace_insn")
+b.attach_kprobe(event=f"e1000_update_itr+0x13", fn_name="trace_insn")
 print("按 Ctrl+C 停止监控...")
 
 # 打开 perf buffer 并设置回调

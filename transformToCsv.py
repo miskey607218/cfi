@@ -2,8 +2,8 @@ import re
 import csv
 
 # ===================== 配置项 =====================
-DISASM_FILE = "data/txt/nfnetlink_disassembly.txt"  # 你的反汇编文件路径
-OUTPUT_CSV = "data/csv/nfnetlink_jump_analysis.csv"  # 输出的CSV文件路径
+DISASM_FILE = "data/txt/e1000_disassembly.txt"  # 你的反汇编文件路径
+OUTPUT_CSV = "data/csv/e1000_jump_analysis.csv"  # 输出的CSV文件路径
 
 # 跳转指令类型映射（按类型分类）
 JUMP_TYPE_MAP = {

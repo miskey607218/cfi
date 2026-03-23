@@ -46,6 +46,7 @@ class CfiEntry(ctypes.Structure):
         ("is_indirect", ctypes.c_uint8),
         ("src_func", ctypes.c_char * 64),
         ("dst_func", ctypes.c_char * 64),
+        ("opcode", ctypes.c_uint8),   # 新增：CSV 中的操作码（指令第一个字节）
     ]
 
 class JumpEvent(ctypes.Structure):
@@ -73,6 +74,8 @@ class JumpEvent(ctypes.Structure):
         ("reg_rsi", ctypes.c_uint64),
         ("reg_rdi", ctypes.c_uint64),
         ("insn_bytes", ctypes.c_uint8 * 16),
+        ("real_target", ctypes.c_uint64),
+        ("insn_len", ctypes.c_uint64),
     ]
 
 def parse_cfi_table(file_path):
@@ -128,7 +131,14 @@ def parse_cfi_table(file_path):
 
                 src_func = row.get('parent_function_name', 'unknown').encode('utf-8')[:63]
                 dst_func = row.get('target_function_name', 'unknown').encode('utf-8')[:63]
-
+                opcode = 0
+                if instr_bytes and instr_bytes != '未知':
+                    bytes_list = instr_bytes.split()
+                    if bytes_list:
+                        try:
+                            opcode = int(bytes_list[0], 16)
+                        except ValueError:
+                            opcode = 0
                 entry = {
                     'src_addr': src_addr,
                     'src_func_addr': src_func_addr,
@@ -141,6 +151,7 @@ def parse_cfi_table(file_path):
                     'instr_len': instr_len,
                     'instr_content': instr_content,
                     'instr_bytes': instr_bytes,
+                    'opcode': opcode,          # 新增
                 }
                 table.append(entry)
             except Exception as e:
@@ -170,9 +181,8 @@ def parse_cfi_table(file_path):
     
     return table
 
-# 将BPF代码定义为一个函数，这样可以在需要时才编译
 def get_bpf_text():
-    """返回BPF程序代码"""
+    """返回BPF程序代码，包含实际目标地址提取"""
     return """
 #include <uapi/linux/ptrace.h>
 
@@ -184,6 +194,7 @@ struct cfi_entry {
     u8 is_indirect;
     char src_func[64];
     char dst_func[64];
+    u8 opcode;               // CSV 中的操作码
 };
 
 struct jump_event {
@@ -210,12 +221,93 @@ struct jump_event {
     u64 reg_rsi;
     u64 reg_rdi;
     u8 insn_bytes[16];
+    u64 real_target;       // 实际跳转目标地址（运行时）
+    u8 insn_len;           // 指令长度
 };
 
 BPF_HASH(cfi_map, u64, struct cfi_entry);
 BPF_HASH(module_base, u64, u64);
 BPF_PERF_OUTPUT(jump_events);
 BPF_HASH(debug_stats, u64, u64);
+
+// 解析指令，提取实际目标地址和指令长度
+static void parse_jump_target(u8 *insn_bytes, u64 ip, u64 *target, u8 *len, u8 opcode) {
+    u8 first = opcode;
+    u8 second = insn_bytes[0];
+    *len = 1;
+    *target = 0;
+    
+    // 返回指令
+    if (first == 0xC3 || first == 0xCB) {
+        *len = 1;
+        return;
+    }
+    if (first == 0xC2 || first == 0xCA) {
+        *len = 3;
+        return;
+    }
+    
+    // 短条件跳转 (0x70-0x7F)
+    if (first >= 0x70 && first <= 0x7F) {
+        *len = 2;
+        s8 offset = (s8)insn_bytes[1];
+        *target = ip + 2 + offset;
+        return;
+    }
+    
+    // 长条件跳转 (0x0F 0x80-0x8F)
+    if (first == 0x0F && second >= 0x80 && second <= 0x8F) {
+        *len = 6;
+        s32 offset;
+        bpf_probe_read(&offset, sizeof(offset), &insn_bytes[2]);
+        *target = ip + 6 + offset;
+        return;
+    }
+    
+    // 短跳转 jmp rel8
+    if (first == 0xEB) {
+        *len = 2;
+        s8 offset = (s8)insn_bytes[1];
+        *target = ip + 2 + offset;
+        return;
+    }
+    
+    // 长跳转 jmp rel32
+    if (first == 0xE9) {
+        *len = 5;
+        s32 offset;
+        bpf_probe_read(&offset, sizeof(offset), &insn_bytes[1]);
+        *target = ip + 5 + offset;
+        return;
+    }
+    
+    // 直接调用 call rel32
+    if (first == 0xE8) {
+        *len = 5;
+        s32 offset;
+        bpf_probe_read(&offset, sizeof(offset), &insn_bytes[1]);
+        *target = ip + 5 + offset;
+        return;
+    }
+    
+    // 间接跳转/调用 (FF /2, /3, /4, /5) —— 这里只处理寄存器间接（rax）
+    if (first == 0xFF) {
+        u8 modrm = second;
+        u8 mod = (modrm >> 6) & 3;
+        u8 rm = modrm & 7;
+        // 寄存器间接 (mod == 3)
+        if (mod == 3) {
+            // 假设目标在 rax（常见的间接跳转）
+            // 实际可能需要根据 rm 选择寄存器，这里为简化只取 rax
+            *target = 0; // 实际目标将通过 ctx->ax 获取，这里留空，后面单独处理
+        }
+        // 内存间接暂不处理
+        *len = 2; // 粗略长度，实际可能需要计算
+        return;
+    }
+    
+    // 其他指令不处理
+}
 
 int trace_all_jumps(struct pt_regs *ctx) {
     u64 key = 0;
@@ -247,7 +339,6 @@ int trace_all_jumps(struct pt_regs *ctx) {
    
     struct jump_event event = {};
     u64 expected_target = 0;
-    u64 actual_target = 0;
     int is_correct = 0;
    
     event.src_offset = offset;
@@ -271,47 +362,64 @@ int trace_all_jumps(struct pt_regs *ctx) {
     __builtin_memcpy(event.dst_func, entry->dst_func, sizeof(event.dst_func));
    
     bpf_probe_read(&event.insn_bytes, sizeof(event.insn_bytes), (void *)ip);
-
+    // 解析指令，获取实际目标（如果有）和指令长度
+    u64 real_target = 0;
+    u8 insn_len = 0;
+    parse_jump_target(event.insn_bytes, ip, &real_target, &insn_len, entry->opcode);
+    event.insn_len = insn_len;
+    
     if (entry->dst_addr != 0) {
         expected_target = entry->dst_addr + base;
     }
     event.expected_dst = expected_target;
    
+    // 根据跳转类型决定 real_target 的最终值
     switch (entry->jump_type) {
         case 0: // CFI_JMP
         case 1: // CFI_JCC
         case 2: // CFI_CALL
-            is_correct = 1;
+            // 直接跳转：使用从指令解析出的目标
+            event.real_target = real_target;
             break;
            
         case 3: // CFI_RET
-            is_correct = 1;
+            // 从栈读取返回地址
+            bpf_probe_read(&event.real_target, sizeof(event.real_target), (void *)ctx->sp);
             break;
            
         case 4: // CFI_INDIRECT_CALL
         case 5: // CFI_INDIRECT_JMP
-            actual_target = ctx->ax;
-           
-            if (actual_target >= base) {
-                event.dst_offset = actual_target - base;
-            }
-           
-            if (expected_target == 0) {
-                is_correct = 1;
-            } else if (actual_target == expected_target) {
-                is_correct = 1;
-            } else {
-                is_correct = 0;
+            // 间接跳转：使用 rax 中的值
+            event.real_target = ctx->ax;
+            if (event.real_target >= base) {
+                event.dst_offset = event.real_target - base;
             }
             break;
            
         default:
-            is_correct = 0;
+            event.real_target = 0;
             break;
+    }
+    
+    // 验证：对于直接跳转，比较 real_target 与 expected_target
+    // 对于间接跳转，比较 rax 与 expected_target（已在上面存入 real_target）
+    if (expected_target == 0) {
+        // 没有预期目标，视为通过
+        is_correct = 1;
+    } else if (entry->jump_type <= 2) {
+        // 直接跳转
+        is_correct = (event.real_target == expected_target);
+    } else if (entry->jump_type == 3) {
+        // 返回指令：检查返回地址是否在模块内
+        is_correct = (event.real_target >= base && event.real_target < base + 0x1000000);
+    } else {
+        // 间接跳转
+        is_correct = (event.real_target == expected_target);
     }
    
     event.is_correct = is_correct;
    
+    // 提交事件
     jump_events.perf_submit(ctx, &event, sizeof(event));
    
     return 0;
@@ -498,6 +606,76 @@ def handle_jump_event(cpu, data, size):
     else:
         print(f"\n  🔧 无法合成指令: 参数不足")
 
+
+
+    # ==================== 根据 csv_first_byte 值直接计算目标地址 ====================
+    print("\n🎯 【根据 CSV 第一字节计算目标地址】")
+    computed_target = 0
+    comparison_result = "未计算"
+    
+    # 将 csv_first_byte 转换为整数
+    if csv_first_byte is not None and csv_first_byte != '未知' and csv_first_byte != '':
+        try:
+            opcode = int(csv_first_byte, 16)  # 将十六进制字符串转为整数
+        except ValueError:
+            print(f"  • 无法解析 opcode: {csv_first_byte}")
+            opcode = None
+    else:
+        opcode = None
+    print(f"0x{opcode:016x}")
+    if opcode is not None:
+        if opcode == 0xE8 or opcode == 0xE9:          # direct call / jmp rel32
+            if len(insn_bytes) >= 5:
+                offset = int.from_bytes(insn_bytes[0:4], 'little', signed=True)
+                computed_target = base + event.src_offset + 5 + offset
+                comparison_result = "✓ 一致" if computed_target == event.expected_dst else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
+                print(f"  • rel32 偏移量: 0x{offset:x}")
+                print(f"  • 计算目标地址: 0x{computed_target:016x}")
+                print(f"  • 与 CFI 预期对比: {comparison_result}")
+       
+        elif opcode == 0xEB:                 # short jmp rel8
+            if len(insn_bytes) >= 2:
+                offset = insn_bytes[0] if insn_bytes[0] < 128 else insn_bytes[0] - 256
+                computed_target = base + event.src_offset + 2 + offset
+                comparison_result = "✓ 一致" if computed_target == event.expected_dst else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
+                print(f"  • rel8 偏移量: 0x{offset:x}")
+                print(f"  • 计算目标地址: 0x{computed_target:016x}")
+                print(f"  • 与 CFI 预期对比: {comparison_result}")
+       
+        elif opcode == 0xFF:                 # 间接跳转/调用
+            computed_target = event.reg_rax
+            if event.expected_dst != 0:
+                comparison_result = "✓ 一致" if computed_target == event.expected_dst else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
+            else:
+                in_module = (computed_target >= base and computed_target < base + 0x1000000)
+                comparison_result = "✓ 在模块内" if in_module else "✗ 超出模块范围"
+            print(f"  • 间接跳转目标 (RAX): 0x{computed_target:016x}")
+            print(f"  • 与 CFI 预期对比: {comparison_result}")
+       
+        elif opcode in (0xC3, 0xC2, 0xCB, 0xCA):  # RET
+            computed_target = base + event.dst_offset
+            comparison_result = "✓ 符合 RET 规则" if event.is_correct else "✗ 违反 RET 规则"
+            print(f"  • RET 返回地址: 0x{computed_target:016x}")
+            print(f"  • 与 CFI 预期对比: {comparison_result}")
+       
+        elif opcode >= 0x70 and opcode <= 0x7F:  # 短条件跳转
+            if len(insn_bytes) >= 2:
+                offset = insn_bytes[0] if insn_bytes[0] < 128 else insn_bytes[0] - 256
+                computed_target = base + event.src_offset + 2 + offset
+                comparison_result = "✓ 一致" if computed_target == event.expected_dst else f"✗ 不一致"
+                print(f"  • 短条件跳转偏移: 0x{offset:x}")
+                print(f"  • 计算目标地址: 0x{computed_target:016x}")
+                print(f"  • 与 CFI 预期对比: {comparison_result}")
+       
+        else:
+            print(f"  • 未知指令类型 (0x{opcode:02x})，无法自动计算")
+    else:
+        print(f"  • CSV第一个字节无效: {csv_first_byte}")
+    
+    print(f"  🎯 最终计算结果: {comparison_result}")
+
+
+
     # 寄存器状态
     print("\n📝 寄存器状态:")
     print(f"  • RAX: 0x{event.reg_rax:016x} (返回值/间接跳转目标)")
@@ -570,7 +748,7 @@ def attach_probes(b, module_name="e1000"):
     """附加探测点到模块函数"""
     try:
         print(f"查找 {module_name} 模块的函数...")
-        b.attach_kprobe(event=f"e1000_maybe_stop_tx+0x87", fn_name="trace_all_jumps")
+        b.attach_kprobe(event=f"e1000_update_itr+0x13", fn_name="trace_all_jumps")
         try:
             with open('/proc/kallsyms', 'r') as f:
                 lines = f.readlines()
@@ -675,7 +853,8 @@ def main():
             jump_type=entry_dict['jump_type'],
             is_indirect=entry_dict['is_indirect'],
             src_func=entry_dict['src_func'],
-            dst_func=entry_dict['dst_func']
+            dst_func=entry_dict['dst_func'],
+            opcode=entry_dict.get('opcode', 0)   # 新增
         )
         b['cfi_map'][offset] = cfi_entry
         loaded_count += 1

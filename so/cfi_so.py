@@ -52,6 +52,7 @@ class JumpEvent(ctypes.Structure):
         ("insn_len", ctypes.c_uint64),
         ("runtime_ip", ctypes.c_uint64),
         ("module_base_addr", ctypes.c_uint64),
+        ("sp", ctypes.c_uint64),
     ]
 
 def parse_cfi_table(file_path):
@@ -88,10 +89,7 @@ def parse_cfi_table(file_path):
 
             opcode = 0
             if instr_bytes and instr_bytes != '未知':
-                try:
-                    opcode = int(instr_bytes.split()[0], 16)
-                except:
-                    pass
+                opcode = int(instr_bytes.split()[0], 16)
 
             table.append({
                 'src_addr': src_addr,
@@ -152,6 +150,7 @@ struct jump_event {
     u8 insn_len;
     u64 runtime_ip;
     u64 module_base_addr;
+    u64 ret_addr;
 };
 
 BPF_HASH(cfi_map, u64, struct cfi_entry);
@@ -195,6 +194,13 @@ int trace_all_jumps(struct pt_regs *ctx) {
     bpf_probe_read(event.insn_bytes, 16, (void*)ip);
     bpf_probe_read(event.src_func, 64, entry->src_func);
     bpf_probe_read(event.dst_func, 64, entry->dst_func);
+    
+    if (entry->jump_type == 3) {  // RET
+        u64 sp = PT_REGS_SP(ctx);
+        bpf_probe_read(&event.ret_addr, sizeof(event.ret_addr), (void *)sp);
+    } else {
+        event.ret_addr = 0;
+    }
 
     jump_events.perf_submit(ctx, &event, sizeof(event));
     return 0;
@@ -217,14 +223,8 @@ def handle_jump_event(cpu, data, size):
         violation_count += 1
 
     # 解码函数名
-    try:
-        src_func_str = event.src_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
-    except:
-        src_func_str = str(event.src_func)
-    try:
-        dst_func_str = event.dst_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
-    except:
-        dst_func_str = str(event.dst_func)
+    src_func_str = event.src_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
+    dst_func_str = event.dst_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
 
     # 从 cfi_lookup 中获取指令信息
     src_addr_key = event.src_addr
@@ -285,28 +285,24 @@ def handle_jump_event(cpu, data, size):
         print(f"     指令字节: {new_insn_hex}")
 
         # 反汇编合成指令
-        try:
-            md = Cs(CS_ARCH_X86, CS_MODE_64)
-            md.detail = True
-            for insn in md.disasm(bytes(new_insn_bytes), event.src_offset):
-                print(f"     反汇编结果: {insn.mnemonic} {insn.op_str}")
-                # 如果是跳转/调用，计算目标地址
-                
-                if insn.mnemonic.startswith(('j', 'call')):
-                    if len(insn.operands) > 0:
-                        op = insn.operands[0]
-                        if op.type == 1:  # 立即数
-                            target_offset = op.imm
-                            target_abs = base + target_offset
-                            print(f"         目标偏移: 0x{target_offset:x}")
-                            print(f"         目标绝对地址: 0x{target_abs:x}")
-                            if target_abs == event.expected_dst:
-                                print(f"         ✓ 与CFI预期目标一致")
-                            else:
-                                print(f"         ✗ 与CFI预期目标不一致 (预期: 0x{event.expected_dst:x})")
-                break
-        except Exception as e:
-            print(f"     反汇编失败: {e}")
+        md = Cs(CS_ARCH_X86, CS_MODE_64)
+        md.detail = True
+        for insn in md.disasm(bytes(new_insn_bytes), event.src_offset):
+            print(f"     反汇编结果: {insn.mnemonic} {insn.op_str}")
+            # 如果是跳转/调用，计算目标地址
+            if insn.mnemonic.startswith(('j', 'call')):
+                if len(insn.operands) > 0:
+                    op = insn.operands[0]
+                    if op.type == 1:  # 立即数
+                        target_offset = op.imm
+                        target_abs = base + target_offset
+                        print(f"         目标偏移: 0x{target_offset:x}")
+                        print(f"         目标绝对地址: 0x{target_abs:x}")
+                        if target_abs == event.expected_dst:
+                            print(f"         ✓ 与CFI预期目标一致")
+                        else:
+                            print(f"         ✗ 与CFI预期目标不一致 (预期: 0x{event.expected_dst:x})")
+            break
     elif instr_bytes and instr_bytes != '未知' and instr_len == 1:
         print(f"\n  🔧 单字节指令: {instr_bytes}")
 
@@ -375,7 +371,6 @@ def handle_jump_event(cpu, data, size):
             else:
                 print(f"  • 无法识别长条件跳转")
         # 间接跳转/调用
-                # 间接跳转/调用 (FF /2, /3, /4, /5)
         elif opcode == 0xFF:
             # 根据 ModRM 字节解析使用的寄存器
             if len(insn_bytes) >= 2:
@@ -419,7 +414,7 @@ def handle_jump_event(cpu, data, size):
         # 返回指令
         elif opcode in (0xC3, 0xC2, 0xCB, 0xCA):
             if event.dst_offset != 0:
-                computed_target = base + event.dst_offset
+                computed_target = event.sp
                 if event.expected_dst == 0:
                     module_end = base + 0x1000000
                     in_module = base <= computed_target < module_end
@@ -468,7 +463,7 @@ def handle_jump_event(cpu, data, size):
             print(f"    └─ 目标是否在模块内: {'是' if in_module else '否'}")
     elif event.jump_type == 3:  # 返回
         print(f"  • 返回指令")
-        print(f"  • 栈指针(RSP): 0x{event.reg_rsp:016x}")
+        print(f"  • 栈指针(RSP): 0x{event.ret_addr:016x}")
         print(f"  • 模块范围: [0x{base:016x}, 0x{base + 0x1000000:016x}]")
 
     # 验证结果
@@ -542,7 +537,7 @@ def main():
     # 触发函数
     def trigger():
         while True:
-            lib.test_indirect_call()
+            lib.test_all()
             time.sleep(1)
 
     threading.Thread(target=trigger, daemon=True).start()

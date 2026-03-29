@@ -286,7 +286,7 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
         *len = 5;
         s32 offset;
         bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
-        *target = ip + 4;
+        *target = ip + 4 + offset;
         return 1;
     }
     
@@ -295,7 +295,7 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
         *len = 5;
         s32 offset;
         bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
-        *target = ip + 4;
+        *target = ip + 4 + offset;
         return 1;
     }
     
@@ -623,7 +623,7 @@ def handle_jump_event(cpu, data, size):
                 # rel32是小端、有符号整数
                 offset = int.from_bytes(insn_bytes[0:4], 'little', signed=True)
                 # 目标地址 = 基址 + 指令起始偏移 + 指令长度 + 偏移量
-                computed_target = base + event.src_offset + 4
+                computed_target = base + event.src_offset + 4 + offset
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接调用 (call rel32) 偏移量: 0x{offset:08x}")
@@ -636,7 +636,7 @@ def handle_jump_event(cpu, data, size):
         elif opcode == 0xE9:
             if len(insn_bytes) >= 5:  # E9 + 4字节偏移 = 5字节指令
                 offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
-                computed_target = base + event.src_offset + 4
+                computed_target = base + event.src_offset + 4 + offset
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接跳转 (jmp rel32) 偏移量: 0x{offset:08x}")
@@ -815,7 +815,7 @@ def attach_probes(b, module_name="e1000"):
     """附加探测点到模块函数"""
     try:
         print(f"查找 {module_name} 模块的函数...")
-        b.attach_kprobe(event=f"e1000_update_itr+0x38", fn_name="trace_all_jumps")
+        #b.attach_kprobe(event=f"e1000_update_itr+0x38", fn_name="trace_all_jumps")
 
         try:
             with open('/proc/kallsyms', 'r') as f:
@@ -834,7 +834,7 @@ def attach_probes(b, module_name="e1000"):
                     try:
                         if func_name.startswith(f"{module_name}_"):
                             print(func_name)
-                            #b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
+                            b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
                             
                             func_count += 1
                             if func_count <= 5:

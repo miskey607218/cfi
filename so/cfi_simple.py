@@ -431,7 +431,7 @@ def handle_jump_event(cpu, data, size):
         if opcode == 0xE8:
             if len(insn_bytes) >= 5:
                 offset = int.from_bytes(insn_bytes[:4], 'little', signed=True)
-                computed_target = base + event.src_offset + 5 + offset
+                computed_target = base + 4 
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接调用偏移: 0x{offset:08x}")
@@ -442,7 +442,7 @@ def handle_jump_event(cpu, data, size):
         elif opcode == 0xE9:
             if len(insn_bytes) >= 5:
                 offset = int.from_bytes(insn_bytes[:4], 'little', signed=True)
-                computed_target = base + event.src_offset + 5 + offset
+                computed_target = base + 4 
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接跳转偏移: 0x{offset:08x}")

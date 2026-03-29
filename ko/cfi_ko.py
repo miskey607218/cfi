@@ -36,6 +36,7 @@ class CfiEntry(ctypes.Structure):
         ("src_func", ctypes.c_char * 64),
         ("dst_func", ctypes.c_char * 64),
         ("opcode", ctypes.c_uint8),
+        ("zero_offset", ctypes.c_uint8),  
     ]
 
 class JumpEvent(ctypes.Structure):
@@ -111,7 +112,11 @@ def parse_cfi_table(file_path):
             src_func = row.get('parent_function_name', 'unknown').encode('utf-8')[:63]
             dst_func = row.get('target_function_name', 'unknown').encode('utf-8')[:63]
             opcode = 0
+            zero_offset = 0
             if instr_bytes and instr_bytes != '未知':
+                parts = instr_bytes.split()
+                if len(parts) == 5 and parts[0] in ('e8', 'e9') and all(p == '00' for p in parts[1:]):
+                    zero_offset = 1
                 bytes_list = instr_bytes.split()
                 if bytes_list:
                     try:
@@ -130,6 +135,7 @@ def parse_cfi_table(file_path):
                 'instr_content': instr_content,
                 'instr_bytes': instr_bytes,
                 'opcode': opcode,     
+                'zero_offset': zero_offset,   
             }
             table.append(entry)
     print(f"✅ 从 CSV 成功解析 {len(table)} 个静态跳转规则")
@@ -160,7 +166,8 @@ struct cfi_entry {
     u8 is_indirect;
     char src_func[64];
     char dst_func[64];
-    u8 opcode;               
+    u8 opcode;   
+    u8 zero_offset;                    
 };
 
 struct jump_event {
@@ -199,7 +206,7 @@ BPF_PERF_OUTPUT(jump_events);
 BPF_HASH(debug_stats, u64, u64);
 
 // 解析指令，根据静态操作码和实际指令字节计算实际目标地址
-static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *target, u8 *len, u8 opcode) {
+static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *target, u8 *len, u8 opcode, u8 zero_offset) {
     u8 first = opcode;              // 使用静态操作码决定指令类型
     *len = 1;
     *target = 0;
@@ -233,23 +240,31 @@ static int parse_jump_target(struct pt_regs *ctx, u8 *insn_bytes, u64 ip, u64 *t
         return 1;
     }
     
-    // 长跳转 jmp rel32
-    if (first == 0xE9) {
-        *len = 5;
-        s32 offset;
-        bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
-        *target = ip + 4;
-        return 1;
-    }
-    
     // 直接调用 call rel32
     if (first == 0xE8) {
         *len = 5;
-        s32 offset;
-        bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
-        *target = ip + 4;
+        if (zero_offset == 1) {
+            *target = ip + 4;          // 偏移为0，目标为下一条指令
+        } else {
+            s32 offset;
+            bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
+            *target = ip + 4 + offset;
+        }
         return 1;
     }
+    // 直接跳转 jmp rel32
+    if (first == 0xE9) {
+        *len = 5;
+        if (zero_offset == 1) {
+            *target = ip + 4;
+        } else {
+            s32 offset;
+            bpf_probe_read(&offset, sizeof(offset), &insn_bytes[0]);
+            *target = ip + 4 + offset;
+        }
+        return 1;
+    }
+    
     return 0;
 }
 
@@ -314,7 +329,7 @@ int trace_all_jumps(struct pt_regs *ctx) {
     // 解析指令，获取实际目标地址和指令长度
     u64 real_target = 0;
     u8 insn_len = 0;
-    parse_jump_target(ctx, event.insn_bytes, ip, &real_target, &insn_len, entry->opcode);
+    parse_jump_target(ctx, event.insn_bytes, ip, &real_target, &insn_len, entry->opcode, entry->zero_offset);
     event.insn_len = insn_len;
     event.real_target = real_target;
     
@@ -540,10 +555,13 @@ def handle_jump_event(cpu, data, size):
         # ---------- 1. 直接调用 (call rel32) ----------
         if opcode == 0xE8:
             if len(insn_bytes) >= 5:  # E8 + 4字节偏移 = 5字节指令
-                # rel32是小端、有符号整数
-                offset = int.from_bytes(insn_bytes[0:4], 'little', signed=True)
-                # 目标地址 = 基址 + 指令起始偏移 + 指令长度 + 偏移量
-                computed_target = base + event.src_offset + 4
+                # rel32 是小端、有符号整数
+                offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
+                zero = cfi_info.get('zero_offset', 0)  # 从 CSV 中获取是否为零偏移
+                if zero:
+                    computed_target = base + event.src_offset + 4
+                else:
+                    computed_target = base + event.src_offset + 4 + offset
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接调用 (call rel32) 偏移量: 0x{offset:08x}")
@@ -556,7 +574,11 @@ def handle_jump_event(cpu, data, size):
         elif opcode == 0xE9:
             if len(insn_bytes) >= 5:  # E9 + 4字节偏移 = 5字节指令
                 offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
-                computed_target = base + event.src_offset + 4
+                zero = cfi_info.get('zero_offset', 0)
+                if zero:
+                    computed_target = base + event.src_offset + 4
+                else:
+                    computed_target = base + event.src_offset + 4 + offset
                 match = computed_target == event.expected_dst
                 comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
                 print(f"  • 直接跳转 (jmp rel32) 偏移量: 0x{offset:08x}")
@@ -564,7 +586,6 @@ def handle_jump_event(cpu, data, size):
                 print(f"  • 与 CFI 预期对比: {comparison_result}")
             else:
                 print(f"  • 指令字节不足（需要5字节，实际{len(insn_bytes)}字节），无法计算 jmp rel32 偏移")
-
         # ---------- 3. 短跳转 (jmp rel8) ----------
         elif opcode == 0xEB:
             if len(insn_bytes) >= 2:  # EB + 1字节偏移 = 2字节指令
@@ -731,8 +752,11 @@ def attach_probes(b, module_name):
                 continue
             if func_name.startswith(f"{module_name}_"):
                 print(func_name)
-                #b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
-                
+                try:
+                    b.attach_kprobe(event=func_name, fn_name="trace_all_jumps")
+                except Exception as e:
+                    print(f"跳过 {func_name}: {e}")
+                    continue
                 func_count += 1
     
     if func_count > 0:
@@ -811,7 +835,8 @@ def main():
             is_indirect=entry_dict['is_indirect'],
             src_func=entry_dict['src_func'],
             dst_func=entry_dict['dst_func'],
-            opcode=entry_dict.get('opcode', 0)
+            opcode=entry_dict.get('opcode', 0),
+            zero_offset=entry_dict.get('zero_offset', 0)   # 新增
         )
         b['cfi_map'][offset] = cfi_entry
         loaded_count += 1

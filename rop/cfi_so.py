@@ -516,8 +516,10 @@ def main():
     print("\n加载BPF程序...")
     b = BPF(text=get_bpf_text())
 
-    # 计算模块基址
+    # 加载共享库到当前进程（用于触发漏洞）
     lib = ctypes.CDLL(so_path)
+
+    # 获取共享库基址
     base = get_module_base_from_maps("libvuln.so")
     print(f"检测到 libvuln.so 基址: 0x{base:x}")
 
@@ -530,19 +532,27 @@ def main():
         b["cfi_map"][offset] = cfi
 
     b["jump_events"].open_perf_buffer(handle_jump_event)
-    
-    b.attach_uprobe(name=so_path, sym="vulnerable_function", sym_off=0x1d, fn_name="trace_all_jumps")
-    b.attach_uprobe(name=so_path, sym="safe_function", sym_off=0x23, fn_name="trace_all_jumps")
-    
-    # 触发函数
-    #def trigger():
-    #    while True:
-    #        lib.test_all()
-    #        time.sleep(1)
 
-    #threading.Thread(target=trigger, daemon=True).start()
+    # 为每个跳转指令附加 uprobe
+    attached = 0
+    for entry in table:
+        try:
+            b.attach_uprobe(name=so_path, addr=entry['src_addr'], fn_name="trace_all_jumps")
+            attached += 1
+        except Exception as e:
+            print(f"附加 uprobe 到偏移 0x{entry['src_addr']:x} 失败: {e}")
+    print(f"成功附加 {attached} 个 uprobe 探测点")
 
-    print("\n=== CFI 监控已启动（.so 模式）===")
+    # 触发漏洞的线程
+    def trigger():
+        payload = b'A' * 199 + b'\x00'   # 200 字节，确保溢出
+        while True:
+            lib.vulnerable_function(payload)
+            time.sleep(2)
+
+    threading.Thread(target=trigger, daemon=True).start()
+
+    print("\n=== CFI 监控已启动（监控 libvuln.so）===")
     print("按 Ctrl+C 停止\n")
 
     try:
@@ -558,6 +568,6 @@ def main():
         if event_count > 0:
             violation_rate = (violation_count / event_count) * 100
             print(f"- 违规率: {violation_rate:.2f}%")
-
+            
 if __name__ == "__main__":
     main()

@@ -2,8 +2,8 @@ import re
 import csv
 
 # ===================== 配置项 =====================
-DISASM_FILE = "libvuln_disassembly.txt"  # 你的反汇编文件路径
-OUTPUT_CSV = "libvuln_jump_analysis.csv"  # 输出的CSV文件路径
+DISASM_FILE = "1.txt"  # 你的反汇编文件路径
+OUTPUT_CSV = "1.csv"  # 输出的CSV文件路径
 
 # 跳转指令类型映射（基本分类）
 JUMP_TYPE_MAP = {

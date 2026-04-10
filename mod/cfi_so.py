@@ -537,7 +537,7 @@ def main():
 
     b["jump_events"].open_perf_buffer(handle_jump_event)
     
-    b.attach_uprobe(name=so_path, sym="internal_func1", sym_off=0x12, fn_name="trace_all_jumps")
+    b.attach_uprobe(name=so_path, sym="vulnerable_function", sym_off=0x0, fn_name="trace_all_jumps")
     # 触发函数
     def trigger():
         while True:

@@ -55,6 +55,15 @@ class JumpEvent(ctypes.Structure):
         ("sp", ctypes.c_uint64),
     ]
 
+def get_module_base_from_maps(so_name):
+    """从 /proc/self/maps 中获取共享库的加载基址"""
+    with open('/proc/self/maps', 'r') as f:
+        for line in f:
+            if so_name in line:
+                start_addr = int(line.split('-')[0], 16)
+                return start_addr
+    return None
+
 def parse_cfi_table(file_path):
     table = []
     with open(file_path, 'r', newline='', encoding='utf-8') as f:
@@ -493,25 +502,15 @@ def main():
     cfi_lookup = {}
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    so_path = os.path.join(script_dir, "test.so")
+    so_path = os.path.join(script_dir, "libvuln.so")
     if not os.path.exists(so_path):
         print(f"错误：找不到 {so_path}")
         return
 
     # 解析 CSV
-    table = parse_cfi_table("test_jump_analysis.csv")
+    table = parse_cfi_table("libvuln_jump_analysis.csv")
     for entry in table:
         cfi_lookup[entry['src_addr']] = entry
-
-    # 从 CSV 中获取 test_returns 的静态偏移
-    static_offset = None
-    for entry in table:
-        if entry['src_func'].decode() == "test_returns":
-            static_offset = entry['src_func_addr']
-            break
-    if static_offset is None:
-        print("错误：无法从 CSV 中找到 test_returns 函数起始地址")
-        return
 
     # 加载 BPF 程序
     print("\n加载BPF程序...")
@@ -519,9 +518,8 @@ def main():
 
     # 计算模块基址
     lib = ctypes.CDLL(so_path)
-    func_addr = ctypes.cast(getattr(lib, "test_returns"), ctypes.c_void_p).value
-zz
-    print(f"检测到 test.so 基址: 0x{base:x}")
+    base = get_module_base_from_maps("libvuln.so")
+    print(f"检测到 libvuln.so 基址: 0x{base:x}")
 
     b["module_base"][ctypes.c_uint64(0)] = ctypes.c_uint64(base)
 
@@ -533,14 +531,16 @@ zz
 
     b["jump_events"].open_perf_buffer(handle_jump_event)
     
-    b.attach_uprobe(name=so_path, sym="test_indirect_call", sym_off=0x21, fn_name="trace_all_jumps")
+    b.attach_uprobe(name=so_path, sym="vulnerable_function", sym_off=0x1d, fn_name="trace_all_jumps")
+    b.attach_uprobe(name=so_path, sym="safe_function", sym_off=0x23, fn_name="trace_all_jumps")
+    
     # 触发函数
-    def trigger():
-        while True:
-            lib.test_all()
-            time.sleep(1)
+    #def trigger():
+    #    while True:
+    #        lib.test_all()
+    #        time.sleep(1)
 
-    threading.Thread(target=trigger, daemon=True).start()
+    #threading.Thread(target=trigger, daemon=True).start()
 
     print("\n=== CFI 监控已启动（.so 模式）===")
     print("按 Ctrl+C 停止\n")

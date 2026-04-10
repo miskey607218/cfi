@@ -6,6 +6,7 @@ import threading
 import time
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64
 import csv
+from pwn import *
 
 if os.geteuid() != 0:
     print("Run with sudo!")
@@ -62,6 +63,18 @@ def get_module_base_from_maps(so_name):
             if so_name in line:
                 start_addr = int(line.split('-')[0], 16)
                 return start_addr
+    return None
+
+def get_pid_libvuln_base(pid):
+    """从指定进程的 maps 中获取 libvuln.so 的加载基址"""
+    maps_path = f"/proc/{pid}/maps"
+    try:
+        with open(maps_path, 'r') as f:
+            for line in f:
+                if "libvuln.so" in line:
+                    return int(line.split('-')[0], 16)
+    except FileNotFoundError:
+        pass
     return None
 
 def parse_cfi_table(file_path):
@@ -285,7 +298,6 @@ def handle_jump_event(cpu, data, size):
     print(f"  • 原始指令字节: {insn_hex}")
 
     # 合成指令
-    
     if instr_bytes and instr_bytes != '未知' and instr_len > 1:
         csv_first_byte = int(instr_bytes.split()[0], 16)
         new_insn_bytes = [csv_first_byte] + list(insn_bytes[1:instr_len])
@@ -516,13 +528,11 @@ def main():
     print("\n加载BPF程序...")
     b = BPF(text=get_bpf_text())
 
-    # 加载共享库到当前进程（用于触发漏洞）
+    # 加载共享库到当前进程（仅用于获取基址，实际监控外部进程）
     lib = ctypes.CDLL(so_path)
-
-    # 获取共享库基址
     base = get_module_base_from_maps("libvuln.so")
-    print(f"检测到 libvuln.so 基址: 0x{base:x}")
-
+    print(f"当前进程中 libvuln.so 基址: 0x{base:x}")
+    # 暂时存入 BPF map，稍后会被外部进程的基址覆盖
     b["module_base"][ctypes.c_uint64(0)] = ctypes.c_uint64(base)
 
     # 加载 CFI 规则
@@ -533,7 +543,8 @@ def main():
 
     b["jump_events"].open_perf_buffer(handle_jump_event)
 
-    # 为每个跳转指令附加 uprobe
+    # 为每个跳转指令附加 uprobe（注意：这里附加到当前进程，但我们需要附加到目标进程）
+    # 由于 uprobe 是基于文件路径的，附加到文件即可，对任何进程都生效。但基址需要按进程单独更新。
     attached = 0
     for entry in table:
         try:
@@ -543,16 +554,34 @@ def main():
             print(f"附加 uprobe 到偏移 0x{entry['src_addr']:x} 失败: {e}")
     print(f"成功附加 {attached} 个 uprobe 探测点")
 
-    # 触发漏洞的线程
-    def trigger():
-        payload = b'A' * 199 + b'\x00'   # 200 字节，确保溢出
-        while True:
-            lib.vulnerable_function(payload)
-            time.sleep(2)
+    # 启动外部目标进程 trigger（假设已编译并存在）
+    print("启动目标进程 trigger...")
+    p = process('./trigger')
+    pid = p.pid
+    print(f"目标进程 PID: {pid}")
 
-    threading.Thread(target=trigger, daemon=True).start()
+    # 等待 libvuln.so 被加载（dlopen 在 main 中执行，需要一点时间）
+    time.sleep(0.2)
+    target_base = get_pid_libvuln_base(pid)
+    if target_base is None:
+        print("无法获取目标进程中 libvuln.so 的基址，尝试等待更长时间...")
+        time.sleep(0.5)
+        target_base = get_pid_libvuln_base(pid)
+        if target_base is None:
+            print("错误：无法获取 libvuln.so 基址，目标进程可能已经退出")
+            p.kill()
+            return
+    print(f"目标进程 {pid} 中 libvuln.so 基址: 0x{target_base:x}")
 
-    print("\n=== CFI 监控已启动（监控 libvuln.so）===")
+    # 更新 BPF map 中的基址为目标进程的基址
+    b["module_base"][ctypes.c_uint64(0)] = ctypes.c_uint64(target_base)
+
+    # 构造 payload 并发送
+    offset = 72
+    payload = b'A' * offset + p64(0x4141414141414141)
+    p.send(payload)
+
+    print("\n=== CFI 监控已启动（监控外部进程 trigger）===")
     print("按 Ctrl+C 停止\n")
 
     try:
@@ -561,6 +590,7 @@ def main():
     except KeyboardInterrupt:
         print("\n监控已停止")
     finally:
+        p.kill()
         print(f"\n=== 最终统计 ===")
         print(f"- CFI规则数: {len(table)}")
         print(f"- 处理事件数: {event_count}")
@@ -568,6 +598,6 @@ def main():
         if event_count > 0:
             violation_rate = (violation_count / event_count) * 100
             print(f"- 违规率: {violation_rate:.2f}%")
-            
+
 if __name__ == "__main__":
     main()

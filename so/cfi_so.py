@@ -52,7 +52,8 @@ class JumpEvent(ctypes.Structure):
         ("insn_len", ctypes.c_uint64),
         ("runtime_ip", ctypes.c_uint64),
         ("module_base_addr", ctypes.c_uint64),
-        ("sp", ctypes.c_uint64),
+        ("ret_addr", ctypes.c_uint64),          # 原 sp → ret_addr
+        ("saved_rax_val", ctypes.c_uint64),     # 新增：保存的 rax
     ]
 
 def parse_cfi_table(file_path):
@@ -151,11 +152,37 @@ struct jump_event {
     u64 runtime_ip;
     u64 module_base_addr;
     u64 ret_addr;
+    u64 saved_rax_val;           // 新增
 };
 
 BPF_HASH(cfi_map, u64, struct cfi_entry);
 BPF_HASH(module_base, u64, u64);
 BPF_PERF_OUTPUT(jump_events);
+BPF_HASH(saved_rax, u32, u64); // key = pid, value = rax
+BPF_HASH(saved_rsp, u32, u64); // key = pid, value = rsp
+
+int trace_rax(struct pt_regs *ctx) {
+    u32 pid = bpf_get_current_pid_tgid() >> 32;
+    u64 rax = ctx->ax;                  // rax 此时是一个用户态地址（二级指针）
+
+    u64 target;                         // 用于存放解引用后的值
+    // 从用户空间地址 rax 读取 8 字节到 target
+    if (bpf_probe_read_user(&target, sizeof(target), (void *)rax) == 0) {
+        saved_rax.update(&pid, &target);  // 存储真正的目标地址
+    } else {
+        // 读取失败（例如地址非法），可设置为 0 或不清空
+        u64 zero = 0;
+        saved_rax.update(&pid, &zero);
+    }
+    return 0;
+}
+
+int trace_rsp(struct pt_regs *ctx) {
+    u32 pid = bpf_get_current_pid_tgid() >> 32;
+    u64 rsp = ctx->sp;           // 直接用 ctx->sp
+    saved_rsp.update(&pid, &rsp);
+    return 0;
+}
 
 int trace_all_jumps(struct pt_regs *ctx) {
     u64 key = 0;
@@ -194,7 +221,23 @@ int trace_all_jumps(struct pt_regs *ctx) {
     bpf_probe_read(event.insn_bytes, 16, (void*)ip);
     bpf_probe_read(event.src_func, 64, entry->src_func);
     bpf_probe_read(event.dst_func, 64, entry->dst_func);
-    
+
+    // 从 saved_rax 中取出记录的 rax 值
+    u64 *saved = saved_rax.lookup(&event.pid);
+    if (saved) {
+        event.saved_rax_val = *saved;          // 传递到用户态
+        if (*saved == event.reg_rax) {
+            event.is_correct = 1;
+        } else {
+            event.is_correct = 0;
+        }
+        // 可选：删除该 pid 的记录，避免残留
+        // saved_rax.delete(&event.pid);
+    } else {
+        event.saved_rax_val = 0;
+        event.is_correct = 1;                   // 无记录时默认正确
+    }
+
     if (entry->jump_type == 3) {  // RET
         u64 sp = PT_REGS_SP(ctx);
         bpf_probe_read(&event.ret_addr, sizeof(event.ret_addr), (void *)sp);
@@ -276,7 +319,6 @@ def handle_jump_event(cpu, data, size):
     print(f"  • 原始指令字节: {insn_hex}")
 
     # 合成指令
-    
     if instr_bytes and instr_bytes != '未知' and instr_len > 1:
         csv_first_byte = int(instr_bytes.split()[0], 16)
         new_insn_bytes = [csv_first_byte] + list(insn_bytes[1:instr_len])
@@ -289,7 +331,6 @@ def handle_jump_event(cpu, data, size):
         md.detail = True
         for insn in md.disasm(bytes(new_insn_bytes), event.src_offset):
             print(f"     反汇编结果: {insn.mnemonic} {insn.op_str}")
-            # 如果是跳转/调用，计算目标地址
             if insn.mnemonic.startswith(('j', 'call')):
                 if len(insn.operands) > 0:
                     op = insn.operands[0]
@@ -372,19 +413,16 @@ def handle_jump_event(cpu, data, size):
                 print(f"  • 无法识别长条件跳转")
         # 间接跳转/调用
         elif opcode == 0xFF:
-            # 根据 ModRM 字节解析使用的寄存器
             if len(insn_bytes) >= 2:
                 modrm = insn_bytes[1]
                 mod = (modrm >> 6) & 3
                 rm = modrm & 7
                 if mod == 3:  # 寄存器间接
-                    # 根据 rm 值确定寄存器名称
                     reg_names = {
                         0: 'rax', 1: 'rcx', 2: 'rdx', 3: 'rbx',
                         4: 'rsp', 5: 'rbp', 6: 'rsi', 7: 'rdi'
                     }
                     reg_name = reg_names.get(rm, 'unknown')
-                    # 从 event 中获取对应寄存器的值
                     reg_map = {
                         'rax': event.reg_rax, 'rcx': event.reg_rcx, 'rdx': event.reg_rdx,
                         'rbx': event.reg_rbx, 'rsp': event.reg_rsp, 'rbp': event.reg_rbp,
@@ -393,11 +431,9 @@ def handle_jump_event(cpu, data, size):
                     computed_target = reg_map.get(reg_name, 0)
                     print(f"  • 间接跳转/调用目标 ({reg_name}): 0x{computed_target:016x}")
                 else:
-                    # 内存间接，暂不支持精确解析
                     print(f"  • 间接跳转/调用: 内存操作数 (ModRM=0x{modrm:02x})，暂不支持解析")
                     computed_target = 0
             else:
-                # 指令字节不足，使用 RAX fallback
                 computed_target = event.reg_rax
                 print(f"  • 间接跳转/调用目标 (RAX fallback): 0x{computed_target:016x}")
 
@@ -414,7 +450,7 @@ def handle_jump_event(cpu, data, size):
         # 返回指令
         elif opcode in (0xC3, 0xC2, 0xCB, 0xCA):
             if event.dst_offset != 0:
-                computed_target = event.sp
+                computed_target = event.ret_addr          # 使用 ret_addr
                 if event.expected_dst == 0:
                     module_end = base + 0x1000000
                     in_module = base <= computed_target < module_end
@@ -442,14 +478,17 @@ def handle_jump_event(cpu, data, size):
     print(f"  • RSI: 0x{event.reg_rsi:016x}")
     print(f"  • RDI: 0x{event.reg_rdi:016x}")
 
+    # 显示保存的 RAX 值
+    print(f"  • 保存的 RAX (trace_rax): 0x{event.saved_rax_val:016x}")
+
     # 跳转分析
     print("\n🔍 跳转分析:")
-    if event.jump_type in [0, 1, 2]:  # 直接跳转
+    if event.jump_type in [0, 1, 2]:
         print(f"  • 直接跳转指令")
         print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
         if event.reg_rax != 0 and event.reg_rax == event.expected_dst:
             print(f"    └─ RAX中的值与预期目标一致")
-    elif event.jump_type in [4, 5]:  # 间接跳转
+    elif event.jump_type in [4, 5]:
         print(f"  • 间接跳转指令")
         print(f"  • RAX中的目标: 0x{event.reg_rax:016x}")
         print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
@@ -461,9 +500,9 @@ def handle_jump_event(cpu, data, size):
         else:
             in_module = base <= event.reg_rax < base + 0x1000000
             print(f"    └─ 目标是否在模块内: {'是' if in_module else '否'}")
-    elif event.jump_type == 3:  # 返回
+    elif event.jump_type == 3:
         print(f"  • 返回指令")
-        print(f"  • 栈指针(RSP): 0x{event.ret_addr:016x}")
+        print(f"  • 返回地址: 0x{event.ret_addr:016x}")
         print(f"  • 模块范围: [0x{base:016x}, 0x{base + 0x1000000:016x}]")
 
     # 验证结果
@@ -485,6 +524,15 @@ def handle_jump_event(cpu, data, size):
 
     print("\n" + "-"*80)
     event_count += 1
+
+def get_module_base_from_maps(so_name):
+    """从 /proc/self/maps 中获取共享库的加载基址"""
+    with open('/proc/self/maps', 'r') as f:
+        for line in f:
+            if so_name in line:
+                start_addr = int(line.split('-')[0], 16)
+                return start_addr
+    return None
 
 def main():
     global b, event_count, violation_count, base, cfi_lookup
@@ -520,7 +568,7 @@ def main():
     # 计算模块基址
     lib = ctypes.CDLL(so_path)
     func_addr = ctypes.cast(getattr(lib, "test_returns"), ctypes.c_void_p).value
-zz
+    base = get_module_base_from_maps("test.so")
     print(f"检测到 test.so 基址: 0x{base:x}")
 
     b["module_base"][ctypes.c_uint64(0)] = ctypes.c_uint64(base)
@@ -532,8 +580,8 @@ zz
         b["cfi_map"][offset] = cfi
 
     b["jump_events"].open_perf_buffer(handle_jump_event)
-    
     b.attach_uprobe(name=so_path, sym="test_indirect_call", sym_off=0x21, fn_name="trace_all_jumps")
+    b.attach_uprobe(name=so_path, sym="test_indirect_call", sym_off=0x1e, fn_name="trace_rax")
     # 触发函数
     def trigger():
         while True:

@@ -1,0 +1,80 @@
+﻿reg,def_func,def_addr,def_instr,use_func,use_addr,use_instr,cross_func,dfi_violation,violation_reason,def_source,indirect_type
+rsp,<unknown>,0x0,undefined source for rsp,_init,0x1004,"sub $0x8,%rsp",No,OK,,unknown,-
+rax,_init,0x1008,"mov 0x2fc1(%rip),%rax",_init,0x100f,"test %rax,%rax",No,OK,,local,-
+rax,_init,0x1008,"mov 0x2fc1(%rip),%rax",_init,0x1014,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x1008,local,reg_based
+rsp,_init,0x1004,"sub $0x8,%rsp",_init,0x1016,"add $0x8,%rsp",No,OK,,local,-
+rax,_init,0x1014,call *%rax,_init,0x101a,ret,No,OK,,synthetic,-
+rax,_init,0x1008,"mov 0x2fc1(%rip),%rax",_init,0x101a,ret,No,OK,,local,-
+rdi,deregister_tm_clones,0x10e0,"lea 0x2f61(%rip),%rdi",deregister_tm_clones,0x10ee,"cmp %rdi,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x10e7,"lea 0x2f5a(%rip),%rax",deregister_tm_clones,0x10ee,"cmp %rdi,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x10f3,"mov 0x2ece(%rip),%rax",deregister_tm_clones,0x10fa,"test %rax,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x10f3,"mov 0x2ece(%rip),%rax",deregister_tm_clones,0x10ff,jmp *%rax,No,WARNING,indirect jump reg_based target rax L1: defined at 0x10f3,local,reg_based
+rax,deregister_tm_clones,0x10f3,"mov 0x2ece(%rip),%rax",deregister_tm_clones,0x1108,ret,No,OK,,local,-
+rax,deregister_tm_clones,0x10e7,"lea 0x2f5a(%rip),%rax",deregister_tm_clones,0x1108,ret,No,OK,,local,-
+rdi,register_tm_clones,0x1110,"lea 0x2f31(%rip),%rdi",register_tm_clones,0x111e,"sub %rdi,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x1117,"lea 0x2f2a(%rip),%rsi",register_tm_clones,0x111e,"sub %rdi,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x111e,"sub %rdi,%rsi",register_tm_clones,0x1121,"mov %rsi,%rax",No,OK,,local,-
+rsi,register_tm_clones,0x111e,"sub %rdi,%rsi",register_tm_clones,0x1124,"shr $0x3f,%rsi",No,OK,,local,-
+rax,register_tm_clones,0x1121,"mov %rsi,%rax",register_tm_clones,0x1128,"sar $0x3,%rax",No,OK,,local,-
+rax,register_tm_clones,0x1128,"sar $0x3,%rax",register_tm_clones,0x112c,"add %rax,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x1124,"shr $0x3f,%rsi",register_tm_clones,0x112c,"add %rax,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x112c,"add %rax,%rsi",register_tm_clones,0x112f,sar %rsi,No,OK,,local,-
+rax,register_tm_clones,0x1134,"mov 0x2ead(%rip),%rax",register_tm_clones,0x113b,"test %rax,%rax",No,OK,,local,-
+rax,register_tm_clones,0x1134,"mov 0x2ead(%rip),%rax",register_tm_clones,0x1140,jmp *%rax,No,WARNING,indirect jump reg_based target rax L1: defined at 0x1134,local,reg_based
+rax,register_tm_clones,0x1128,"sar $0x3,%rax",register_tm_clones,0x1148,ret,No,OK,,local,-
+rax,register_tm_clones,0x1134,"mov 0x2ead(%rip),%rax",register_tm_clones,0x1148,ret,No,OK,,local,-
+rbp,<unknown>,0x0,undefined source for rbp,__do_global_dtors_aux,0x115d,push %rbp,No,OK,,unknown,-
+rsp,__do_global_dtors_aux,0x115d,push %rbp,__do_global_dtors_aux,0x1166,"mov %rsp,%rbp",No,OK,,local,-
+rsp,__do_global_dtors_aux,0x115d,push %rbp,__do_global_dtors_aux,0x1183,pop %rbp,No,OK,,local,-
+rax,__do_global_dtors_aux,0x1177,call 10e0 <deregister_tm_clones>,__do_global_dtors_aux,0x1184,ret,No,OK,,synthetic,-
+rax,<unknown>,0x0,undefined source for rax,__do_global_dtors_aux,0x1188,ret,No,OK,,unknown,-
+rbp,<unknown>,0x0,undefined source for rbp,test_returns,0x119d,push %rbp,No,OK,,unknown,-
+rsp,test_returns,0x119d,push %rbp,test_returns,0x119e,"mov %rsp,%rbp",No,OK,,local,-
+rax,test_returns,0x11a1,"lea 0xe58(%rip),%rax",test_returns,0x11a8,"mov %rax,%rdi",No,OK,,local,-
+rsp,test_returns,0x119d,push %rbp,test_returns,0x11b1,pop %rbp,No,OK,,local,-
+rax,test_returns,0x11ab,call 10a0 <puts@plt>,test_returns,0x11b2,ret,No,OK,,synthetic,-
+rbp,<unknown>,0x0,undefined source for rbp,test_indirect_call,0x11b7,push %rbp,No,OK,,unknown,-
+rsp,test_indirect_call,0x11b7,push %rbp,test_indirect_call,0x11b8,"mov %rsp,%rbp",No,OK,,local,-
+rax,test_indirect_call,0x11bb,"lea 0xe5e(%rip),%rax",test_indirect_call,0x11c2,"mov %rax,%rdi",No,OK,,local,-
+rax,test_indirect_call,0x11ca,"mov 0x2e1f(%rip),%rax",test_indirect_call,0x11d1,"mov (%rax),%rax",No,OK,,local,-
+rax,test_indirect_call,0x11d1,"mov (%rax),%rax",test_indirect_call,0x11d4,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x11d1,local,reg_based
+rax,test_indirect_call,0x11ca,"mov 0x2e1f(%rip),%rax",test_indirect_call,0x11d4,call *%rax,No,WARNING,indirect call reg_based target rax L2: defined at 0x11ca,local,reg_based
+rsp,test_indirect_call,0x11b7,push %rbp,test_indirect_call,0x11d7,pop %rbp,No,OK,,local,-
+rax,test_indirect_call,0x11d4,call *%rax,test_indirect_call,0x11d8,ret,No,OK,,synthetic,-
+rbp,<unknown>,0x0,undefined source for rbp,test_indirect_jump,0x11dd,push %rbp,No,OK,,unknown,-
+rsp,test_indirect_jump,0x11dd,push %rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",No,OK,,local,-
+rsp,test_indirect_jump,0x11dd,push %rbp,test_indirect_jump,0x11e1,"sub $0x20,%rsp",No,OK,,local,-
+rdi,test_indirect_jump,0x0,<param:rdi>,test_indirect_jump,0x11e5,"mov %edi,-0x14(%rbp)",No,OK,,parameter,-
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x11e5,"mov %edi,-0x14(%rbp)",No,OK,,local,-
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x11e8,"mov -0x14(%rbp),%eax",No,OK,,local,-
+rax,test_indirect_jump,0x11e8,"mov -0x14(%rbp),%eax",test_indirect_jump,0x11eb,"mov %eax,%esi",No,OK,,local,-
+rax,test_indirect_jump,0x11ed,"lea 0xe50(%rip),%rax",test_indirect_jump,0x11f4,"mov %rax,%rdi",No,OK,,local,-
+rax,test_indirect_jump,0x1201,"mov 0x2dd8(%rip),%rax",test_indirect_jump,0x1208,"mov %rax,-0x8(%rbp)",No,OK,,local,-
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x1208,"mov %rax,-0x8(%rbp)",No,OK,,local,-
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x120c,"cmpl $0x0,-0x14(%rbp)",No,OK,,local,-
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x1212,"mov -0x8(%rbp),%rax",No,OK,,local,-
+rax,test_indirect_jump,0x1212,"mov -0x8(%rbp),%rax",test_indirect_jump,0x121b,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x1212,local,reg_based
+rbp,test_indirect_jump,0x11de,"mov %rsp,%rbp",test_indirect_jump,0x121e,leave,No,OK,,local,-
+rax,test_indirect_jump,0x121b,call *%rax,test_indirect_jump,0x121f,ret,No,OK,,synthetic,-
+rax,test_indirect_jump,0x1201,"mov 0x2dd8(%rip),%rax",test_indirect_jump,0x121f,ret,No,OK,,local,-
+rbp,<unknown>,0x0,undefined source for rbp,test_ff_instructions,0x1224,push %rbp,No,OK,,unknown,-
+rsp,test_ff_instructions,0x1224,push %rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",No,OK,,local,-
+rsp,test_ff_instructions,0x1224,push %rbp,test_ff_instructions,0x1228,"sub $0x10,%rsp",No,OK,,local,-
+rax,test_ff_instructions,0x122c,"lea 0xe28(%rip),%rax",test_ff_instructions,0x1233,"mov %rax,%rdi",No,OK,,local,-
+rax,test_ff_instructions,0x123b,"mov 0x2d96(%rip),%rax",test_ff_instructions,0x1242,"mov %rax,-0x10(%rbp)",No,OK,,local,-
+rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",test_ff_instructions,0x1242,"mov %rax,-0x10(%rbp)",No,OK,,local,-
+rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",test_ff_instructions,0x1246,"mov -0x10(%rbp),%rax",No,OK,,local,-
+rax,test_ff_instructions,0x1246,"mov -0x10(%rbp),%rax",test_ff_instructions,0x124a,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x1246,local,reg_based
+rax,test_ff_instructions,0x124c,"mov 0x2d8d(%rip),%rax",test_ff_instructions,0x1253,"mov %rax,-0x8(%rbp)",No,OK,,local,-
+rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",test_ff_instructions,0x1253,"mov %rax,-0x8(%rbp)",No,OK,,local,-
+rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",test_ff_instructions,0x1257,"mov -0x8(%rbp),%rax",No,OK,,local,-
+rax,test_ff_instructions,0x1257,"mov -0x8(%rbp),%rax",test_ff_instructions,0x1260,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x1257,local,reg_based
+rbp,test_ff_instructions,0x1225,"mov %rsp,%rbp",test_ff_instructions,0x1263,leave,No,OK,,local,-
+rax,test_ff_instructions,0x1260,call *%rax,test_ff_instructions,0x1264,ret,No,OK,,synthetic,-
+rbp,<unknown>,0x0,undefined source for rbp,test_all,0x1269,push %rbp,No,OK,,unknown,-
+rsp,test_all,0x1269,push %rbp,test_all,0x126a,"mov %rsp,%rbp",No,OK,,local,-
+rsp,test_all,0x1269,push %rbp,test_all,0x1287,pop %rbp,No,OK,,local,-
+rax,test_all,0x1281,call 10c0 <test_ff_instructions@plt>,test_all,0x1288,ret,No,OK,,synthetic,-
+rsp,<unknown>,0x0,undefined source for rsp,_fini,0x1290,"sub $0x8,%rsp",No,OK,,unknown,-
+rsp,_fini,0x1290,"sub $0x8,%rsp",_fini,0x1294,"add $0x8,%rsp",No,OK,,local,-
+rax,<unknown>,0x0,undefined source for rax,_fini,0x1298,ret,No,OK,,unknown,-

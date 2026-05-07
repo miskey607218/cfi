@@ -1,0 +1,122 @@
+
+============================================================
+[Phase 1] 解析三层 DFI 数据流链
+============================================================
+ 发现 18 个间接跳转站点:
+  * _init @ 0x1014  reg=rax
+     L1: 0x1014 type=DIRECT -> call *%rax
+     L2: 0x1008 type=RIP_REL -> mov 0x2fc1(%rip),%rax
+     L3: 0x1008 type=RIP_REL -> mov 0x2fc1(%rip),%rax
+  * _init @ 0x101a  reg=rsp
+     L1: 0x101a type=RET -> ret
+     L2: 0x1016 type=DEREF -> add $0x8,%rsp
+     L3: 0x1004 type=DEREF -> sub $0x8,%rsp
+  * deregister_tm_clones @ 0x10ff  reg=rax
+     L1: 0x10ff type=DIRECT -> jmp *%rax
+     L2: 0x10f3 type=RIP_REL -> mov 0x2ece(%rip),%rax
+     L3: 0x10f3 type=RIP_REL -> mov 0x2ece(%rip),%rax
+  * deregister_tm_clones @ 0x1108  reg=rsp
+     L1: 0x1108 type=RET -> ret
+     L2: 0x1108 type=RET -> ret
+     L3: 0x1108 type=RET -> ret
+  * register_tm_clones @ 0x1140  reg=rax
+     L1: 0x1140 type=DIRECT -> jmp *%rax
+     L2: 0x1134 type=RIP_REL -> mov 0x2ead(%rip),%rax
+     L3: 0x1134 type=RIP_REL -> mov 0x2ead(%rip),%rax
+  * register_tm_clones @ 0x1148  reg=rsp
+     L1: 0x1148 type=RET -> ret
+     L2: 0x1148 type=RET -> ret
+     L3: 0x1148 type=RET -> ret
+  * __do_global_dtors_aux @ 0x1184  reg=rsp
+     L1: 0x1184 type=RET -> ret
+     L2: 0x115d type=DEREF -> push %rbp
+     L3: 0x115d type=DEREF -> push %rbp
+  * __do_global_dtors_aux @ 0x1188  reg=rsp
+     L1: 0x1188 type=RET -> ret
+     L2: 0x1188 type=RET -> ret
+     L3: 0x1188 type=RET -> ret
+  * test_returns @ 0x11b2  reg=rsp
+     L1: 0x11b2 type=RET -> ret
+     L2: 0x119d type=DEREF -> push %rbp
+     L3: 0x119d type=DEREF -> push %rbp
+  * test_indirect_call @ 0x11d4  reg=rax
+     L1: 0x11d4 type=DIRECT -> call *%rax
+     L2: 0x11d1 type=DEREF -> mov (%rax),%rax
+     L3: 0x11ca type=RIP_REL -> mov 0x2e1f(%rip),%rax
+  * test_indirect_call @ 0x11d8  reg=rsp
+     L1: 0x11d8 type=RET -> ret
+     L2: 0x11b7 type=DEREF -> push %rbp
+     L3: 0x11b7 type=DEREF -> push %rbp
+  * test_indirect_jump @ 0x121b  reg=rax
+     L1: 0x121b type=DIRECT -> call *%rax
+     L2: 0x1212 type=RBP_REL -> mov -0x8(%rbp),%rax
+     L3: 0x1212 type=RBP_REL -> mov -0x8(%rbp),%rax
+  * test_indirect_jump @ 0x121f  reg=rsp
+     L1: 0x121f type=RET -> ret
+     L2: 0x121e type=DEREF -> leave
+     L3: 0x11dd type=DEREF -> push %rbp
+  * test_ff_instructions @ 0x124a  reg=rax
+     L1: 0x124a type=DIRECT -> call *%rax
+     L2: 0x1246 type=RBP_REL -> mov -0x10(%rbp),%rax
+     L3: 0x1246 type=RBP_REL -> mov -0x10(%rbp),%rax
+  * test_ff_instructions @ 0x1260  reg=rax
+     L1: 0x1260 type=DIRECT -> call *%rax
+     L2: 0x1257 type=RBP_REL -> mov -0x8(%rbp),%rax
+     L3: 0x1257 type=RBP_REL -> mov -0x8(%rbp),%rax
+  * test_ff_instructions @ 0x1264  reg=rsp
+     L1: 0x1264 type=RET -> ret
+     L2: 0x1263 type=DEREF -> leave
+     L3: 0x1224 type=DEREF -> push %rbp
+  * test_all @ 0x1288  reg=rsp
+     L1: 0x1288 type=RET -> ret
+     L2: 0x1269 type=DEREF -> push %rbp
+     L3: 0x1269 type=DEREF -> push %rbp
+  * _fini @ 0x1298  reg=rsp
+     L1: 0x1298 type=RET -> ret
+     L2: 0x1294 type=DEREF -> add $0x8,%rsp
+     L3: 0x1290 type=DEREF -> sub $0x8,%rsp
+
+============================================================
+[Phase 2] 加载 CFI 规则表
+============================================================
+ 从 CSV 成功解析 37 个静态跳转规则
+ 函数入口: 11 个, 直接调用边: 11 条
+ 间接调用返回地址: 5 个
+ 间接跳转站点: 7 个 (合法目标集=所有函数入口)
+ 返回站点:       11 个 (合法目标=call下一条指令, 共61个)
+
+============================================================
+[Phase 3] 加载 BPF 程序 + 三层DFI保护
+============================================================
+[*] test.so 基址: 0x77fce325a000
+  填充 ret_targets 哈希: 11 个合法返回地址
+
+============================================================
+[Phase 4] RIPE 攻击 (参考 ripe_attack_runner.c)
+  攻击方式: rop (ROP链攻击)
+  目标站点: [0] test_indirect_call
+  触发函数: test_indirect_call
+  Shellcode类型: rop
+============================================================
+[*] Loaded ELF: /home/162310212_Lvhaiye/Desktop/cfi/dfi_rop/test.so
+[*]   Base: 0x77fce325a000
+[*]   Arch: amd64  Bits: 64
+[*] Sections: ['', '.note.gnu.property', '.note.gnu.build-id', '.gnu.hash', '.dynsym', '.dynstr', '.gnu.version', '.gnu.version_r', '.rela.dyn', '.rela.plt']...
+[*] Symbols in .dynsym: indirect_call_ptr=True
+[*] Loaded 5 cached gadgets for '/home/162310212_Lvhaiye/Desktop/cfi/dfi_rop/test.so'
+[*] Found 5 ROP gadgets
+[!]   pop rdi: not found
+[!]   pop rsi: not found
+[!]   pop rdx: not found
+[*]   ret: ['0x77fce325b017', '0x77fce325b016', '0x77fce325b21e']
+[!]   pop rax: not found
+[!]   syscall: not found
+[!]   pop rcx: not found
+[*] Generated shellcode (rop): 0 bytes
+
+[ATTACK] No shellcode needed (rop)
+
+[ATTACK] 攻击目标: indirect_call_ptr -> rop
+[ATTACK] 攻击方法: 覆盖全局函数指针 (mprotect + overwrite)
+[ATTACK] 触发方式: test_indirect_call()
+[!] Missing gadgets for ROP chain

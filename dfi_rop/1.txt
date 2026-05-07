@@ -1,122 +1,143 @@
+================================================================================
+RIPE框架攻击方法 vs cfi/dfi_rop/dfi_rop.py 移植分析
+================================================================================
 
-============================================================
-[Phase 1] 解析三层 DFI 数据流链
-============================================================
- 发现 18 个间接跳转站点:
-  * _init @ 0x1014  reg=rax
-     L1: 0x1014 type=DIRECT -> call *%rax
-     L2: 0x1008 type=RIP_REL -> mov 0x2fc1(%rip),%rax
-     L3: 0x1008 type=RIP_REL -> mov 0x2fc1(%rip),%rax
-  * _init @ 0x101a  reg=rsp
-     L1: 0x101a type=RET -> ret
-     L2: 0x1016 type=DEREF -> add $0x8,%rsp
-     L3: 0x1004 type=DEREF -> sub $0x8,%rsp
-  * deregister_tm_clones @ 0x10ff  reg=rax
-     L1: 0x10ff type=DIRECT -> jmp *%rax
-     L2: 0x10f3 type=RIP_REL -> mov 0x2ece(%rip),%rax
-     L3: 0x10f3 type=RIP_REL -> mov 0x2ece(%rip),%rax
-  * deregister_tm_clones @ 0x1108  reg=rsp
-     L1: 0x1108 type=RET -> ret
-     L2: 0x1108 type=RET -> ret
-     L3: 0x1108 type=RET -> ret
-  * register_tm_clones @ 0x1140  reg=rax
-     L1: 0x1140 type=DIRECT -> jmp *%rax
-     L2: 0x1134 type=RIP_REL -> mov 0x2ead(%rip),%rax
-     L3: 0x1134 type=RIP_REL -> mov 0x2ead(%rip),%rax
-  * register_tm_clones @ 0x1148  reg=rsp
-     L1: 0x1148 type=RET -> ret
-     L2: 0x1148 type=RET -> ret
-     L3: 0x1148 type=RET -> ret
-  * __do_global_dtors_aux @ 0x1184  reg=rsp
-     L1: 0x1184 type=RET -> ret
-     L2: 0x115d type=DEREF -> push %rbp
-     L3: 0x115d type=DEREF -> push %rbp
-  * __do_global_dtors_aux @ 0x1188  reg=rsp
-     L1: 0x1188 type=RET -> ret
-     L2: 0x1188 type=RET -> ret
-     L3: 0x1188 type=RET -> ret
-  * test_returns @ 0x11b2  reg=rsp
-     L1: 0x11b2 type=RET -> ret
-     L2: 0x119d type=DEREF -> push %rbp
-     L3: 0x119d type=DEREF -> push %rbp
-  * test_indirect_call @ 0x11d4  reg=rax
-     L1: 0x11d4 type=DIRECT -> call *%rax
-     L2: 0x11d1 type=DEREF -> mov (%rax),%rax
-     L3: 0x11ca type=RIP_REL -> mov 0x2e1f(%rip),%rax
-  * test_indirect_call @ 0x11d8  reg=rsp
-     L1: 0x11d8 type=RET -> ret
-     L2: 0x11b7 type=DEREF -> push %rbp
-     L3: 0x11b7 type=DEREF -> push %rbp
-  * test_indirect_jump @ 0x121b  reg=rax
-     L1: 0x121b type=DIRECT -> call *%rax
-     L2: 0x1212 type=RBP_REL -> mov -0x8(%rbp),%rax
-     L3: 0x1212 type=RBP_REL -> mov -0x8(%rbp),%rax
-  * test_indirect_jump @ 0x121f  reg=rsp
-     L1: 0x121f type=RET -> ret
-     L2: 0x121e type=DEREF -> leave
-     L3: 0x11dd type=DEREF -> push %rbp
-  * test_ff_instructions @ 0x124a  reg=rax
-     L1: 0x124a type=DIRECT -> call *%rax
-     L2: 0x1246 type=RBP_REL -> mov -0x10(%rbp),%rax
-     L3: 0x1246 type=RBP_REL -> mov -0x10(%rbp),%rax
-  * test_ff_instructions @ 0x1260  reg=rax
-     L1: 0x1260 type=DIRECT -> call *%rax
-     L2: 0x1257 type=RBP_REL -> mov -0x8(%rbp),%rax
-     L3: 0x1257 type=RBP_REL -> mov -0x8(%rbp),%rax
-  * test_ff_instructions @ 0x1264  reg=rsp
-     L1: 0x1264 type=RET -> ret
-     L2: 0x1263 type=DEREF -> leave
-     L3: 0x1224 type=DEREF -> push %rbp
-  * test_all @ 0x1288  reg=rsp
-     L1: 0x1288 type=RET -> ret
-     L2: 0x1269 type=DEREF -> push %rbp
-     L3: 0x1269 type=DEREF -> push %rbp
-  * _fini @ 0x1298  reg=rsp
-     L1: 0x1298 type=RET -> ret
-     L2: 0x1294 type=DEREF -> add $0x8,%rsp
-     L3: 0x1290 type=DEREF -> sub $0x8,%rsp
+一、RIPE框架的全部攻击方法（5个维度，7680种理论组合）
+--------------------------------------------------------------------------------
 
-============================================================
-[Phase 2] 加载 CFI 规则表
-============================================================
- 从 CSV 成功解析 37 个静态跳转规则
- 函数入口: 11 个, 直接调用边: 11 条
- 间接调用返回地址: 5 个
- 间接跳转站点: 7 个 (合法目标集=所有函数入口)
- 返回站点:       11 个 (合法目标=call下一条指令, 共61个)
+RIPE (Runtime Intrusion Prevention Evaluator) 是一个通用的运行时入侵防御评估器，
+定义在 /RIPE/source/ripe_attack_parameters.h 中，攻击方法由5个维度组合而成：
 
-============================================================
-[Phase 3] 加载 BPF 程序 + 三层DFI保护
-============================================================
-[*] test.so 基址: 0x77fce325a000
-  填充 ret_targets 哈希: 11 个合法返回地址
+  1) 溢出技术 (2种):  direct (直接覆盖), indirect (间接覆盖)
+  2) 注入参数/载荷 (6种):  nonop, simplenop, polynop, returnintolibc, createfile, rop
+  3) 代码指针目标 (16种):
+     ret, baseptr, funcptrstackvar, funcptrstackparam,
+     funcptrheap, funcptrbss, funcptrdata,
+     longjmpstackvar, longjmpstackparam, longjmpheap, longjmpbss, longjmpdata,
+     structfuncptrstack, structfuncptrheap, structfuncptrdata, structfuncptrbss
+  4) 内存位置 (4种):  stack, heap, bss, data
+  5) 漏洞函数 (10种):  memcpy, strcpy, strncpy, sprintf, snprintf,
+                       strcat, strncat, sscanf, fscanf, homebrew
 
-============================================================
-[Phase 4] RIPE 攻击 (参考 ripe_attack_runner.c)
-  攻击方式: rop (ROP链攻击)
-  目标站点: [0] test_indirect_call
-  触发函数: test_indirect_call
-  Shellcode类型: rop
-============================================================
-[*] Loaded ELF: /home/162310212_Lvhaiye/Desktop/cfi/dfi_rop/test.so
-[*]   Base: 0x77fce325a000
-[*]   Arch: amd64  Bits: 64
-[*] Sections: ['', '.note.gnu.property', '.note.gnu.build-id', '.gnu.hash', '.dynsym', '.dynstr', '.gnu.version', '.gnu.version_r', '.rela.dyn', '.rela.plt']...
-[*] Symbols in .dynsym: indirect_call_ptr=True
-[*] Loaded 5 cached gadgets for '/home/162310212_Lvhaiye/Desktop/cfi/dfi_rop/test.so'
-[*] Found 5 ROP gadgets
-[!]   pop rdi: not found
-[!]   pop rsi: not found
-[!]   pop rdx: not found
-[*]   ret: ['0x77fce325b017', '0x77fce325b016', '0x77fce325b21e']
-[!]   pop rax: not found
-[!]   syscall: not found
-[!]   pop rcx: not found
-[*] Generated shellcode (rop): 0 bytes
+理论组合总数 = 2 × 6 × 16 × 4 × 10 = 7,680 种攻击变体
 
-[ATTACK] No shellcode needed (rop)
 
-[ATTACK] 攻击目标: indirect_call_ptr -> rop
-[ATTACK] 攻击方法: 覆盖全局函数指针 (mprotect + overwrite)
-[ATTACK] 触发方式: test_indirect_call()
-[!] Missing gadgets for ROP chain
+二、移植到 cfi/dfi_rop/dfi_rop.py 的攻击方法
+--------------------------------------------------------------------------------
+
+dfi_rop.py 中 ATTACK_TYPES 字典 (第153-162行) 定义了以下8种攻击类型：
+
+  | 攻击类型         | 来源          | 说明                         |
+  |-----------------|--------------|------------------------------|
+  | nonop           | RIPE         | 纯 shellcode (无 NOP)        |
+  | simplenop       | RIPE         | NOP 滑板 + shellcode         |
+  | polynop         | RIPE         | 多态 NOP + shellcode         |
+  | createfile      | RIPE         | 创建文件 /tmp/rip-eval/f_xxxx |
+  | returnintolibc  | RIPE         | 返回 libc (creat/system)     |
+  | rop             | RIPE         | ROP 链攻击                    |
+  | sh              | pwntools扩展 | /bin/sh shellcode            |
+  | exit0           | pwntools扩展 | 安全退出 exit(0)             |
+
+以下对照 RIPE 的5个维度逐一分析移植情况：
+
+(1) 注入参数/载荷 (6/6 全部移植):
+    RIPE 的全部6种注入参数均已移植为 dfi_rop.py 中的 shellcode 类型：
+      nonop → RIPE_SHELLCODE_NONOP     (第133-137行, RIPE风格execve /bin/sh)
+      simplenop → RIPE_SHELLCODE_SIMPLENOP (第139行, 32字节NOP + shellcode)
+      polynop → RIPE_SHELLCODE_POLYNOP     (第141-144行, 多态NOP + shellcode)
+      createfile → RIPE_SHELLCODE_CREATEFILE (第146-151行, 创建/tmp/rip-eval/f_xxxx)
+      returnintolibc → build_return_into_libc_exploit() (第1076行)
+      rop → build_rop_exploit() / craft_rop_chain_for_execve()
+
+    额外增加了 sh (pwntools shellcraft.sh()) 和 exit0。
+
+(2) 代码指针目标 (仅 1/16):
+    RIPE 定义了16种代码指针目标，dfi_rop.py 仅使用一种：
+      indirect_call_ptr → 对应 RIPE 中的 funcptrbss / funcptrdata
+      
+    通过 mprotect + 直接内存写入覆盖该全局函数指针 (第1015-1050行)。
+    
+    RIPE 的其他15种代码指针目标均未移植：
+      ret (返回地址)       → 未移植
+      baseptr (旧基址指针)  → 未移植
+      funcptrstackvar       → 未移植
+      funcptrstackparam     → 未移植
+      funcptrheap           → 未移植
+      funcptrdata           → 未移植 (仅 funcptrbss)
+      longjmpstackvar/param → 未移植
+      longjmpheap/bss/data  → 未移植
+      structfuncptrstack    → 未移植
+      structfuncptrheap     → 未移植
+      structfuncptrdata     → 未移植
+      structfuncptrbss      → 未移植
+
+(3) 溢出技术 (仅 1/2):
+    dfi_rop.py 仅使用了 RIPE 的 "direct" 技术 (通过 mprotect 直接覆盖函数指针)。
+    "indirect" (先覆盖一般指针，再间接解引用到达代码指针) 未实现。
+
+(4) 内存位置 (仅 1/4):
+    仅使用 BSS/data 段的全局函数指针 (indirect_call_ptr)。
+    stack (栈) / heap (堆) 溢出均未实现。
+
+(5) 漏洞函数 (0/10):
+    dfi_rop.py 不使用任何传统缓冲区溢出漏洞函数。
+    攻击方式是通过 mprotect 改变内存页属性后直接写入函数指针，而不是通过
+    对 memcpy/strcpy/sprintf 等函数的溢出来实现代码指针劫持。
+
+三、移植的完整汇总
+--------------------------------------------------------------------------------
+
+  RIPE 维度               RIPE 总数    dfi_rop.py 移植数    移植内容
+  ----------------------  ----------  -------------------  ----------------------------
+  注入参数/载荷              6          6 (全部)            nonop, simplenop, polynop,
+                                                           createfile, returnintolibc, rop
+  代码指针目标               16         1                   funcptrbss (indirect_call_ptr)
+  溢出技术                   2          1                   direct (直接覆盖)
+  内存位置                   4          1                   bss/data (全局变量)
+  漏洞函数                  10         0                   无 (使用 mprotect 直接写入)
+  ----------------------  ----------  -------------------  ----------------------------
+
+  移植比例: 6种攻击载荷类型已全部移植，但在代码指针目标、溢出技术、内存位置、
+           漏洞函数这4个维度上严重简化，仅保留了验证 DFI+CFI 防护所需的最小集合。
+
+
+四、为什么 RIPE 攻击方法那么多，移植到 dfi_rop.py 的只有几种？
+--------------------------------------------------------------------------------
+
+核心原因：两个项目的目的完全不同。
+
+1. RIPE 的设计目标 —— 通用运行时入侵防御评估器
+   - RIPE 旨在评估各种内存安全防护机制的防御能力
+   - 需要覆盖尽可能多的攻击面，以全面测试防护机制的覆盖率
+   - 5个维度笛卡尔积产生了 7,680 种攻击变体
+   - 每种组合都可能绕过不同的防护机制，因此需要穷举测试
+
+2. dfi_rop.py 的设计目标 —— DFI+CFI 联合防护验证
+   - dfi_rop.py 是基于 eBPF 的三层数据流完整性 (DFI) + 控制流完整性 (CFI) 监控框架
+   - 其核心任务是：监控间接调用/跳转/返回站点的数据流链，检测是否偏离合法集合
+   - 它只需要攻击载荷（shellcode/ROP/return-to-libc）来触发防护并验证检测效果
+   - 不需要穷举所有代码指针位置、内存区域、漏洞函数等维度
+
+3. 具体原因分析：
+   (a) 攻击载荷维度全部移植 —— 因为 DFI+CFI 框架需要验证能检测各种类型的恶意
+       载荷注入，无论攻击者使用纯 shellcode、NOP 滑板、ROP 链还是 return-to-libc。
+
+   (b) 代码指针目标大量简化 —— dfi_rop.py 只关注间接跳转站点（indirect call/jmp/ret）
+       的 CFI 规则和 3 层寄存器数据流链的 DFI 规则。RIPE 的 16 种代码指针目标是
+       为了让评估器能测试各种内存位置上的指针劫持是否都被防御，而 dfi_rop.py 只需
+       验证其监控框架对特定间接调用站点的保护效果。
+
+   (c) 漏洞函数完全省略 —— RIPE 通过复用各种 C 库函数（memcpy/strcpy/...）作为
+       缓冲区溢出载体，以模拟真实世界中的漏洞利用。dfi_rop.py 则使用 mprotect
+       直接修改内存属性后写入，这是一种"实验室条件"下的攻击模拟，更便捷可控。
+
+   (d) 内存位置简化 —— RIPE 覆盖 stack/heap/bss/data 四种内存区域，因为它们是
+       缓冲区溢出可能发生的所有位置。dfi_rop.py 只需覆盖 BSS 段的全局函数指针
+       即可触发间接调用，不需要真实的栈溢出或堆溢出。
+
+总结：dfi_rop.py 从 RIPE 中提取了"攻击载荷生成"这一核心组件（6种 shellcode/ROP
+      类型），而省略了"漏洞利用向量"部分（代码指针位置、内存区域、溢出函数）。
+      这是合理的工程选择 —— DFI+CFI 框架的验证重点在于是否能检测到间接跳转目标
+      的异常，而不是验证能否阻止所有可能的缓冲区溢出途径。
+
+================================================================================

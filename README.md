@@ -1,8 +1,0 @@
-1.通过其他技术减少EC(等价类)(创新点)，论文[46]-[48]
-2.条件跳转(switch case/if else)，
-3.ebpf动态插桩(创新点)，
-4.dfi细化(原来的计算有缺陷),
-5.前端实时数据流图,
-6.针对不同程序进行大规模测试(EC等价类(安全性)/bpf时间)。
-7.word,PPT
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/miskey607218/cfi)

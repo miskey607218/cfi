@@ -4,9 +4,9 @@ _init,0x1004,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
 _init,0x1008,"mov 0x2fc1(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 _init,0x100f,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
 _init,0x1012,je 1016 <_init+0x16>,-,-,No,No,No,-,none,OK,none
-_init,0x1014,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1008; indirect call reg_based target rax L2: defined at 0x1008; indirect call reg_based target rax L3: defined at 0x1008
+_init,0x1014,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1008; indirect call reg_based target rax L2: terminal (param) at _init
 _init,0x1016,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
-_init,0x101a,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,"ret target rsp L1: defined at 0x1016 (add $0x8,%rsp); ret target rsp L2: defined at 0x1004 (sub $0x8,%rsp); ret target rsp L3: no local rsp definition"
+_init,0x101a,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 .plt,0x1020,push 0x2fe2(%rip),-,rsp,No,No,No,-,none,OK,none
 .plt,0x1026,jmp *0x2fe3(%rip),-,-,No,Yes,No,got_based,low,OK,none
 .plt,0x102d,nopl (%rax),-,-,No,No,No,-,none,OK,none
@@ -54,9 +54,9 @@ deregister_tm_clones,0x10f1,je 1108 <deregister_tm_clones+0x28>,-,-,No,No,No,-,n
 deregister_tm_clones,0x10f3,"mov 0x2ece(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 deregister_tm_clones,0x10fa,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
 deregister_tm_clones,0x10fd,je 1108 <deregister_tm_clones+0x28>,-,-,No,No,No,-,none,OK,none
-deregister_tm_clones,0x10ff,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x10f3; indirect jump reg_based target rax L2: defined at 0x10f3; indirect jump reg_based target rax L3: defined at 0x10f3
+deregister_tm_clones,0x10ff,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x10f3; indirect jump reg_based target rax L2: terminal (param) at deregister_tm_clones
 deregister_tm_clones,0x1101,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
-deregister_tm_clones,0x1108,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: no local rsp definition
+deregister_tm_clones,0x1108,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 deregister_tm_clones,0x1109,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
 register_tm_clones,0x1110,"lea 0x2f31(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
 register_tm_clones,0x1117,"lea 0x2f2a(%rip),%rsi",-,rsi,No,No,No,-,none,OK,none
@@ -70,9 +70,9 @@ register_tm_clones,0x1132,je 1148 <register_tm_clones+0x38>,-,-,No,No,No,-,none,
 register_tm_clones,0x1134,"mov 0x2ead(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 register_tm_clones,0x113b,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
 register_tm_clones,0x113e,je 1148 <register_tm_clones+0x38>,-,-,No,No,No,-,none,OK,none
-register_tm_clones,0x1140,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x1134; indirect jump reg_based target rax L2: defined at 0x1134; indirect jump reg_based target rax L3: defined at 0x1134
+register_tm_clones,0x1140,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x1134; indirect jump reg_based target rax L2: terminal (param) at register_tm_clones
 register_tm_clones,0x1142,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
-register_tm_clones,0x1148,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: no local rsp definition
+register_tm_clones,0x1148,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 register_tm_clones,0x1149,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
 __do_global_dtors_aux,0x1150,endbr64,-,-,No,No,No,-,none,OK,none
 __do_global_dtors_aux,0x1154,"cmpb $0x0,0x2eed(%rip)",-,-,No,No,No,-,none,OK,none
@@ -86,9 +86,9 @@ __do_global_dtors_aux,0x1172,call 1090 <__cxa_finalize@plt>,-,rax,No,No,No,-,non
 __do_global_dtors_aux,0x1177,call 10e0 <deregister_tm_clones>,-,rax,No,No,No,-,none,OK,none
 __do_global_dtors_aux,0x117c,"movb $0x1,0x2ec5(%rip)",-,-,No,No,No,-,none,OK,none
 __do_global_dtors_aux,0x1183,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
-__do_global_dtors_aux,0x1184,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: defined at 0x115d (push %rbp); ret target rbp L2: no local rsp definition
+__do_global_dtors_aux,0x1184,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 __do_global_dtors_aux,0x1185,nopl (%rax),-,-,No,No,No,-,none,OK,none
-__do_global_dtors_aux,0x1188,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: no local rsp definition
+__do_global_dtors_aux,0x1188,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 __do_global_dtors_aux,0x1189,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
 frame_dummy,0x1190,endbr64,-,-,No,No,No,-,none,OK,none
 frame_dummy,0x1194,jmp 1110 <register_tm_clones>,-,-,No,No,No,-,none,OK,none
@@ -100,7 +100,7 @@ test_returns,0x11a8,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
 test_returns,0x11ab,call 10a0 <puts@plt>,-,rax,No,No,No,-,none,OK,none
 test_returns,0x11b0,nop,-,-,No,No,No,-,none,OK,none
 test_returns,0x11b1,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
-test_returns,0x11b2,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: defined at 0x119d (push %rbp); ret target rbp L2: no local rsp definition
+test_returns,0x11b2,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 test_indirect_call,0x11b3,endbr64,-,-,No,No,No,-,none,OK,none
 test_indirect_call,0x11b7,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
 test_indirect_call,0x11b8,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
@@ -109,10 +109,10 @@ test_indirect_call,0x11c2,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
 test_indirect_call,0x11c5,call 10a0 <puts@plt>,-,rax,No,No,No,-,none,OK,none
 test_indirect_call,0x11ca,"mov 0x2e1f(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 test_indirect_call,0x11d1,"mov (%rax),%rax",rax,rax,No,No,No,-,none,OK,none
-test_indirect_call,0x11d4,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x11d1; indirect call reg_based target rax L2: defined at 0x11ca; indirect call reg_based target rax L3: defined at 0x11ca
+test_indirect_call,0x11d4,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x11d1; indirect call reg_based target rax L2: defined at 0x11ca; indirect call reg_based target rax L3: terminal (param) at test_indirect_call
 test_indirect_call,0x11d6,nop,-,-,No,No,No,-,none,OK,none
 test_indirect_call,0x11d7,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
-test_indirect_call,0x11d8,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: defined at 0x11b7 (push %rbp); ret target rbp L2: no local rsp definition
+test_indirect_call,0x11d8,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 test_indirect_jump,0x11d9,endbr64,-,-,No,No,No,-,none,OK,none
 test_indirect_jump,0x11dd,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
 test_indirect_jump,0x11de,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
@@ -130,10 +130,10 @@ test_indirect_jump,0x120c,"cmpl $0x0,-0x14(%rbp)",rbp,-,No,No,No,-,none,OK,none
 test_indirect_jump,0x1210,jne 121d <test_indirect_jump+0x44>,-,-,No,No,No,-,none,OK,none
 test_indirect_jump,0x1212,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
 test_indirect_jump,0x1216,"mov $0x1,%edi",-,rdi,No,No,No,-,none,OK,none
-test_indirect_jump,0x121b,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1212; indirect call reg_based target rax L2: defined at 0x1212; indirect call reg_based target rax L3: defined at 0x1212
+test_indirect_jump,0x121b,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1212; indirect call reg_based target rax L2: defined at 0x1201; indirect call reg_based target rax L3: terminal (param) at test_indirect_jump
 test_indirect_jump,0x121d,nop,-,-,No,No,No,-,none,OK,none
 test_indirect_jump,0x121e,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
-test_indirect_jump,0x121f,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,"ret target rsp L1: defined at 0x121e (leave); ret target rbp L2: defined at 0x11de (mov %rsp,%rbp); ret target rsp L3: defined at 0x11dd (push %rbp)"
+test_indirect_jump,0x121f,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 test_ff_instructions,0x1220,endbr64,-,-,No,No,No,-,none,OK,none
 test_ff_instructions,0x1224,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
 test_ff_instructions,0x1225,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
@@ -144,15 +144,15 @@ test_ff_instructions,0x1236,call 10a0 <puts@plt>,-,rax,No,No,No,-,none,OK,none
 test_ff_instructions,0x123b,"mov 0x2d96(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 test_ff_instructions,0x1242,"mov %rax,-0x10(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
 test_ff_instructions,0x1246,"mov -0x10(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
-test_ff_instructions,0x124a,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1246; indirect call reg_based target rax L2: defined at 0x1246; indirect call reg_based target rax L3: defined at 0x1246
+test_ff_instructions,0x124a,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1246; indirect call reg_based target rax L2: defined at 0x123b; indirect call reg_based target rax L3: terminal (param) at test_ff_instructions
 test_ff_instructions,0x124c,"mov 0x2d8d(%rip),%rax",-,rax,No,No,No,-,none,OK,none
 test_ff_instructions,0x1253,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
 test_ff_instructions,0x1257,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
 test_ff_instructions,0x125b,"mov $0x3e7,%edi",-,rdi,No,No,No,-,none,OK,none
-test_ff_instructions,0x1260,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1257; indirect call reg_based target rax L2: defined at 0x1257; indirect call reg_based target rax L3: defined at 0x1257
+test_ff_instructions,0x1260,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1257; indirect call reg_based target rax L2: defined at 0x124c; indirect call reg_based target rax L3: terminal (param) at test_ff_instructions
 test_ff_instructions,0x1262,nop,-,-,No,No,No,-,none,OK,none
 test_ff_instructions,0x1263,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
-test_ff_instructions,0x1264,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,"ret target rsp L1: defined at 0x1263 (leave); ret target rbp L2: defined at 0x1225 (mov %rsp,%rbp); ret target rsp L3: defined at 0x1224 (push %rbp)"
+test_ff_instructions,0x1264,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 test_all,0x1265,endbr64,-,-,No,No,No,-,none,OK,none
 test_all,0x1269,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
 test_all,0x126a,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
@@ -163,8 +163,8 @@ test_all,0x127c,call 1080 <test_indirect_jump@plt>,-,rax,No,No,No,-,none,OK,none
 test_all,0x1281,call 10c0 <test_ff_instructions@plt>,-,rax,No,No,No,-,none,OK,none
 test_all,0x1286,nop,-,-,No,No,No,-,none,OK,none
 test_all,0x1287,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
-test_all,0x1288,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,ret target rsp L1: defined at 0x1269 (push %rbp); ret target rbp L2: no local rsp definition
+test_all,0x1288,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
 _fini,0x128c,endbr64,-,-,No,No,No,-,none,OK,none
 _fini,0x1290,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
 _fini,0x1294,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
-_fini,0x1298,ret,rsp,rsp,No,Yes,Yes,ret,high,WARNING,"ret target rsp L1: defined at 0x1294 (add $0x8,%rsp); ret target rsp L2: defined at 0x1290 (sub $0x8,%rsp); ret target rsp L3: no local rsp definition"
+_fini,0x1298,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none

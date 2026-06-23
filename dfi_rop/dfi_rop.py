@@ -198,6 +198,80 @@ def classify_instr(instr_text):
 
 # ======================== DFI 三层链解析 ========================
 
+def _parse_asm_text_file(filepath):
+    """Parse disassembly text file.
+    Returns {func_name: [(addr, raw_instr), ...]} and {(func, addr): raw_instr}."""
+    func_instrs = {}
+    addr_index = {}
+    current_func = None
+    instr_re = re.compile(
+        r'^\s+([0-9a-f]+):\s+(?:[0-9a-f]{2}\s+)+\s*(\S+)\s*(.*?)(?:\s*#.*)?$'
+    )
+    func_re = re.compile(r'^([0-9a-f]+)\s+<([^>]+)>:')
+    if not os.path.exists(filepath):
+        return func_instrs, addr_index
+    with open(filepath, 'r', encoding='utf-8') as f:
+        for line in f:
+            fm = func_re.match(line)
+            if fm:
+                current_func = fm.group(2)
+                if current_func not in func_instrs:
+                    func_instrs[current_func] = []
+                continue
+            im = instr_re.match(line)
+            if im and current_func:
+                addr = int(im.group(1), 16)
+                mnemonic = im.group(2)
+                operands = im.group(3).strip()
+                operands = re.sub(r'#.*$', '', operands).strip()
+                raw = f"{mnemonic} {operands}".strip()
+                func_instrs[current_func].append((addr, raw))
+                addr_index[(current_func, addr)] = raw
+    return func_instrs, addr_index
+
+
+def _trace_rbp_store_to_source(func_name, rbp_offset, start_addr,
+                               asm_func_instrs, asm_addr_index):
+    """Given a RBP_REL read at start_addr with offset, trace back through
+    the store instruction to find the ultimate source register's definition.
+    Returns (def_addr, def_instr_str) or None."""
+    instrs = asm_func_instrs.get(func_name, [])
+    if not instrs:
+        return None
+
+    for sa, sr in reversed(instrs):
+        if sa >= start_addr:
+            continue
+        m = re.match(r'^mov\s+%([a-z0-9]+),\s*(-?0x[0-9a-fA-F]+)\(%rbp\)', sr)
+        if m and int(m.group(2), 16) == rbp_offset:
+            src_reg = m.group(1)
+            src_canon = REG_ALIASES.get(src_reg, src_reg)
+            for sa2, sr2 in reversed(instrs):
+                if sa2 >= sa:
+                    continue
+                t2, e2, _ = classify_instr(sr2)
+                if t2 == 2:
+                    dst_parts = sr2.split(',')
+                    if len(dst_parts) >= 2:
+                        dst_regs = re.findall(r'%([a-z0-9]+)', dst_parts[-1])
+                        for dr in dst_regs:
+                            if REG_ALIASES.get(dr, dr) == src_canon:
+                                return (sa2, sr2)
+                if t2 == 3:
+                    dst_regs = re.findall(r'%([a-z0-9]+)', sr2.split(',')[-1] if ',' in sr2 else '')
+                    for dr in dst_regs:
+                        if REG_ALIASES.get(dr, dr) == src_canon:
+                            return (sa2, sr2)
+                dst_parts = sr2.split(',')
+                if len(dst_parts) >= 2:
+                    dst_regs = re.findall(r'%([a-z0-9]+)', dst_parts[-1])
+                    for dr in dst_regs:
+                        if REG_ALIASES.get(dr, dr) == src_canon and not re.search(r'\(%', dst_parts[-1]):
+                            return (sa2, sr2)
+            return (sa, sr)
+    return None
+
+
 def parse_df1_layer_chains():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     instr_csv = os.path.join(script_dir, 'register_dfi_instructions.csv')
@@ -206,6 +280,7 @@ def parse_df1_layer_chains():
     instr_map = {}
     func_bases = {}
     reg_based_jumps = []
+    ret_sites = []
 
     with open(instr_csv, 'r', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f)
@@ -220,7 +295,7 @@ def parse_df1_layer_chains():
                     reg_based_jumps.append(row)
             elif row['indirect_type'] == 'ret':
                 if row['is_ret'] == 'Yes':
-                    reg_based_jumps.append(row)
+                    ret_sites.append(row)
 
     du_index = {}
     with open(du_csv, 'r', encoding='utf-8-sig') as f:
@@ -242,6 +317,9 @@ def parse_df1_layer_chains():
                 'def_instr': def_instr,
             })
 
+    asm_txt_path = os.path.join(script_dir, 'test.txt')
+    asm_func_instrs, asm_addr_index = _parse_asm_text_file(asm_txt_path)
+
     layer_chains = []
     for jump_row in reg_based_jumps:
         func = jump_row['function']
@@ -251,10 +329,7 @@ def parse_df1_layer_chains():
 
         reg_match = re.search(r'\*(%[a-z0-9]+)', instr)
         if not reg_match:
-            if re.match(r'^(ret|retq)$', instr.strip()):
-                reg_name = 'rsp'
-            else:
-                continue
+            continue
         else:
             reg_name_raw = reg_match.group(1).lstrip('%')
             reg_name = REG_ALIASES.get(reg_name_raw, reg_name_raw)
@@ -269,6 +344,18 @@ def parse_df1_layer_chains():
             if d['def_addr'] not in seen_addr and d['def_addr'] != 0:
                 seen_addr.add(d['def_addr'])
                 unique_defs.append(d)
+
+        if unique_defs:
+            last_d = unique_defs[-1]
+            t_last, e_last, _ = classify_instr(last_d['def_instr'])
+            if t_last == 3:
+                deeper = _trace_rbp_store_to_source(
+                    func, e_last, last_d['def_addr'],
+                    asm_func_instrs, asm_addr_index
+                )
+                if deeper and deeper[0] not in seen_addr:
+                    seen_addr.add(deeper[0])
+                    unique_defs.append({'def_addr': deeper[0], 'def_instr': deeper[1]})
 
         layers = []
         t1, e1, l1 = classify_instr(instr)
@@ -304,6 +391,10 @@ def parse_df1_layer_chains():
             else:
                 l['need_deref'] = 0
 
+        save_layer = 2
+        if len(layers) >= 3 and layers[2]['def_addr'] != layers[1]['def_addr']:
+            save_layer = 3
+
         chain = {
             'func': func,
             'func_base': func_base,
@@ -311,10 +402,11 @@ def parse_df1_layer_chains():
             'reg': reg_name,
             'instr': instr,
             'layers': layers,
+            'save_layer': save_layer,
         }
         layer_chains.append(chain)
 
-    return layer_chains, func_bases
+    return layer_chains, func_bases, ret_sites
 
 # ======================== CFI 表解析 ========================
 
@@ -645,7 +737,7 @@ static inline int dfi_do_probe(struct pt_regs *ctx, u32 layer,
     u64 key = ((u64)pid << 32) | ((u64)meta->site_id << 8) | layer;
     dfi_layer_vals.update(&key, &reg_val);
 
-    if (meta->save_target_to_saved_rax && layer == 2 && target != 0) {
+    if (meta->save_target_to_saved_rax && target != 0) {
         saved_rax.update(&pid, &target);
     }
 
@@ -1203,7 +1295,7 @@ def main():
     print("\n" + "=" * 60)
     print("[Phase 1] 解析三层 DFI 数据流链")
     print("=" * 60)
-    layer_chains, func_bases = parse_df1_layer_chains()
+    layer_chains, func_bases, ret_sites = parse_df1_layer_chains()
     print(f" 发现 {len(layer_chains)} 个间接跳转站点:")
     for chain in layer_chains:
         print(f"  * {chain['func']} @ 0x{chain['jump_addr']:x}  reg={chain['reg']}")
@@ -1268,13 +1360,23 @@ def main():
     reg_to_idx = REG_TO_IDX
     attached = {}
 
+    # 为 ret 指令单独挂载 (不涉及三层 DFI)
+    ret_funcs_done = set()
+    for row in ret_sites:
+        func = row['function']
+        addr = int(row['address'], 16)
+        sym = func.split('@')[0]
+        func_base = func_bases.get(func, addr)
+        offset = addr - func_base
+        try:
+            if sym not in ret_funcs_done:
+                b.attach_uprobe(name=so_path, sym=sym, sym_off=0, fn_name="trace_ret_target")
+                ret_funcs_done.add(sym)
+            b.attach_uprobe(name=so_path, sym=sym, sym_off=offset, fn_name="trace_all_jumps")
+        except Exception as e:
+            print(f"  [WARN] ret uprobe attach failed: {sym}+0x{offset:x}: {e}")
+
     for site_id, chain in enumerate(layer_chains):
-        if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:
-            l1 = chain['layers'][0]
-            sym = chain['func'].split('@')[0]
-            b.attach_uprobe(name=so_path, sym=sym, sym_off=0, fn_name="trace_ret_target")
-            b.attach_uprobe(name=so_path, sym=sym, sym_off=l1['offset'], fn_name="trace_all_jumps")
-            continue
 
         reg_idx = reg_to_idx.get(chain['reg'], 0)
         func = chain['func']
@@ -1309,7 +1411,7 @@ def main():
             meta.extra = layer.get('extra', 0)
             meta.instr_len = layer.get('instr_len', 0)
             meta.need_deref = layer.get('need_deref', 0)
-            meta.save_target_to_saved_rax = 1 if level == 2 else 0
+            meta.save_target_to_saved_rax = 1 if level == chain.get('save_layer', 2) else 0
             fn_bytes = chain['func'].encode('utf-8')[:63]
             meta.func_name = fn_bytes
 

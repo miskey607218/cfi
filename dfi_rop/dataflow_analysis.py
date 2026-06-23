@@ -295,6 +295,20 @@ def parse_asm(text: str) -> list:
 
 BR_TGT_RE = re.compile(r'(?:0x)?([0-9a-fA-F]+)\s*(?:<[^>]*>)?$')
 
+def extract_rbp_mem_offset(operands: str) -> Optional[int]:
+    """Extract RBP-relative offset from memory operand like -0x8(%rbp)."""
+    m = re.search(r'(-?0x[0-9a-fA-F]+)\(%rbp\)', operands)
+    if m:
+        return int(m.group(1), 16)
+    return None
+
+def extract_rip_mem_offset(operands: str) -> Optional[int]:
+    """Extract RIP-relative offset from memory operand like 0x2dd8(%rip)."""
+    m = re.search(r'(0x[0-9a-fA-F]+)\(%rip\)', operands)
+    if m:
+        return int(m.group(1), 16)
+    return None
+
 def extract_branch_target(operand_str: str) -> Optional[int]:
     """Extract the absolute hex address from a direct branch operand."""
     m = BR_TGT_RE.search(operand_str)
@@ -567,10 +581,11 @@ def make_param_defs(func: str) -> dict:
 
 def trace_indirect_target_local(target_reg: str, func: str, call_addr: int,
                                  func_instrs: dict, reach_info: dict,
-                                 depth: int = 3) -> list:
+                                 depth: int = 5) -> list:
     """
     Trace the definition chain of an indirect call/jump target register
     using ONLY local (same-function) reaching definitions.
+    Follows memory-read chains (RBP_REL → store → source register).
     Returns list of dicts.
     """
     traces = []
@@ -618,109 +633,65 @@ def trace_indirect_target_local(target_reg: str, func: str, call_addr: int,
         if ds == 'unknown':
             break
 
-        # Follow one step: find the instruction that defined df,da,di
-        # and look at its source registers
-        if df == func:
-            instrs = func_instrs.get(func, [])
-            for i in instrs:
-                if i.addr == da and i.raw == di:
-                    next_reg = None
-                    for sr in i.src_regs:
-                        if sr not in ('rsp', 'rbp', 'rip'):
-                            next_reg = sr
-                            break
-                    if next_reg is None:
-                        break
-                    curr_reg = next_reg
-                    curr_addr = da
-                    break
-            else:
-                break
-        else:
+        if df != func:
             break
+
+        instrs = func_instrs.get(func, [])
+        def_instr = None
+        for i in instrs:
+            if i.addr == da and i.raw == di:
+                def_instr = i
+                break
+
+        if def_instr is None:
+            break
+
+        next_reg = None
+        next_addr = da
+
+        for sr in def_instr.src_regs:
+            if sr not in ('rsp', 'rbp', 'rip'):
+                next_reg = sr
+                break
+
+        if next_reg is None:
+            rbp_off = extract_rbp_mem_offset(def_instr.operands)
+            if rbp_off is not None:
+                for si in reversed(instrs):
+                    if si.addr >= da:
+                        continue
+                    m = re.match(r'^mov\s+%([a-z0-9]+),\s*(-?0x[0-9a-fA-F]+)\(%rbp\)', si.raw)
+                    if m and int(m.group(2), 16) == rbp_off:
+                        sr_name = norm_reg(m.group(1))
+                        if sr_name:
+                            next_reg = sr_name
+                            next_addr = si.addr
+                            break
+
+            if next_reg is None:
+                rip_off = extract_rip_mem_offset(def_instr.operands)
+                if rip_off is not None:
+                    traces.append({
+                        'level': level + 2,
+                        'reg': 'data_segment',
+                        'def_func': func,
+                        'def_addr': da,
+                        'def_instr': f'← data segment [rip+0x{rip_off:x}]',
+                        'def_source': 'synthetic',
+                        'src_regs': [],
+                        'cross_func': False,
+                        'terminal': True,
+                    })
+                    break
+
+        if next_reg is None:
+            break
+
+        curr_reg = next_reg
+        curr_addr = next_addr
 
     return traces
 
-
-def trace_ret_target_local(func: str, ret_addr: int,
-                            func_instrs: dict, reach_info: dict,
-                            depth: int = 3) -> list:
-    """
-    Trace the definition chain of a ret instruction's target (return address).
-    ret reads from [rsp], so we trace rsp backwards through the function.
-    Unlike register-based indirect jumps, ret's data flow goes through
-    rsp → [pop/leave] → rbp → [mov %rsp,%rbp] → rsp → [push %rbp] → caller's rsp.
-    Includes rsp and rbp in the trace since they're essential to ret's target.
-    """
-    traces = []
-    curr_reg = 'rsp'
-    curr_func = func
-    curr_addr = ret_addr
-
-    for level in range(depth):
-        key = (curr_func, curr_addr)
-        defs = reach_info.get(key, [])
-        target_defs = [d for r, d in defs if r == curr_reg]
-
-        if not target_defs:
-            traces.append({
-                'level': level + 1,
-                'reg': curr_reg,
-                'def_func': '<unknown>',
-                'def_addr': 0,
-                'def_instr': f'ret: undefined source for {curr_reg}',
-                'def_source': 'unknown',
-                'src_regs': [],
-                'cross_func': True,
-                'terminal': True,
-            })
-            break
-
-        df, da, di, ds = target_defs[0]
-        cross = df != func
-        is_terminal = ds == 'parameter'
-
-        traces.append({
-            'level': level + 1,
-            'reg': curr_reg,
-            'def_func': df,
-            'def_addr': da,
-            'def_instr': di,
-            'def_source': ds,
-            'src_regs': [],
-            'cross_func': cross,
-            'terminal': is_terminal,
-        })
-
-        if is_terminal:
-            break
-        if ds == 'unknown':
-            break
-
-        # Follow one step: find the instruction that defined df,da,di
-        # For ret tracing, ALSO include rsp and rbp since they carry the return addr
-        if df == func:
-            instrs = func_instrs.get(func, [])
-            for i in instrs:
-                if i.addr == da and i.raw == di:
-                    next_reg = None
-                    for sr in i.src_regs:
-                        # For ret trace: include rbp (frame pointer chain)
-                        # rsp → pop/leave → rbp → mov %rsp,%rbp → rsp → push
-                        if sr != 'rip':
-                            next_reg = sr
-                            break
-                    if next_reg is None:
-                        break
-                    curr_reg = next_reg
-                    curr_addr = da
-                    break
-            else:
-                break
-        else:
-            break
-
-    return traces
 
 # ── Dataflow Analysis ───────────────────────────────────────────────────────
 
@@ -780,7 +751,7 @@ def analyze_dfi(instructions: list) -> tuple:
                         continue
                     traces = trace_indirect_target_local(
                         canon, func, instr.addr,
-                        func_instrs, all_reach, depth=3
+                        func_instrs, all_reach, depth=5
                     )
                     for t in traces:
                         level = t['level']
@@ -832,59 +803,6 @@ def analyze_dfi(instructions: list) -> tuple:
                                 def_source=def_src,
                                 indirect_type=instr.indirect_type,
                             ))
-
-            # ── Ret: trace rsp → rbp → prologue stack frame chain ──
-            if instr.is_ret and instr.indirect_type == 'ret':
-                traces = trace_ret_target_local(
-                    func, instr.addr,
-                    func_instrs, all_reach, depth=3
-                )
-                for t in traces:
-                    level = t['level']
-                    def_func = t['def_func']
-                    def_addr = t['def_addr']
-                    def_instr_raw = t['def_instr']
-                    cross = t['cross_func']
-                    term = t['terminal']
-                    def_src = t['def_source']
-                    canon = t['reg']
-
-                    descs = []
-                    if def_func == '<unknown>' or def_src == 'unknown':
-                        descs.append(
-                            f"ret target {canon} L{level}: no local rsp definition"
-                        )
-                    elif term:
-                        descs.append(
-                            f"ret target {canon} L{level}: terminal (param) at {def_func}"
-                        )
-                    elif cross:
-                        descs.append(
-                            f"ret target {canon} L{level}: cross-function defined at {def_func}@{hex(def_addr)}"
-                        )
-                    else:
-                        descs.append(
-                            f"ret target {canon} L{level}: defined at {hex(def_addr)} ({def_instr_raw})"
-                        )
-                    violations.extend(descs)
-
-                    du_key = (t['reg'], def_func, def_addr, func, instr.addr)
-                    if du_key not in seen_du:
-                        seen_du.add(du_key)
-                        du_chains.append(DefUseEntry(
-                            reg=t['reg'],
-                            def_func=def_func,
-                            def_addr=def_addr,
-                            def_instr=def_instr_raw,
-                            use_func=func,
-                            use_addr=instr.addr,
-                            use_instr=instr.raw,
-                            cross_function=cross,
-                            dfi_violation=bool(cross or def_src == 'unknown'),
-                            violation_reason='; '.join(descs) if descs else '',
-                            def_source=def_src,
-                            indirect_type=instr.indirect_type,
-                        ))
 
             # ── Use-before-def / undef warning ──
             for r in src_uses:

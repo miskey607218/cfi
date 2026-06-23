@@ -278,6 +278,32 @@ def parse_df1_layer_chains():
             else:
                 l['need_deref'] = 0
 
+        # ===== 确定"首次从数据段/栈内存读取"的层 =====
+        # 语义：call/jmp 的目标寄存器值，是在数据流链条中"第一次从内存（数据段/栈）
+        # 实际读取"的那一层确定下来的（instr_type 1=DEREF, 2=RIP_REL, 3=RBP_REL 都
+        # 代表一次内存读取；0=DIRECT 只是寄存器搬运，不算"读取"）。
+        # 这一层在链条里是离跳转指令最远（level 最大）的真实内存读取层，对应执行顺序上
+        # 最早发生的那次读取。我们就在这里把目标值存起来，留到真正发生间接跳转时再校验。
+        save_level = None
+        for l in sorted(layers, key=lambda x: -x['level']):
+            if l['level'] == 1:
+                # L1 是跳转指令本身，不是"读取"动作，跳过
+                continue
+            if l['instr_type'] in (1, 2, 3):
+                save_level = l['level']
+                break
+        if save_level is None:
+            # 链条里没有发现显式的内存读取层（例如目标值直接来自寄存器/lea），
+            # 退化为原来的行为：在 L2（最靠近跳转指令的定义点）保存
+            save_level = 2 if len(layers) >= 2 else 1
+
+        # 根据 save_level 反查实际 offset（防止 L2/L3 同址时 save_level 指向了被跳过的层）
+        save_offset = None
+        for l in layers:
+            if l['level'] == save_level:
+                save_offset = l['offset']
+                break
+
         chain = {
             'func': func,
             'func_base': func_base,
@@ -285,6 +311,8 @@ def parse_df1_layer_chains():
             'reg': reg_name,
             'instr': instr,
             'layers': layers,
+            'save_level': save_level,
+            'save_offset': save_offset,
         }
         layer_chains.append(chain)
 
@@ -318,6 +346,11 @@ def parse_cfi_table(file_path):
             if is_indirect:
                 if jump_type == 2: jump_type = 4
                 elif jump_type == 0: jump_type = 5
+
+            # 直接跳转(JMP=0/JCC=1/CALL=2)不再纳入 CFI 表 —— 本工具只关心
+            # 间接调用/跳转(4/5)和 ret(3)，因为只有这些站点会挂 uprobe 校验。
+            if jump_type in (0, 1, 2):
+                continue
 
             src_func = row.get('parent_function_name', 'unknown').encode('utf-8')[:63]
             dst_func = row.get('target_function_name', 'unknown').encode('utf-8')[:63]
@@ -405,7 +438,7 @@ struct dfi_layer_meta {
     s32 extra;      // displacement for rip_rel / rbp_rel
     u32 instr_len;  // instruction length (for rip_rel addr calc)
     u32 need_deref; // for type 2/3: 1=double-deref needed, 0=value IS target
-    u32 save_target_to_saved_rax; // L2: 1=store computed target into saved_rax map
+    u32 save_target_to_saved_rax; // 1=this is the "first read from data segment" layer: store computed target into saved_rax map
     u32 save_target_to_saved_rsp; // L2: 1=store computed target into saved_rsp map
     char func_name[64];
 };
@@ -514,8 +547,11 @@ static inline int dfi_do_probe(struct pt_regs *ctx, u32 layer,
     u64 key = ((u64)pid << 32) | ((u64)meta->site_id << 8) | layer;
     dfi_layer_vals.update(&key, &reg_val);
 
-    // L2: 将计算出的正确目标存入 saved_rax，供 trace_all_jumps 校验
-    if (meta->save_target_to_saved_rax && layer == 2 && target != 0) {
+    // 在"首次从数据段/栈内存读取"的那一层（由 Python 端按 instr_type 选定并标记在
+    // save_target_to_saved_rax 上）把计算出的正确目标存入 saved_rax，
+    // 供 trace_all_jumps 在真正发生间接跳转时校验。注意这里不再硬编码 layer == 2,
+    // 具体保存在哪一层由调用点的 meta 决定（哪一层先从内存读出指针，就在哪一层存）。
+    if (meta->save_target_to_saved_rax && target != 0) {
         saved_rax.update(&pid, &target);
     }
 
@@ -541,7 +577,8 @@ int trace_ret_target(struct pt_regs *ctx) {
     u32 depth = dp ? (*dp + 1) : 1;
     ret_depth.update(&pid, &depth);
 
-    // 读取函数入口处 *(rsp) = 返回地址
+    // 读取函数入口处 *(rsp) = 返回地址（这是 ret 目标"第一次出现"的位置：函数刚被
+    // call 进入时，返回地址就已经被压在栈顶，因此在函数开头存一次即可）
     u64 rsp;
     bpf_probe_read(&rsp, sizeof(rsp), &ctx->sp);
     u64 ret_addr = 0;
@@ -700,10 +737,9 @@ def handle_jump_event(cpu, data, size):
     global event_count, violation_count, base, cfi_lookup
     event = b["jump_events"].event(data)
 
-    # 跳转类型名称映射
+    # 跳转类型名称映射（只保留 ret 与间接调用/跳转，直接跳转已不再追踪）
     jump_type_names = {
-        0: "JMP", 1: "JCC", 2: "CALL", 3: "RET",
-        4: "INDIRECT_CALL", 5: "INDIRECT_JMP"
+        3: "RET", 4: "INDIRECT_CALL", 5: "INDIRECT_JMP"
     }
     jump_type_name = jump_type_names.get(event.jump_type, f"UNKNOWN({event.jump_type})")
     status = "✓" if event.is_correct else "✗ VIOLATION"
@@ -804,64 +840,8 @@ def handle_jump_event(cpu, data, size):
 
     if opcode:
         print(f"  • 使用的操作码: 0x{opcode:02x}")
-        # 直接调用
-        if opcode == 0xE8:
-            if len(insn_bytes) >= 5:
-                offset = int.from_bytes(insn_bytes[:4], 'little', signed=True)
-                computed_target = base + event.src_offset + 5 + offset
-                match = computed_target == event.expected_dst
-                comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
-                print(f"  • 直接调用偏移: 0x{offset:08x}")
-                print(f"  • 计算目标: 0x{computed_target:016x}")
-            else:
-                print(f"  • 指令字节不足，无法计算 call rel32")
-        # 直接跳转
-        elif opcode == 0xE9:
-            if len(insn_bytes) >= 5:
-                offset = int.from_bytes(insn_bytes[:4], 'little', signed=True)
-                computed_target = base + event.src_offset + 5 + offset
-                match = computed_target == event.expected_dst
-                comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
-                print(f"  • 直接跳转偏移: 0x{offset:08x}")
-                print(f"  • 计算目标: 0x{computed_target:016x}")
-            else:
-                print(f"  • 指令字节不足，无法计算 jmp rel32")
-        # 短跳转
-        elif opcode == 0xEB:
-            if len(insn_bytes) >= 2:
-                offset = insn_bytes[0] if insn_bytes[0] < 128 else insn_bytes[0] - 256
-                computed_target = base + event.src_offset + 2 + offset
-                match = computed_target == event.expected_dst
-                comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
-                print(f"  • 短跳转偏移: 0x{offset:02x}")
-                print(f"  • 计算目标: 0x{computed_target:016x}")
-            else:
-                print(f"  • 指令字节不足，无法计算 jmp rel8")
-        # 短条件跳转
-        elif 0x70 <= opcode <= 0x7F:
-            if len(insn_bytes) >= 2:
-                offset = insn_bytes[0] if insn_bytes[0] < 128 else insn_bytes[0] - 256
-                computed_target = base + event.src_offset + 2 + offset
-                match = computed_target == event.expected_dst
-                comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
-                print(f"  • 短条件跳转偏移: 0x{offset:02x}")
-                print(f"  • 计算目标: 0x{computed_target:016x}")
-            else:
-                print(f"  • 指令字节不足，无法计算短条件跳转")
-        # 长条件跳转
-        elif opcode == 0x0F and len(insn_bytes) >= 2:
-            second = insn_bytes[0]
-            if 0x80 <= second <= 0x8F and len(insn_bytes) >= 6:
-                offset = int.from_bytes(insn_bytes[1:5], 'little', signed=True)
-                computed_target = base + event.src_offset + 6 + offset
-                match = computed_target == event.expected_dst
-                comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
-                print(f"  • 长条件跳转偏移: 0x{offset:08x}")
-                print(f"  • 计算目标: 0x{computed_target:016x}")
-            else:
-                print(f"  • 无法识别长条件跳转")
         # 间接跳转/调用
-        elif opcode == 0xFF:
+        if opcode == 0xFF:
             if len(insn_bytes) >= 2:
                 modrm = insn_bytes[1]
                 mod = (modrm >> 6) & 3
@@ -932,12 +912,7 @@ def handle_jump_event(cpu, data, size):
     print(f"  • 保存的 RAX (trace_rsp): 0x{event.saved_rsp_val:016x}")
     # 跳转分析
     print("\n🔍 跳转分析:")
-    if event.jump_type in [0, 1, 2]:
-        print(f"  • 直接跳转指令")
-        print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
-        if event.reg_rax != 0 and event.reg_rax == event.expected_dst:
-            print(f"    └─ RAX中的值与预期目标一致")
-    elif event.jump_type in [4, 5]:
+    if event.jump_type in [4, 5]:
         print(f"  • 间接跳转指令")
         print(f"  • RAX中的目标: 0x{event.reg_rax:016x}")
         print(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
@@ -968,8 +943,6 @@ def handle_jump_event(cpu, data, size):
                 print(f"     • 间接跳转目标超出模块范围")
         elif event.jump_type == 3:
             print(f"     • 返回地址异常")
-        else:
-            print(f"     • 指令类型不匹配或其他原因")
 
     print("\n" + "-"*80)
     event_count += 1
@@ -1038,14 +1011,18 @@ def main():
     layer_chains, func_bases = parse_df1_layer_chains()
     print(f"✅ 发现 {len(layer_chains)} 个基于寄存器的间接跳转站点")
     for chain in layer_chains:
-        print(f"   • {chain['func']} @ 0x{chain['jump_addr']:x}  寄存器={chain['reg']}")
+        save_level = chain.get('save_level')
+        save_offset = chain.get('save_offset')
+        print(f"   • {chain['func']} @ 0x{chain['jump_addr']:x}  寄存器={chain['reg']}  "
+              f"[首次内存读取/保存层 = L{save_level} @ offset=0x{save_offset:x}]")
         for layer in chain['layers']:
             itype_names = {0: "DIRECT", 1: "DEREF", 2: "RIP_REL", 3: "RBP_REL"}
             itname = itype_names.get(layer.get('instr_type', 0), "?")
+            mark = " ⭐(保存点)" if (save_offset is not None and layer['offset'] == save_offset) else ""
             print(f"      L{layer['level']}: 0x{layer['def_addr']:x} (offset=0x{layer['offset']:x}) "
                   f"type={itname} extra=0x{layer.get('extra',0):x} len={layer.get('instr_len',0)} "
                   f"deref={layer.get('need_deref',0)} "
-                  f"→ {layer['instr']}")
+                  f"→ {layer['instr']}{mark}")
 
     # 解析 CFI 表
     table = parse_cfi_table("test_jump_analysis.csv")
@@ -1085,9 +1062,11 @@ def main():
     b["dfi_layer_events"].open_perf_buffer(handle_df1_layer_event)
 
     # 加载三层 DFI 配置并挂载 uprobes
-    # L1: trace_all_jumps (CFI 校验) + trace_df1_l1 (记录实际调用目标)
-    # L2: trace_df1_l2   (预期目标计算 + 自动更新 saved_rax)
-    # L3: trace_df1_l3   (数据流追溯)
+    # RET 站点: trace_ret_target 挂在函数开头，在第一次出现(进入函数时)即存好返回地址；
+    #           trace_all_jumps 挂在 ret 处，在真正发生间接跳转(返回)时校验。
+    # CALL/JMP 站点: 三层数据流链条中，"首次从数据段/栈内存读取"指针的那一层
+    #           (chain['save_level']，由 instr_type ∈ {DEREF, RIP_REL, RBP_REL} 判定)
+    #           负责把目标值存入 saved_rax；trace_all_jumps 挂在真正的间接跳转处校验。
     print("\n🔗 挂载三层 DFI 数据流保护 + CFI 校验 uprobes...")
     reg_to_idx = REG_TO_IDX
     attached = {}  # (sym_name, sym_off) -> fn_name，处理 L2/L3 同偏移冲突
@@ -1096,15 +1075,17 @@ def main():
         if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:   # RET 站点
             l1 = chain['layers'][0]
             sym = chain['func'].split('@')[0]
-            # trace_ret_target 挂函数头 (sym_off=0): 保存入口 *(rsp) → saved_rsp
+            # trace_ret_target 挂函数头 (sym_off=0): 第一次出现/进入函数时保存 *(rsp) → saved_rsp
             b.attach_uprobe(name=so_path, sym=sym, sym_off=0, fn_name="trace_ret_target")
-            # trace_all_jumps   挂 ret 处:   读取 *(rsp) 对比 saved_rsp
+            # trace_all_jumps   挂 ret 处:   真正发生间接跳转(返回)时读取 *(rsp) 对比 saved_rsp
             b.attach_uprobe(name=so_path, sym=sym, sym_off=l1['offset'], fn_name="trace_all_jumps")
-            print(f"  ✓ RET site#{site_id}: {sym}+0x0 (save ret addr) + 0x{l1['offset']:x} (verify)")
+            print(f"  ✓ RET site#{site_id}: {sym}+0x0 (函数开头保存返回地址) + 0x{l1['offset']:x} (跳转时校验)")
             continue   # 跳过后续 L2/L3 的挂载
         reg_idx = reg_to_idx.get(chain['reg'], 0)
         func = chain['func']
         sym_name = func.split('@')[0]
+        save_level = chain.get('save_level', 2)
+        save_offset = chain.get('save_offset')
 
         for layer in chain['layers']:
             level = layer['level']
@@ -1114,11 +1095,11 @@ def main():
 
             # 决定挂载哪个 BPF 函数
             if level == 1:
-                fn_name = "trace_df1_l1"       # L1: DFI 事件记录实际调用目标
+                fn_name = "trace_df1_l1"       # L1: DFI 事件记录实际调用目标（真正的间接跳转点）
             elif level == 2:
-                fn_name = "trace_df1_l2"       # L2: 预期目标计算 + 保存 saved_rax
+                fn_name = "trace_df1_l2"       # L2: 数据流中间层
             else:
-                fn_name = "trace_df1_l3"       # L3: 数据流追溯
+                fn_name = "trace_df1_l3"       # L3: 数据流追溯（最深层，通常对应首次内存读取）
 
             # 冲突处理 (L2/L3 之间; L1 与 L2/L3 map 不同可共存)
             if level != 1 and addr_key in attached:
@@ -1138,7 +1119,9 @@ def main():
             meta.extra = layer.get('extra', 0)
             meta.instr_len = layer.get('instr_len', 0)
             meta.need_deref = layer.get('need_deref', 0)
-            meta.save_target_to_saved_rax = 1 if level == 2 else 0  # 仅 L2 保存预期目标
+            # 按地址(offset)匹配保存点，而非按 level 编号——防止 L2/L3 同址冲突
+            # 导致 save_level 指向被跳过的层，而真正挂载的层漏掉保存标记。
+            meta.save_target_to_saved_rax = 1 if (save_offset is not None and sym_off == save_offset) else 0
             fn_bytes = chain['func'].encode('utf-8')[:63]
             meta.func_name = fn_bytes
 
@@ -1154,8 +1137,9 @@ def main():
                 b.attach_uprobe(name=so_path, sym=sym_name, sym_off=sym_off, fn_name=fn_name)
                 if level != 1:
                     attached[addr_key] = fn_name
-                tag = {1: "DFI+L1(实际目标)", 2: "DFI+L2+SAVE", 3: "DFI+L3"}.get(level, f"L{level}")
-                print(f"  ✓ site#{site_id} {tag}: {sym_name}+0x{sym_off:x}  ({layer['instr']})")
+                save_tag = " +SAVE(首次内存读取)" if (save_offset is not None and sym_off == save_offset) else ""
+                tag = {1: "DFI+L1(实际目标)", 2: "DFI+L2", 3: "DFI+L3"}.get(level, f"L{level}")
+                print(f"  ✓ site#{site_id} {tag}{save_tag}: {sym_name}+0x{sym_off:x}  ({layer['instr']})")
             except Exception as e:
                 print(f"  ✗ site#{site_id} L{level}: {sym_name}+0x{sym_off:x} 挂载失败 ({e})")
 

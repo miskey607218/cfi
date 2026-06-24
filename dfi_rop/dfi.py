@@ -1,5 +1,6 @@
 from bcc import BPF
 import ctypes
+import json
 import os
 import re
 import sys
@@ -1072,6 +1073,7 @@ def handle_jump_event(cpu, data, size):
     # Call-Site Sensitivity & Origin Sensitivity
     # ========================================
     actual_target = event.reg_rax if event.jump_type in (4, 5) else event.ret_addr
+    actual_target_offset = actual_target - event.module_base_addr if actual_target else 0
     cs_hash = event.call_stack_hash
     ptr_origin = event.ptr_origin
 
@@ -1092,18 +1094,18 @@ def handle_jump_event(cpu, data, size):
             cs_key = (cs_hash, event.src_addr)
             if cs_key not in cs_allowed_targets:
                 cs_allowed_targets[cs_key] = set()
-            cs_allowed_targets[cs_key].add(actual_target)
-            print(f"  📝 CS训练: 记录 (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x}) → 0x{actual_target:x}"
+            cs_allowed_targets[cs_key].add(actual_target_offset)
+            print(f"  📝 CS训练: 记录 (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x}) → 0x{actual_target_offset:x}"
                   f" [集合大小={len(cs_allowed_targets[cs_key])}]")
 
         if ptr_origin != 0:
             if ptr_origin not in origin_allowed_targets:
                 origin_allowed_targets[ptr_origin] = set()
-            origin_allowed_targets[ptr_origin].add(actual_target)
+            origin_allowed_targets[ptr_origin].add(actual_target_offset)
             # Also update Python-side pointer origin map from event
             if event.jump_type in (4, 5) and event.reg_rbx != 0:
                 ptr_origin_map_py[event.reg_rbx] = ptr_origin
-            print(f"  📝 Origin训练: origin=0x{ptr_origin:x} → 0x{actual_target:x}"
+            print(f"  📝 Origin训练: origin=0x{ptr_origin:x} → 0x{actual_target_offset:x}"
                   f" [集合大小={len(origin_allowed_targets[ptr_origin])}]")
 
     elif CFI_MODE in ('enforce', 'hybrid'):
@@ -1115,10 +1117,10 @@ def handle_jump_event(cpu, data, size):
             if cs_hash != 0 and event.jump_type in (4, 5):
                 cs_key = (cs_hash, event.src_addr)
                 cs_set = cs_allowed_targets.get(cs_key, set())
-                if cs_set and actual_target not in cs_set:
+                if cs_set and actual_target_offset not in cs_set:
                     cs_violation = True
                     print(f"  🔴 CS违规: (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x})")
-                    print(f"     实际目标 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(cs_set)[:5]]} 中")
+                    print(f"     实际目标(偏移) 0x{actual_target_offset:x} (绝对) 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(cs_set)[:5]]} 中")
                 elif cs_set:
                     print(f"  ✓ CS校验通过: 目标在训练集中 ({len(cs_set)} 个合法)")
                 else:
@@ -1127,10 +1129,10 @@ def handle_jump_event(cpu, data, size):
         if method in (0, 2):  # none or origin sensitivity
             if ptr_origin != 0:
                 origin_set = origin_allowed_targets.get(ptr_origin, set())
-                if origin_set and actual_target not in origin_set:
+                if origin_set and actual_target_offset not in origin_set:
                     origin_violation = True
                     print(f"  🔴 Origin违规: origin=0x{ptr_origin:x}")
-                    print(f"     实际目标 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(origin_set)[:5]]} 中")
+                    print(f"     实际目标(偏移) 0x{actual_target_offset:x} (绝对) 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(origin_set)[:5]]} 中")
                 elif origin_set:
                     print(f"  ✓ Origin校验通过: 目标与起源绑定 ({len(origin_set)} 个合法)")
                 else:
@@ -1211,6 +1213,16 @@ def main():
     origin_allowed_targets = {}
     ptr_origin_map_py = {}
     CFI_METHOD_CONFIG = {}
+
+    if CFI_MODE in ('enforce', 'hybrid'):
+        try:
+            with open('cfi_training_data.json', 'r') as f:
+                data = json.load(f)
+                cs_allowed_targets = {eval(k): set(v) for k, v in data['cs_allowed_targets'].items()}
+                origin_allowed_targets = {int(k): set(v) for k, v in data['origin_allowed_targets'].items()}
+            print("✅ 已加载历史训练数据")
+        except Exception:
+            print("⚠️ 未找到训练数据，请先运行 --mode train")
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     so_path = os.path.join(script_dir, "test.so")
@@ -1345,12 +1357,10 @@ def main():
                 fn_name = "trace_df1_l3"
 
             if level != 1 and addr_key in attached:
-                existing = attached[addr_key]
-                if level == 2 and existing == "trace_df1_l3":
-                    pass
-                elif level == 3 and existing == "trace_df1_l2":
-                    continue
-                elif existing in ("trace_df1_l2", "trace_df1_l3"):
+                existing_fn = attached[addr_key]
+                if (level == 3 and existing_fn == "trace_df1_l2") or \
+                   (level == 2 and existing_fn == "trace_df1_l3"):
+                    print(f"  ⚠️ 跳过重复挂载: {sym_name}+0x{sym_off:x} (L{level}, 已挂载 {existing_fn})")
                     continue
 
             meta = DfiLayerMeta()
@@ -1407,6 +1417,18 @@ def main():
     except KeyboardInterrupt:
         print("\n监控已停止")
     finally:
+        if CFI_MODE == 'train':
+            try:
+                training_data = {
+                    'cs_allowed_targets': {str(k): list(v) for k, v in cs_allowed_targets.items()},
+                    'origin_allowed_targets': {str(k): list(v) for k, v in origin_allowed_targets.items()}
+                }
+                with open('cfi_training_data.json', 'w') as f:
+                    json.dump(training_data, f, indent=2)
+                print("✅ 训练数据已保存到 cfi_training_data.json")
+            except Exception as e:
+                print(f"⚠️ 训练数据保存失败: {e}")
+
         print(f"\n=== 最终统计 ===")
         print(f"- CFI模式: {CFI_MODE}")
         print(f"- CFI规则数: {len(table)}")

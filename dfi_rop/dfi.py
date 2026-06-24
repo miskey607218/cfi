@@ -54,8 +54,10 @@ class JumpEvent(ctypes.Structure):
         ("runtime_ip", ctypes.c_uint64),
         ("module_base_addr", ctypes.c_uint64),
         ("ret_addr", ctypes.c_uint64),          # 原 sp → ret_addr
-        ("saved_rax_val", ctypes.c_uint64),     # 新增：保存的 rax
-        ("saved_rsp_val", ctypes.c_uint64),     # 新增：保存的 rax
+        ("saved_rax_val", ctypes.c_uint64),     # 保存的 rax
+        ("saved_rsp_val", ctypes.c_uint64),     # 保存的 rsp
+        ("call_stack_hash", ctypes.c_uint64),   # 调用栈哈希 (CS敏感)
+        ("ptr_origin", ctypes.c_uint64),        # 函数指针的起源指令偏移 (Origin敏感)
     ]
 
 class DfiLayerMeta(ctypes.Structure):
@@ -421,6 +423,8 @@ struct jump_event {
     u64 ret_addr;
     u64 saved_rax_val;           // 新增
     u64 saved_rsp_val;           // 新增
+    u64 call_stack_hash;         // 调用栈哈希 (Call-Site Sensitivity)
+    u64 ptr_origin;              // 函数指针起源指令偏移 (Origin Sensitivity)
 };
 
 BPF_HASH(cfi_map, u64, struct cfi_entry);
@@ -429,6 +433,10 @@ BPF_PERF_OUTPUT(jump_events);
 BPF_HASH(saved_rax, u32, u64); // key = pid, value = rax
 BPF_HASH(saved_rsp, u64, u64); // key = (pid<<32)|depth, value = saved return address
 BPF_HASH(ret_depth, u32, u32); // key = pid, value = current call depth
+
+// ---- Call-Site Sensitivity & Origin Sensitivity ----
+BPF_HASH(ptr_origin_map, u64, u64);      // key=func_ptr_addr, value=origin_instr_offset
+BPF_HASH(call_stack_hash_map, u32, u64); // key=pid, value=rolling call stack hash
 
 // ===== Three-Layer DFI Protection =====
 struct dfi_layer_meta {
@@ -590,6 +598,13 @@ int trace_ret_target(struct pt_regs *ctx) {
     // 存入 saved_rsp，key = (pid<<32) | depth
     u64 key = ((u64)pid << 32) | depth;
     saved_rsp.update(&key, &ret_addr);
+
+    // Update rolling call stack hash for Call-Site Sensitivity
+    // hash = old_hash * 1103515245 + ret_addr (truncated to 16-bit for mix)
+    u64 *old_hash = call_stack_hash_map.lookup(&pid);
+    u64 new_hash = old_hash ? (*old_hash * 1103515245 + (ret_addr & 0xFFFF)) : ret_addr;
+    call_stack_hash_map.update(&pid, &new_hash);
+
     return 0;
 }
 
@@ -643,6 +658,33 @@ int trace_rax(struct pt_regs *ctx) {
     return 0;
 }
 
+int trace_ptr_store(struct pt_regs *ctx) {
+    // Origin Sensitivity: record function pointer assignment
+    // Attach to store instructions like mov [rax], rbx or mov %rax, -0x8(%rbp)
+    // Records: func_ptr_addr -> origin_instr_offset
+    u64 ip = PT_REGS_IP(ctx);
+    u64 zero = 0;
+    u64 *bp = module_base.lookup(&zero);
+    if (!bp) return 0;
+    u64 origin_offset = ip - *bp;
+
+    // Read the destination address (ptr being written to) from rbx (or other src reg)
+    // For simplicity, use rbx as the "pointer being stored" address
+    u64 ptr_addr = 0;
+    bpf_probe_read(&ptr_addr, sizeof(ptr_addr), &ctx->bx);
+
+    // Read the value being stored (the function address) from rax
+    u64 func_val = 0;
+    bpf_probe_read(&func_val, sizeof(func_val), &ctx->ax);
+
+    if (ptr_addr != 0 && func_val != 0) {
+        // Store origin: pointer_address -> instruction offset where assigned
+        ptr_origin_map.update(&ptr_addr, &origin_offset);
+    }
+
+    return 0;
+}
+
 int trace_all_jumps(struct pt_regs *ctx) {
     u64 key = 0;
     u64 *base_ptr = module_base.lookup(&key);
@@ -657,6 +699,8 @@ int trace_all_jumps(struct pt_regs *ctx) {
     struct cfi_entry *entry = cfi_map.lookup(&offset);
     if (!entry) return 0;
 
+    u32 pid = bpf_get_current_pid_tgid() >> 32;
+
     struct jump_event event = {};
     event.runtime_ip = ip;
     event.module_base_addr = base;
@@ -667,7 +711,7 @@ int trace_all_jumps(struct pt_regs *ctx) {
     event.is_indirect = entry->is_indirect;
     event.timestamp_ns = bpf_ktime_get_ns();
     event.cpu = bpf_get_smp_processor_id();
-    event.pid = bpf_get_current_pid_tgid() >> 32;
+    event.pid = pid;
     bpf_probe_read(&event.reg_rax, sizeof(event.reg_rax), &ctx->ax);
     bpf_probe_read(&event.reg_rcx, sizeof(event.reg_rcx), &ctx->cx);
     bpf_probe_read(&event.reg_rdx, sizeof(event.reg_rdx), &ctx->dx);
@@ -681,8 +725,29 @@ int trace_all_jumps(struct pt_regs *ctx) {
     bpf_probe_read(event.src_func, 64, entry->src_func);
     bpf_probe_read(event.dst_func, 64, entry->dst_func);
 
+    // ---- Call-Site Sensitivity: pass call stack hash ----
+    u64 *csh = call_stack_hash_map.lookup(&pid);
+    event.call_stack_hash = csh ? *csh : 0;
+
+    // ---- Origin Sensitivity: check ptr origin ----
+    event.ptr_origin = 0;
+    if (entry->jump_type == 4 || entry->jump_type == 5) {
+        // For indirect call/jump, try to find the origin of the function pointer
+        // The function pointer is typically stored at a known location (e.g., indirect_call_ptr)
+        // Look up ptr_origin for each of the register values that could be ptr addresses
+        u64 *origin_ptr = ptr_origin_map.lookup(&event.reg_rbx);
+        if (origin_ptr) {
+            event.ptr_origin = *origin_ptr;
+        } else {
+            origin_ptr = ptr_origin_map.lookup(&event.reg_rax);
+            if (origin_ptr) {
+                event.ptr_origin = *origin_ptr;
+            }
+        }
+    }
+
     // 从 saved_rax 中取出记录的 rax 值
-    u64 *saved = saved_rax.lookup(&event.pid);
+    u64 *saved = saved_rax.lookup(&pid);
     if (saved) {
         event.saved_rax_val = *saved;          // 传递到用户态
         if (*saved == event.reg_rax) {
@@ -690,24 +755,19 @@ int trace_all_jumps(struct pt_regs *ctx) {
         } else {
             event.is_correct = 0;
         }
-        // 可选：删除该 pid 的记录，避免残留
-        // saved_rax.delete(&event.pid);
     } else {
         event.saved_rax_val = 0;
-        
     }
 
     if (entry->jump_type == 3) {  // RET
-        u32 pid = event.pid;
         u64 sp;
         bpf_probe_read(&sp, sizeof(sp), &ctx->sp);
         bpf_probe_read(&event.ret_addr, sizeof(event.ret_addr), (void *)sp);
 
-        // 用深度计数器查找对应层级的 saved_rsp
         u32 *dp = ret_depth.lookup(&pid);
         u32 depth = dp ? *dp : 0;
-        u64 key = ((u64)pid << 32) | depth;
-        u64 *saved = saved_rsp.lookup(&key);
+        u64 rkey = ((u64)pid << 32) | depth;
+        u64 *saved = saved_rsp.lookup(&rkey);
 
         if (saved && *saved != 0) {
             event.saved_rsp_val = *saved;
@@ -718,13 +778,19 @@ int trace_all_jumps(struct pt_regs *ctx) {
             }
         } else {
             event.saved_rsp_val = 0;
-            
         }
 
         // 递减深度 (出栈)
         if (depth > 0) {
             depth--;
             ret_depth.update(&pid, &depth);
+        }
+
+        // 更新 call stack hash on RET (remove last entry's contribution)
+        u64 *csh_ret = call_stack_hash_map.lookup(&pid);
+        if (csh_ret) {
+            u64 rev_hash = *csh_ret * 1103515245; // reverse the hash contribution
+            call_stack_hash_map.update(&pid, &rev_hash);
         }
     }
 
@@ -733,8 +799,66 @@ int trace_all_jumps(struct pt_regs *ctx) {
 }
 """
 
+def compute_ec_stats(table, cs_allowed, origin_allowed):
+    """Compute Equivalent Class (EC) statistics for hybrid strategy.
+    EC = number of valid targets per indirect control transfer instruction.
+    Returns per-ICT config dict: src_offset -> method (0=none, 1=cs, 2=origin)
+    """
+    ec_stats = {}
+    cs_config = {}
+    for entry in table:
+        src = entry['src_addr']
+        if entry['jump_type'] not in (3, 4, 5):
+            continue
+
+        # Static EC: count all targets in cfi_map for this src
+        static_ec = 1  # basic cfi_map has one entry
+        # Count from CS allowed (dynamic training)
+        cs_ec = 0
+        for (rh, so), targets in cs_allowed.items():
+            if so == src:
+                cs_ec = max(cs_ec, len(targets))
+        # Count from origin allowed
+        origin_ec = 0
+        for origin, targets in origin_allowed.items():
+            origin_ec = max(origin_ec, len(targets))
+
+        ec_stats[src] = {
+            'static_ec': static_ec,
+            'cs_ec': cs_ec if cs_ec > 0 else static_ec,
+            'origin_ec': origin_ec if origin_ec > 0 else 1,
+        }
+
+        # Adaptive strategy: select method based on EC size
+        if origin_ec <= 2:
+            method = 2  # origin sensitive (most precise)
+        elif cs_ec <= 5:
+            method = 1  # call-site sensitive
+        else:
+            method = 0  # none (default cfi_map)
+
+        cs_config[src] = method
+
+    return ec_stats, cs_config
+
+# ---- Call-Site Sensitivity: Training & Enforcement ----
+cs_allowed_targets = {}    # (ret_hash, src_offset) -> set of allowed dst_addrs
+cs_training_rounds = 0
+cs_max_depth = 3           # track up to 3 levels of call stack
+
+# ---- Origin Sensitivity: Training & Enforcement ----
+origin_allowed_targets = {}  # origin_inst_offset -> set of allowed func_addrs
+ptr_origin_map_py = {}       # func_ptr_addr -> origin_inst_offset (Python side mirror)
+
+# ---- Mode Control ----
+CFI_MODE = 'train'  # 'train', 'enforce', 'hybrid'
+CFI_METHOD_CONFIG = {}  # src_offset -> method (0=none, 1=cs, 2=origin)
+
 def handle_jump_event(cpu, data, size):
     global event_count, violation_count, base, cfi_lookup
+    global cs_allowed_targets, cs_training_rounds
+    global origin_allowed_targets, ptr_origin_map_py
+    global CFI_MODE, CFI_METHOD_CONFIG
     event = b["jump_events"].event(data)
 
     # 跳转类型名称映射（只保留 ret 与间接调用/跳转，直接跳转已不再追踪）
@@ -944,6 +1068,78 @@ def handle_jump_event(cpu, data, size):
         elif event.jump_type == 3:
             print(f"     • 返回地址异常")
 
+    # ========================================
+    # Call-Site Sensitivity & Origin Sensitivity
+    # ========================================
+    actual_target = event.reg_rax if event.jump_type in (4, 5) else event.ret_addr
+    cs_hash = event.call_stack_hash
+    ptr_origin = event.ptr_origin
+
+    method = CFI_METHOD_CONFIG.get(event.src_addr, 1) if CFI_MODE == 'hybrid' else \
+             (1 if CFI_MODE == 'enforce' else 0)
+
+    method_names = {0: "无(无上下文)", 1: "调用点敏感(CS)", 2: "起源敏感(Origin)"}
+    method_name = method_names.get(method, "未知")
+
+    # ---- Display CS/Origin Info ----
+    print(f"\n🔐 上下文敏感CFI ({CFI_MODE}模式, 方法={method_name}):")
+    print(f"  • 调用栈哈希(CS): 0x{cs_hash:016x}")
+    print(f"  • 指针起源(Origin): 0x{ptr_origin:016x}")
+
+    if CFI_MODE == 'train':
+        # ---- Training mode: record observations ----
+        if cs_hash != 0 and event.jump_type in (4, 5):
+            cs_key = (cs_hash, event.src_addr)
+            if cs_key not in cs_allowed_targets:
+                cs_allowed_targets[cs_key] = set()
+            cs_allowed_targets[cs_key].add(actual_target)
+            print(f"  📝 CS训练: 记录 (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x}) → 0x{actual_target:x}"
+                  f" [集合大小={len(cs_allowed_targets[cs_key])}]")
+
+        if ptr_origin != 0:
+            if ptr_origin not in origin_allowed_targets:
+                origin_allowed_targets[ptr_origin] = set()
+            origin_allowed_targets[ptr_origin].add(actual_target)
+            # Also update Python-side pointer origin map from event
+            if event.jump_type in (4, 5) and event.reg_rbx != 0:
+                ptr_origin_map_py[event.reg_rbx] = ptr_origin
+            print(f"  📝 Origin训练: origin=0x{ptr_origin:x} → 0x{actual_target:x}"
+                  f" [集合大小={len(origin_allowed_targets[ptr_origin])}]")
+
+    elif CFI_MODE in ('enforce', 'hybrid'):
+        # ---- Enforcement mode: check against trained sets ----
+        cs_violation = False
+        origin_violation = False
+
+        if method in (0, 1):  # none or call-site sensitivity
+            if cs_hash != 0 and event.jump_type in (4, 5):
+                cs_key = (cs_hash, event.src_addr)
+                cs_set = cs_allowed_targets.get(cs_key, set())
+                if cs_set and actual_target not in cs_set:
+                    cs_violation = True
+                    print(f"  🔴 CS违规: (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x})")
+                    print(f"     实际目标 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(cs_set)[:5]]} 中")
+                elif cs_set:
+                    print(f"  ✓ CS校验通过: 目标在训练集中 ({len(cs_set)} 个合法)")
+                else:
+                    print(f"  ⚠️ CS: 无训练数据，跳过检查")
+
+        if method in (0, 2):  # none or origin sensitivity
+            if ptr_origin != 0:
+                origin_set = origin_allowed_targets.get(ptr_origin, set())
+                if origin_set and actual_target not in origin_set:
+                    origin_violation = True
+                    print(f"  🔴 Origin违规: origin=0x{ptr_origin:x}")
+                    print(f"     实际目标 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(origin_set)[:5]]} 中")
+                elif origin_set:
+                    print(f"  ✓ Origin校验通过: 目标与起源绑定 ({len(origin_set)} 个合法)")
+                else:
+                    print(f"  ⚠️ Origin: 无训练数据，跳过检查")
+
+        if cs_violation or origin_violation:
+            print(f"  🛑 上下文敏感CFI违规! 终止进程")
+            os._exit(1)
+
     print("\n" + "-"*80)
     event_count += 1
 
@@ -995,16 +1191,36 @@ def get_module_base_from_maps(so_name):
 
 def main():
     global b, event_count, violation_count, base, cfi_lookup, layer_event_count
+    global cs_allowed_targets, cs_training_rounds
+    global origin_allowed_targets, ptr_origin_map_py
+    global CFI_MODE, CFI_METHOD_CONFIG
+
+    import argparse
+    parser = argparse.ArgumentParser(description='CFI/DFI Monitor with Call-Site & Origin Sensitivity')
+    parser.add_argument('-m', '--mode', default='train', choices=['train', 'enforce', 'hybrid'],
+                        help='CFI mode: train (收集数据), enforce (强制执行), hybrid (自适应混合)')
+    args = parser.parse_args()
+    CFI_MODE = args.mode
+
     event_count = 0
     layer_event_count = 0
     violation_count = 0
     cfi_lookup = {}
+    cs_allowed_targets = {}
+    cs_training_rounds = 0
+    origin_allowed_targets = {}
+    ptr_origin_map_py = {}
+    CFI_METHOD_CONFIG = {}
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     so_path = os.path.join(script_dir, "test.so")
     if not os.path.exists(so_path):
         print(f"错误：找不到 {so_path}")
         return
+
+    print(f"\n{'='*60}")
+    print(f"CFI 模式: {CFI_MODE.upper()}")
+    print(f"{'='*60}")
 
     # 解析三层 DFI 链
     print("\n📊 解析三层 DFI 数据流链...")
@@ -1028,6 +1244,20 @@ def main():
     table = parse_cfi_table("test_jump_analysis.csv")
     for entry in table:
         cfi_lookup[entry['src_addr']] = entry
+
+    # ---- Compute EC stats for hybrid strategy ----
+    if CFI_MODE == 'hybrid':
+        print(f"\n📊 自适应混合策略 EC 分析...")
+        ec_stats, CFI_METHOD_CONFIG = compute_ec_stats(table, cs_allowed_targets, origin_allowed_targets)
+        n_none = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 0)
+        n_cs = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 1)
+        n_origin = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 2)
+        print(f"  策略分配: 无上下文={n_none}, 调用点敏感={n_cs}, 起源敏感={n_origin}")
+        for src, method in CFI_METHOD_CONFIG.items():
+            ec = ec_stats.get(src, {})
+            method_names = {0: "无", 1: "CS", 2: "Origin"}
+            print(f"  0x{src:x}: EC(static={ec.get('static_ec',0)}, cs={ec.get('cs_ec',0)}, "
+                  f"origin={ec.get('origin_ec',0)}) -> {method_names.get(method, '?')}")
 
     # 从 CSV 中获取 test_returns 的静态偏移
     static_offset = None
@@ -1061,12 +1291,28 @@ def main():
     b["jump_events"].open_perf_buffer(handle_jump_event)
     b["dfi_layer_events"].open_perf_buffer(handle_df1_layer_event)
 
+    # ---- Attach Origin Sensitivity probes ----
+    print("\n🔗 挂载起源敏感 (Origin Sensitivity) 指针赋值探针...")
+    origin_probes_attached = 0
+    # Attach trace_ptr_store on key function entry points where pointers are assigned
+    for chain in layer_chains:
+        if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:
+            continue  # skip RET sites for origin tracking
+        sym_name = chain['func'].split('@')[0]
+        for layer in chain['layers']:
+            if layer['level'] in (2, 3) and layer.get('instr_type') in (1, 2, 3):
+                # These are the data-read layers — the L2/L3 that perform memory reads
+                # We attach trace_ptr_store to capture origin of function pointer
+                try:
+                    b.attach_uprobe(name=so_path, sym=sym_name,
+                                    sym_off=layer['offset'], fn_name="trace_ptr_store")
+                    origin_probes_attached += 1
+                    print(f"  ✓ Origin探针: {sym_name}+0x{layer['offset']:x} ({layer['instr']})")
+                except Exception:
+                    pass
+    print(f"  共挂载 {origin_probes_attached} 个起源敏感探针")
+
     # 加载三层 DFI 配置并挂载 uprobes
-    # RET 站点: trace_ret_target 挂在函数开头，在第一次出现(进入函数时)即存好返回地址；
-    #           trace_all_jumps 挂在 ret 处，在真正发生间接跳转(返回)时校验。
-    # CALL/JMP 站点: 三层数据流链条中，"首次从数据段/栈内存读取"指针的那一层
-    #           (chain['save_level']，由 instr_type ∈ {DEREF, RIP_REL, RBP_REL} 判定)
-    #           负责把目标值存入 saved_rax；trace_all_jumps 挂在真正的间接跳转处校验。
     print("\n🔗 挂载三层 DFI 数据流保护 + CFI 校验 uprobes...")
     reg_to_idx = REG_TO_IDX
     attached = {}  # (sym_name, sym_off) -> fn_name，处理 L2/L3 同偏移冲突
@@ -1075,12 +1321,10 @@ def main():
         if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:   # RET 站点
             l1 = chain['layers'][0]
             sym = chain['func'].split('@')[0]
-            # trace_ret_target 挂函数头 (sym_off=0): 第一次出现/进入函数时保存 *(rsp) → saved_rsp
             b.attach_uprobe(name=so_path, sym=sym, sym_off=0, fn_name="trace_ret_target")
-            # trace_all_jumps   挂 ret 处:   真正发生间接跳转(返回)时读取 *(rsp) 对比 saved_rsp
             b.attach_uprobe(name=so_path, sym=sym, sym_off=l1['offset'], fn_name="trace_all_jumps")
             print(f"  ✓ RET site#{site_id}: {sym}+0x0 (函数开头保存返回地址) + 0x{l1['offset']:x} (跳转时校验)")
-            continue   # 跳过后续 L2/L3 的挂载
+            continue
         reg_idx = reg_to_idx.get(chain['reg'], 0)
         func = chain['func']
         sym_name = func.split('@')[0]
@@ -1093,25 +1337,22 @@ def main():
             sym_off = layer['offset']
             addr_key = (sym_name, sym_off)
 
-            # 决定挂载哪个 BPF 函数
             if level == 1:
-                fn_name = "trace_df1_l1"       # L1: DFI 事件记录实际调用目标（真正的间接跳转点）
+                fn_name = "trace_df1_l1"
             elif level == 2:
-                fn_name = "trace_df1_l2"       # L2: 数据流中间层
+                fn_name = "trace_df1_l2"
             else:
-                fn_name = "trace_df1_l3"       # L3: 数据流追溯（最深层，通常对应首次内存读取）
+                fn_name = "trace_df1_l3"
 
-            # 冲突处理 (L2/L3 之间; L1 与 L2/L3 map 不同可共存)
             if level != 1 and addr_key in attached:
                 existing = attached[addr_key]
                 if level == 2 and existing == "trace_df1_l3":
-                    pass  # L2 覆盖 L3
+                    pass
                 elif level == 3 and existing == "trace_df1_l2":
-                    continue  # L2 已存在且更优，跳过 L3
+                    continue
                 elif existing in ("trace_df1_l2", "trace_df1_l3"):
-                    continue  # 同层冲突，跳过
+                    continue
 
-            # 准备 meta + 挂载 — L1/L2/L3 都需要 meta (L1 记录实际目标)
             meta = DfiLayerMeta()
             meta.site_id = site_id
             meta.reg_sel = reg_idx
@@ -1119,8 +1360,6 @@ def main():
             meta.extra = layer.get('extra', 0)
             meta.instr_len = layer.get('instr_len', 0)
             meta.need_deref = layer.get('need_deref', 0)
-            # 按地址(offset)匹配保存点，而非按 level 编号——防止 L2/L3 同址冲突
-            # 导致 save_level 指向被跳过的层，而真正挂载的层漏掉保存标记。
             meta.save_target_to_saved_rax = 1 if (save_offset is not None and sym_off == save_offset) else 0
             fn_bytes = chain['func'].encode('utf-8')[:63]
             meta.func_name = fn_bytes
@@ -1143,7 +1382,6 @@ def main():
             except Exception as e:
                 print(f"  ✗ site#{site_id} L{level}: {sym_name}+0x{sym_off:x} 挂载失败 ({e})")
 
-            # L1 额外挂载 trace_all_jumps 做 CFI 校验 (与 trace_df1_l1 共用偏移)
             if level == 1:
                 try:
                     b.attach_uprobe(name=so_path, sym=sym_name, sym_off=sym_off, fn_name="trace_all_jumps")
@@ -1159,7 +1397,8 @@ def main():
 
     threading.Thread(target=trigger, daemon=True).start()
 
-    print("\n=== CFI 监控已启动（.so 模式 + 三层 DFI）===")
+    mode_label = {"train": "训练模式 (收集CS/Origin数据)", "enforce": "强制执行模式", "hybrid": "自适应混合模式"}
+    print(f"\n=== CFI 监控已启动（{CFI_MODE}: {mode_label.get(CFI_MODE, CFI_MODE)}）===")
     print("按 Ctrl+C 停止\n")
 
     try:
@@ -1169,6 +1408,7 @@ def main():
         print("\n监控已停止")
     finally:
         print(f"\n=== 最终统计 ===")
+        print(f"- CFI模式: {CFI_MODE}")
         print(f"- CFI规则数: {len(table)}")
         print(f"- 处理事件数: {event_count}")
         print(f"- CFI违规数: {violation_count}")
@@ -1176,6 +1416,28 @@ def main():
         if event_count > 0:
             violation_rate = (violation_count / event_count) * 100
             print(f"- 违规率: {violation_rate:.2f}%")
+        print(f"\n--- 上下文敏感统计 ---")
+        print(f"- CS训练条目数: {len(cs_allowed_targets)}")
+        total_cs_targets = sum(len(v) for v in cs_allowed_targets.values())
+        print(f"- CS目标总数: {total_cs_targets}")
+        print(f"- Origin训练条目数: {len(origin_allowed_targets)}")
+        total_origin_targets = sum(len(v) for v in origin_allowed_targets.values())
+        print(f"- Origin目标总数: {total_origin_targets}")
+        # Print per-ICT EC summary for CS
+        if cs_allowed_targets:
+            print(f"\n  Call-Site敏感 EC 统计 (前10):")
+            cs_items = sorted(cs_allowed_targets.items(),
+                            key=lambda x: len(x[1]), reverse=True)[:10]
+            for (rh, so), targets in cs_items:
+                print(f"    offset=0x{so:x} hash=0x{rh:x} EC={len(targets)} "
+                      f"targets={[hex(t) for t in list(targets)[:3]]}{'...' if len(targets) > 3 else ''}")
+        if origin_allowed_targets:
+            print(f"\n  Origin敏感 EC 统计 (前10):")
+            origin_items = sorted(origin_allowed_targets.items(),
+                                key=lambda x: len(x[1]), reverse=True)[:10]
+            for origin, targets in origin_items:
+                print(f"    origin=0x{origin:x} EC={len(targets)} "
+                      f"targets={[hex(t) for t in list(targets)[:3]]}{'...' if len(targets) > 3 else ''}")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,66 @@
+﻿reg,def_func,def_addr,def_instr,use_func,use_addr,use_instr,cross_func,dfi_violation,violation_reason,def_source,indirect_type
+rsp,<unknown>,0x0,undefined source for rsp,_init,0x1004,"sub $0x8,%rsp",No,OK,,unknown,-
+rax,_init,0x1008,"mov 0x2fc1(%rip),%rax",_init,0x100f,"test %rax,%rax",No,OK,,local,-
+rax,_init,0x1008,"mov 0x2fc1(%rip),%rax",_init,0x1014,call *%rax,No,WARNING,indirect call reg_based target rax L1: defined at 0x1008,local,reg_based
+data_segment,_init,0x1008,← data segment [rip+0x2fc1],_init,0x1014,call *%rax,No,WARNING,indirect call reg_based target rax L2: terminal (param) at _init,synthetic,reg_based
+rsp,_init,0x1004,"sub $0x8,%rsp",_init,0x1016,"add $0x8,%rsp",No,OK,,local,-
+rsp,_init,0x1016,"add $0x8,%rsp",_init,0x101a,ret,No,OK,,local,ret
+rax,<unknown>,0x0,undefined source for rax,.plt,0x103e,"xchg %ax,%ax",No,OK,,unknown,-
+rax,<unknown>,0x0,undefined source for rax,.plt,0x104e,"xchg %ax,%ax",No,OK,,unknown,-
+rdi,deregister_tm_clones,0x1080,"lea 0x2f91(%rip),%rdi",deregister_tm_clones,0x108e,"cmp %rdi,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x1087,"lea 0x2f8a(%rip),%rax",deregister_tm_clones,0x108e,"cmp %rdi,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x1093,"mov 0x2f2e(%rip),%rax",deregister_tm_clones,0x109a,"test %rax,%rax",No,OK,,local,-
+rax,deregister_tm_clones,0x1093,"mov 0x2f2e(%rip),%rax",deregister_tm_clones,0x109f,jmp *%rax,No,WARNING,indirect jump reg_based target rax L1: defined at 0x1093,local,reg_based
+data_segment,deregister_tm_clones,0x1093,← data segment [rip+0x2f2e],deregister_tm_clones,0x109f,jmp *%rax,No,WARNING,indirect jump reg_based target rax L2: terminal (param) at deregister_tm_clones,synthetic,reg_based
+rsp,<unknown>,0x0,undefined source for rsp,deregister_tm_clones,0x10a8,ret,No,OK,,unknown,ret
+rdi,register_tm_clones,0x10b0,"lea 0x2f61(%rip),%rdi",register_tm_clones,0x10be,"sub %rdi,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x10b7,"lea 0x2f5a(%rip),%rsi",register_tm_clones,0x10be,"sub %rdi,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x10be,"sub %rdi,%rsi",register_tm_clones,0x10c1,"mov %rsi,%rax",No,OK,,local,-
+rsi,register_tm_clones,0x10be,"sub %rdi,%rsi",register_tm_clones,0x10c4,"shr $0x3f,%rsi",No,OK,,local,-
+rax,register_tm_clones,0x10c1,"mov %rsi,%rax",register_tm_clones,0x10c8,"sar $0x3,%rax",No,OK,,local,-
+rax,register_tm_clones,0x10c8,"sar $0x3,%rax",register_tm_clones,0x10cc,"add %rax,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x10c4,"shr $0x3f,%rsi",register_tm_clones,0x10cc,"add %rax,%rsi",No,OK,,local,-
+rsi,register_tm_clones,0x10cc,"add %rax,%rsi",register_tm_clones,0x10cf,"sar $1,%rsi",No,OK,,local,-
+rax,register_tm_clones,0x10d4,"mov 0x2efd(%rip),%rax",register_tm_clones,0x10db,"test %rax,%rax",No,OK,,local,-
+rax,register_tm_clones,0x10d4,"mov 0x2efd(%rip),%rax",register_tm_clones,0x10e0,jmp *%rax,No,WARNING,indirect jump reg_based target rax L1: defined at 0x10d4,local,reg_based
+data_segment,register_tm_clones,0x10d4,← data segment [rip+0x2efd],register_tm_clones,0x10e0,jmp *%rax,No,WARNING,indirect jump reg_based target rax L2: terminal (param) at register_tm_clones,synthetic,reg_based
+rsp,<unknown>,0x0,undefined source for rsp,register_tm_clones,0x10e8,ret,No,OK,,unknown,ret
+rbp,<unknown>,0x0,undefined source for rbp,__do_global_dtors_aux,0x10fd,push %rbp,No,OK,,unknown,-
+rsp,__do_global_dtors_aux,0x10fd,push %rbp,__do_global_dtors_aux,0x1106,"mov %rsp,%rbp",No,OK,,local,-
+rsp,__do_global_dtors_aux,0x10fd,push %rbp,__do_global_dtors_aux,0x1123,pop %rbp,No,OK,,local,-
+rsp,__do_global_dtors_aux,0x10fd,push %rbp,__do_global_dtors_aux,0x1124,ret,No,OK,,local,ret
+rsp,<unknown>,0x0,undefined source for rsp,__do_global_dtors_aux,0x1128,ret,No,OK,,unknown,ret
+rbp,<unknown>,0x0,undefined source for rbp,main,0x113d,push %rbp,No,OK,,unknown,-
+rsp,main,0x113d,push %rbp,main,0x113e,"mov %rsp,%rbp",No,OK,,local,-
+rsp,main,0x113d,push %rbp,main,0x1141,"sub $0x20,%rsp",No,OK,,local,-
+rdi,main,0x0,<param:rdi>,main,0x1145,"mov %edi,-0x14(%rbp)",No,OK,,parameter,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1145,"mov %edi,-0x14(%rbp)",No,OK,,local,-
+rsi,main,0x0,<param:rsi>,main,0x1148,"mov %rsi,-0x20(%rbp)",No,OK,,parameter,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1148,"mov %rsi,-0x20(%rbp)",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x114c,"movl $0x1,-0x4(%rbp)",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1155,"mov -0x4(%rbp),%eax",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x1155,"mov -0x4(%rbp),%eax",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1162,"mov -0x20(%rbp),%rax",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x1162,"mov -0x20(%rbp),%rax",No,OK,,local,-
+rdx,main,0x0,<param:rdx>,main,0x1166,"add %rdx,%rax",No,OK,,parameter,-
+rax,main,0x1162,"mov -0x20(%rbp),%rax",main,0x1166,"add %rdx,%rax",No,OK,,local,-
+rax,main,0x1166,"add %rdx,%rax",main,0x1169,"mov (%rax),%rax",No,OK,,local,-
+rax,main,0x1169,"mov (%rax),%rax",main,0x116c,"mov %rax,%rsi",No,OK,,local,-
+rax,main,0x116f,"lea 0xe8a(%rip),%rax",main,0x1176,"mov %rax,%rdi",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1183,"mov -0x14(%rbp),%eax",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x1183,"mov -0x14(%rbp),%eax",No,OK,,local,-
+rax,main,0x1183,"mov -0x14(%rbp),%eax",main,0x1186,"sub $0x1,%eax",No,OK,,local,-
+rax,main,0x1186,"sub $0x1,%eax",main,0x1189,"cmp %eax,-0x4(%rbp)",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x1189,"cmp %eax,-0x4(%rbp)",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x1189,"cmp %eax,-0x4(%rbp)",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x119c,"mov -0x4(%rbp),%eax",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x119c,"mov -0x4(%rbp),%eax",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x119f,"cmp -0x14(%rbp),%eax",No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x119f,"cmp -0x14(%rbp),%eax",No,OK,,local,-
+rax,main,0x119c,"mov -0x4(%rbp),%eax",main,0x119f,"cmp -0x14(%rbp),%eax",No,OK,,local,-
+rbp,main,0x113e,"mov %rsp,%rbp",main,0x11a9,leave,No,OK,,local,-
+rbp,main,0x1198,"addl $0x1,-0x4(%rbp)",main,0x11a9,leave,No,OK,,local,-
+rsp,main,0x11a9,leave,main,0x11aa,ret,No,OK,,local,ret
+rsp,<unknown>,0x0,undefined source for rsp,_fini,0x11b0,"sub $0x8,%rsp",No,OK,,unknown,-
+rsp,_fini,0x11b0,"sub $0x8,%rsp",_fini,0x11b4,"add $0x8,%rsp",No,OK,,local,-
+rsp,_fini,0x11b4,"add $0x8,%rsp",_fini,0x11b8,ret,No,OK,,local,ret

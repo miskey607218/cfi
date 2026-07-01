@@ -1,0 +1,1257 @@
+from bcc import BPF
+import ast
+import ctypes
+import json
+import os
+import re
+import sys
+import threading
+import time
+import argparse
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64
+import csv
+
+# Defer root check until after --help is handled
+
+class CfiEntry(ctypes.Structure):
+    _fields_ = [
+        ("src_addr", ctypes.c_uint64),
+        ("src_func_addr", ctypes.c_uint64),
+        ("dst_addr", ctypes.c_uint64),
+        ("jump_type", ctypes.c_uint8),
+        ("is_indirect", ctypes.c_uint8),
+        ("src_func", ctypes.c_char * 64),
+        ("dst_func", ctypes.c_char * 64),
+        ("opcode", ctypes.c_uint8),
+    ]
+
+class JumpEvent(ctypes.Structure):
+    _fields_ = [
+        ("src_offset", ctypes.c_uint64),
+        ("dst_offset", ctypes.c_uint64),
+        ("expected_dst", ctypes.c_uint64),
+        ("jump_type", ctypes.c_uint8),
+        ("is_indirect", ctypes.c_uint8),
+        ("is_correct", ctypes.c_uint8),
+        ("src_func", ctypes.c_char * 64),
+        ("dst_func", ctypes.c_char * 64),
+        ("src_addr", ctypes.c_uint64),
+        ("src_func_addr", ctypes.c_uint64),
+        ("cfi_dst_addr", ctypes.c_uint64),
+        ("timestamp_ns", ctypes.c_uint64),
+        ("cpu", ctypes.c_uint32),
+        ("pid", ctypes.c_uint32),
+        ("reg_rax", ctypes.c_uint64),
+        ("reg_rcx", ctypes.c_uint64),
+        ("reg_rdx", ctypes.c_uint64),
+        ("reg_rbx", ctypes.c_uint64),
+        ("reg_rsp", ctypes.c_uint64),
+        ("reg_rbp", ctypes.c_uint64),
+        ("reg_rsi", ctypes.c_uint64),
+        ("reg_rdi", ctypes.c_uint64),
+        ("insn_bytes", ctypes.c_uint8 * 16),
+        ("real_target", ctypes.c_uint64),
+        ("insn_len", ctypes.c_uint64),
+        ("runtime_ip", ctypes.c_uint64),
+        ("module_base_addr", ctypes.c_uint64),
+        ("ret_addr", ctypes.c_uint64),          # 原 sp → ret_addr
+        ("saved_rax_val", ctypes.c_uint64),     # 保存的 rax
+        ("saved_rsp_val", ctypes.c_uint64),     # 保存的 rsp
+        ("call_stack_hash", ctypes.c_uint64),   # 调用栈哈希 (CS敏感)
+        ("ptr_origin", ctypes.c_uint64),        # 函数指针的起源指令偏移 (Origin敏感)
+    ]
+
+class DfiLayerMeta(ctypes.Structure):
+    _fields_ = [
+        ("site_id", ctypes.c_uint32),
+        ("reg_sel", ctypes.c_uint32),
+        ("instr_type", ctypes.c_uint32),  # 0=direct,1=deref,2=rip_rel,3=rbp_rel
+        ("extra", ctypes.c_int32),        # displacement for rip/rbp-rel
+        ("instr_len", ctypes.c_uint32),   # instruction byte length
+        ("need_deref", ctypes.c_uint32),  # for type 2/3: 1=double-deref, 0=single
+        ("save_target_to_saved_rax", ctypes.c_uint32),  # L2: 1=save computed target to saved_rax
+        ("save_target_to_saved_rsp", ctypes.c_uint32),  # L2: 1=save computed target to saved_rsp
+        ("func_name", ctypes.c_char * 64),
+    ]
+
+class DfiLayerEvent(ctypes.Structure):
+    _fields_ = [
+        ("site_id", ctypes.c_uint32),
+        ("layer", ctypes.c_uint32),
+        ("reg_value", ctypes.c_uint64),
+        ("target_addr", ctypes.c_uint64),
+        ("inst_offset", ctypes.c_uint64),
+        ("timestamp", ctypes.c_uint64),
+        ("pid", ctypes.c_uint32),
+        ("cpu", ctypes.c_uint32),
+        ("func_name", ctypes.c_char * 64),
+    ]
+
+REG_ALIASES = {
+    'rax':'rax','eax':'rax','ax':'rax','al':'rax','ah':'rax',
+    'rbx':'rbx','ebx':'rbx','bx':'rbx','bl':'rbx','bh':'rbx',
+    'rcx':'rcx','ecx':'rcx','cx':'rcx','cl':'rcx','ch':'rcx',
+    'rdx':'rdx','edx':'rdx','dx':'rdx','dl':'rdx','dh':'rdx',
+    'rsi':'rsi','esi':'rsi','si':'rsi','sil':'rsi',
+    'rdi':'rdi','edi':'rdi','di':'rdi','dil':'rdi',
+    'rbp':'rbp','ebp':'rbp','bp':'rbp','bpl':'rbp',
+    'rsp':'rsp','esp':'rsp','sp':'rsp','spl':'rsp',
+    'r8':'r8','r8d':'r8','r8w':'r8','r8b':'r8',
+    'r9':'r9','r9d':'r9','r9w':'r9','r9b':'r9',
+    'r10':'r10','r10d':'r10','r10w':'r10','r10b':'r10',
+    'r11':'r11','r11d':'r11','r11w':'r11','r11b':'r11',
+    'r12':'r12','r12d':'r12','r12w':'r12','r12b':'r12',
+    'r13':'r13','r13d':'r13','r13w':'r13','r13b':'r13',
+    'r14':'r14','r14d':'r14','r14w':'r14','r14b':'r14',
+    'r15':'r15','r15d':'r15','r15w':'r15','r15b':'r15',
+}
+
+REG_TO_IDX = {
+    'rax': 0, 'rcx': 1, 'rdx': 2, 'rbx': 3,
+    'rbp': 5, 'rsi': 6, 'rdi': 7, 'r8': 8, 'r9': 9,
+    'rsp': 4,   # ret uses rsp for return address at [rsp]
+}
+
+def classify_instr(instr_text):
+    """
+    根据 CSV 中的 instruction 字段，分类并返回 (instr_type, extra, instr_len)
+    instr_type: 0=DIRECT(reg即目标), 1=DEREF(*(reg)), 2=RIP_REL(**(rip+disp)), 3=RBP_REL(**(rbp+disp)), 4=RET(*(rsp))
+    """
+    i = instr_text.strip()
+
+    # Type 4: ret / retq → target = *(rsp), rsp saved by push %rbp / mov %rsp,%rbp
+    if re.match(r'^(ret|retq)$', i):
+        return (4, 0, 1)  # ret = 1 byte (c3)
+
+    # Type 0: call/jmp *%reg  → 寄存器值即目标地址
+    if re.match(r'^(call|jmp|jmpq|ljmp)\s+\*%[a-z0-9]+', i):
+        return (0, 0, 3)  # ff d0 = 2 bytes, but default to 3 for safety
+
+    # Type 1: mov (%reg),%reg  → *(reg) 是目标
+    if re.match(r'^mov\s+\(%[a-z0-9]+\),\s*%[a-z0-9]+', i):
+        # mov (%rax),%rax  →  48 8b 00 = 3 bytes
+        return (1, 0, 3)
+
+    # Type 2: mov DISP(%rip),%reg  → read ptr from rip+len+disp, then deref
+    m = re.match(r'^mov\s+(0x[0-9a-fA-F]+)\(%rip\),\s*%[a-z0-9]+', i)
+    if m:
+        disp = int(m.group(1), 16)
+        return (2, disp, 7)  # REX.W + 8B + ModRM + disp32 = 7 bytes
+
+    # Type 3: mov DISP(%rbp),%reg  → read ptr from rbp+disp, then deref
+    m = re.match(r'^mov\s+(-?0x[0-9a-fA-F]+)\(%rbp\),\s*%[a-z0-9]+', i)
+    if m:
+        disp = int(m.group(1), 16)
+        # int() handles negative hex correctly if it's two's complement
+        # But -0x10 → ValueError. So handle negative prefix
+        return (3, disp, 4)  # disp8 = 4 bytes typical
+
+    # Type 0 fallback: lea → effective address is in reg
+    if re.match(r'^lea\s+', i):
+        return (0, 0, 7)
+
+    # Default: try dereference
+    return (1, 0, 3)
+
+def parse_df1_layer_chains(build_dir=None):
+    """从 CSV 文件解析间接跳转相关寄存器的三层数据流链。
+    build_dir: 包含 _register_dfi_*.csv 的目录（如 build/test/），默认为 build/test/。
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if build_dir is None:
+        build_dir = os.path.join(script_dir, '..', 'build', 'test')
+
+    # 从目录中的文件名自动推导 basename（如 test、attack）
+    basename = os.path.basename(build_dir.rstrip('/'))
+    instr_csv = os.path.join(build_dir, f'{basename}_register_dfi_instructions.csv')
+    du_csv = os.path.join(build_dir, f'{basename}_register_dfi_def_use_chains.csv')
+
+    func_bases = {}
+    reg_based_jumps = []
+
+    # 读取指令级 CSV
+    with open(instr_csv, 'r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            func = row['function']
+            addr = int(row['address'], 16)
+            if func not in func_bases or addr < func_bases[func]:
+                func_bases[func] = addr
+            if row['indirect_type'] == 'reg_based':
+                if row['indirect_call'] == 'Yes' or row['indirect_jump'] == 'Yes':
+                    reg_based_jumps.append(row)
+            elif row['indirect_type'] == 'ret':
+                if row['is_ret'] == 'Yes':
+                    reg_based_jumps.append(row)   # ret 也视为间接跳转站点
+
+    # 读取 def-use chains，建立索引
+    du_index = {}  # (reg, use_func, use_addr) -> [(def_func, def_addr, def_instr)]
+    with open(du_csv, 'r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            reg = row['reg']
+            use_func = row['use_func']
+            use_addr = int(row['use_addr'], 16)
+            def_func = row['def_func']
+            def_addr_str = row['def_addr']
+            def_addr = int(def_addr_str, 16) if def_addr_str.startswith('0x') else 0
+            def_instr = row['def_instr']
+            key = (reg, use_func, use_addr)
+            if key not in du_index:
+                du_index[key] = []
+            du_index[key].append({
+                'def_func': def_func,
+                'def_addr': def_addr,
+                'def_instr': def_instr,
+            })
+
+    layer_chains = []
+    for jump_row in reg_based_jumps:
+        func = jump_row['function']
+        jump_addr = int(jump_row['address'], 16)
+        instr = jump_row['instruction']
+        func_base = func_bases.get(func, jump_addr)
+
+        # 提取寄存器名
+        reg_match = re.search(r'\*(%[a-z0-9]+)', instr)
+        if not reg_match:
+            # ret 指令没有 *%reg 语法，但 uses rsp (返回地址在 [rsp])
+            if re.match(r'^(ret|retq)$', instr.strip()):
+                reg_name = 'rsp'
+            else:
+                continue
+        else:
+            reg_name_raw = reg_match.group(1).lstrip('%')
+            reg_name = REG_ALIASES.get(reg_name_raw, reg_name_raw)
+
+        # 查找定义链
+        chain_key = (reg_name, func, jump_addr)
+        def_entries = du_index.get(chain_key, [])
+
+        # 按 def_addr 升序（最早的定义排在前面，即执行顺序上先发生的指令）
+        def_entries.sort(key=lambda x: x['def_addr'])
+
+        # 去重
+        seen_addr = set()
+        unique_defs = []
+        for d in def_entries:
+            if d['def_addr'] not in seen_addr and d['def_addr'] != 0:
+                seen_addr.add(d['def_addr'])
+                unique_defs.append(d)
+
+        layers = []
+        # Layer 1: 间接跳转指令本身
+        t1, e1, l1 = classify_instr(instr)
+        layers.append({
+            'level': 1,
+            'def_addr': jump_addr,
+            'offset': jump_addr - func_base,
+            'instr': instr,
+            'instr_type': t1,
+            'extra': e1,
+            'instr_len': l1,
+        })
+        # Layer 2 & 3: 从定义链取
+        for i, d in enumerate(unique_defs[:2]):
+            t, e, il = classify_instr(d['def_instr'])
+            layers.append({
+                'level': i + 2,
+                'def_addr': d['def_addr'],
+                'offset': d['def_addr'] - func_base,
+                'instr': d['def_instr'],
+                'instr_type': t,
+                'extra': e,
+                'instr_len': il,
+            })
+
+        # 补足到 3 层
+        while len(layers) < 3:
+            last = layers[-1].copy()
+            last['level'] = len(layers) + 1
+            layers.append(last)
+
+        # 决定是否需要对 types 2/3 做双重解引用
+        # 如果链中存在 DEREF(instr_type=1) 中间层，则外层的值是指针 → 需要 double deref
+        has_deref = any(l['instr_type'] == 1 for l in layers)
+        for l in layers:
+            if l['instr_type'] in (2, 3):
+                l['need_deref'] = 1 if has_deref else 0
+            else:
+                l['need_deref'] = 0
+
+        # ===== 确定"首次从数据段/栈内存读取"的层 =====
+        # 选择有实际内存读取（instr_type 1=DEREF, 2=RIP_REL, 3=RBP_REL）且
+        # def_addr 最小（即执行顺序上最早发生）的那一层。这样可以确保保存的是
+        # 函数指针被首次从数据段/栈加载时的值，而非攻击路径上被篡改后的值。
+        save_level = None
+        earliest_addr = float('inf')
+        for l in layers:
+            if l['level'] == 1:
+                continue
+            if l['instr_type'] in (1, 2, 3):
+                if l['def_addr'] < earliest_addr:
+                    earliest_addr = l['def_addr']
+                    save_level = l['level']
+        if save_level is None:
+            save_level = 2 if len(layers) >= 2 else 1
+
+        # 根据 save_level 反查实际 offset（防止 L2/L3 同址时 save_level 指向了被跳过的层）
+        save_offset = None
+        for l in layers:
+            if l['level'] == save_level:
+                save_offset = l['offset']
+                break
+
+        chain = {
+            'func': func,
+            'func_base': func_base,
+            'jump_addr': jump_addr,
+            'reg': reg_name,
+            'instr': instr,
+            'layers': layers,
+            'save_level': save_level,
+            'save_offset': save_offset,
+        }
+        layer_chains.append(chain)
+
+    return layer_chains, func_bases
+
+def parse_cfi_table(file_path):
+    table = []
+    with open(file_path, 'r', newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            def to_offset(s):
+                return int(s, 16) if s and s != "UNKNOWN" else 0
+            src_addr = to_offset(row['jump_instr_address'])
+            src_func_addr = to_offset(row['parent_function_start'])
+            dst_addr = to_offset(row['target_address'])
+            instr_len = int(row.get('instr_len', 0)) if row.get('instr_len') else 0
+            instr_content = row.get('instr_content', '').strip()
+            instr_bytes = row.get('instr_bytes', '').strip()
+            jump_instr = row.get('jump_instr', '').strip()
+
+            if jump_instr in ['callq', 'call']:
+                jump_type = 2
+            elif jump_instr == 'jmp':
+                jump_type = 0
+            elif jump_instr in ['ret', 'retq']:
+                jump_type = 3
+            else:
+                jump_type = 1
+
+            is_indirect = 1 if '*' in instr_content else 0
+            if is_indirect:
+                if jump_type == 2: jump_type = 4
+                elif jump_type == 0: jump_type = 5
+
+            # 直接跳转(JMP=0/JCC=1/CALL=2)不再纳入 CFI 表 —— 本工具只关心
+            # 间接调用/跳转(4/5)和 ret(3)，因为只有这些站点会挂 uprobe 校验。
+            if jump_type in (0, 1, 2):
+                continue
+
+            src_func = row.get('parent_function_name', 'unknown').encode('utf-8')[:63]
+            dst_func = row.get('target_function_name', 'unknown').encode('utf-8')[:63]
+
+            opcode = 0
+            if instr_bytes and instr_bytes != '未知':
+                opcode = int(instr_bytes.split()[0], 16)
+
+            table.append({
+                'src_addr': src_addr,
+                'src_func_addr': src_func_addr,
+                'dst_addr': dst_addr,
+                'jump_type': jump_type,
+                'is_indirect': is_indirect,
+                'src_func': src_func,
+                'dst_func': dst_func,
+                'instr_len': instr_len,
+                'instr_content': instr_content,
+                'instr_bytes': instr_bytes,
+                'opcode': opcode,
+            })
+    print(f"✅ 从 CSV 成功解析 {len(table)} 个静态跳转规则")
+    return table
+
+def get_bpf_text():
+    """Load BPF C program from external file."""
+    c_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bpf_program.c')
+    with open(c_path, 'r') as f:
+        return f.read()
+
+def compute_ec_stats(table, cs_allowed, origin_allowed):
+    """Compute Equivalent Class (EC) statistics for hybrid strategy.
+    EC = number of valid targets per indirect control transfer instruction.
+    Returns per-ICT config dict: src_offset -> method (0=none, 1=cs, 2=origin)
+    """
+    ec_stats = {}
+    cs_config = {}
+    for entry in table:
+        src = entry['src_addr']
+        if entry['jump_type'] not in (3, 4, 5):
+            continue
+
+        # Static EC: count all targets in cfi_map for this src
+        static_ec = 1  # basic cfi_map has one entry
+        # Count from CS allowed (dynamic training)
+        cs_ec = 0
+        for (rh, so), targets in cs_allowed.items():
+            if so == src:
+                cs_ec = max(cs_ec, len(targets))
+        # Count from origin allowed (average across all origin groups)
+        origin_ec = 0
+        if origin_allowed:
+            origin_sizes = [len(v) for v in origin_allowed.values()]
+            origin_ec = sum(origin_sizes) / len(origin_sizes)
+
+        ec_stats[src] = {
+            'static_ec': static_ec,
+            'cs_ec': cs_ec if cs_ec > 0 else static_ec,
+            'origin_ec': origin_ec if origin_ec > 0 else 1,
+        }
+
+        # Adaptive strategy: select method based on EC size
+        if origin_ec <= 2:
+            method = 2  # origin sensitive (most precise)
+        elif cs_ec <= 5:
+            method = 1  # call-site sensitive
+        else:
+            method = 0  # none (default cfi_map)
+
+        cs_config[src] = method
+
+    return ec_stats, cs_config
+
+# ---- Call-Site Sensitivity: Training & Enforcement ----
+cs_allowed_targets = {}    # (ret_hash, src_offset) -> set of allowed dst_addrs
+cs_training_rounds = 0
+# ---- Origin Sensitivity: Training & Enforcement ----
+origin_allowed_targets = {}  # origin_inst_offset -> set of allowed func_addrs
+ptr_origin_map_py = {}       # func_ptr_addr -> origin_inst_offset (Python side mirror)
+
+# ---- Mode Control ----
+CFI_MODE = 'train'  # 'train', 'enforce', 'hybrid'
+CFI_METHOD_CONFIG = {}  # src_offset -> method (0=none, 1=cs, 2=origin)
+
+# ---- Dataflow Recording ----
+DATAFLOW_OUTPUT_PREFIX = 'cfi_runtime_record'
+dfi_csv_writer = None     # CSV writer for DFI layer events
+cfi_csv_writer = None     # CSV writer for CFI jump events
+dfi_csv_file = None
+cfi_csv_file = None
+event_log_file = None     # detailed event log
+verbose = False           # print events to terminal (--verbose)
+dfi_site_meta = {}        # (site_id, layer) -> {instr_type, reg, func_name, ...}
+
+LAYER_INSTR_TYPE_NAMES = {
+    0: 'DIRECT', 1: 'DEREF', 2: 'RIP_REL', 3: 'RBP_REL', 4: 'RET',
+}
+
+def log_event(msg: str = ""):
+    """Write to event log file, and to terminal only if verbose."""
+    global event_log_file, verbose
+    if event_log_file:
+        event_log_file.write(msg + "\n")
+        event_log_file.flush()
+    if verbose:
+        print(msg)
+
+def init_dataflow_recorders(output_prefix, script_dir):
+    """Initialize CSV writers and event log for dataflow and CFI event recording."""
+    global dfi_csv_writer, cfi_csv_writer, dfi_csv_file, cfi_csv_file, event_log_file
+    output_dir = os.path.join(script_dir, '..', 'output')
+
+    dfi_path = os.path.join(output_dir, f'{output_prefix}_dfi_layers.csv')
+    cfi_path = os.path.join(output_dir, f'{output_prefix}_cfi_events.csv')
+    log_path = os.path.join(output_dir, f'{output_prefix}_events.log')
+
+    dfi_csv_file = open(dfi_path, 'w', newline='', encoding='utf-8')
+    cfi_csv_file = open(cfi_path, 'w', newline='', encoding='utf-8')
+    event_log_file = open(log_path, 'w', encoding='utf-8')
+
+    dfi_csv_writer = csv.DictWriter(dfi_csv_file, fieldnames=[
+        'event_id', 'timestamp_ns', 'pid', 'cpu',
+        'site_id', 'layer', 'func_name', 'inst_offset',
+        'reg_value', 'target_addr',
+        'instr_type', 'instr_type_name',
+    ])
+    dfi_csv_writer.writeheader()
+
+    cfi_csv_writer = csv.DictWriter(cfi_csv_file, fieldnames=[
+        'event_id', 'timestamp_ns', 'pid', 'cpu',
+        'jump_type', 'jump_type_name',
+        'src_func', 'dst_func', 'src_instr',
+        'src_offset', 'src_func_addr', 'cfi_dst_addr',
+        'reg_rax', 'reg_rcx', 'reg_rdx', 'reg_rbx',
+        'reg_rsp', 'reg_rbp', 'reg_rsi', 'reg_rdi',
+        'ret_addr', 'saved_rax_val', 'saved_rsp_val',
+        'is_correct', 'call_stack_hash', 'ptr_origin',
+    ])
+    cfi_csv_writer.writeheader()
+
+    print(f"📊 数据流记录: {os.path.basename(dfi_path)}")
+    print(f"📊 CFI事件记录: {os.path.basename(cfi_path)}")
+
+def close_dataflow_recorders():
+    """Close CSV and log file handles."""
+    global dfi_csv_file, cfi_csv_file, event_log_file
+    for fh in (dfi_csv_file, cfi_csv_file, event_log_file):
+        if fh:
+            try:
+                fh.close()
+            except Exception:
+                pass
+    dfi_csv_file = None
+    cfi_csv_file = None
+    event_log_file = None
+
+def handle_jump_event(cpu, data, size):
+    global event_count, violation_count, base, cfi_lookup
+    global cs_allowed_targets, cs_training_rounds
+    global origin_allowed_targets, ptr_origin_map_py
+    global CFI_MODE, CFI_METHOD_CONFIG
+    event = b["jump_events"].event(data)
+
+    # 跳转类型名称映射（只保留 ret 与间接调用/跳转，直接跳转已不再追踪）
+    jump_type_names = {
+        3: "RET", 4: "INDIRECT_CALL", 5: "INDIRECT_JMP"
+    }
+    jump_type_name = jump_type_names.get(event.jump_type, f"UNKNOWN({event.jump_type})")
+    status = "✓" if event.is_correct else "✗ VIOLATION"
+
+    if not event.is_correct:
+        violation_count += 1
+
+    # 解码函数名
+    src_func_str = event.src_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
+    dst_func_str = event.dst_func.decode('utf-8', errors='ignore').split('\x00')[0].strip()
+
+    # 从 cfi_lookup 中获取指令信息
+    src_addr_key = event.src_addr
+    cfi_info = cfi_lookup.get(src_addr_key, {})
+    instr_len = cfi_info.get('instr_len', 0)
+    instr_content = cfi_info.get('instr_content', '未知')
+    instr_bytes = cfi_info.get('instr_bytes', '未知')
+    csv_opcode = cfi_info.get('opcode', 0)
+
+    # 输出事件头部
+    log_event("\n" + "="*80)
+    log_event(f"CFI 事件 #{event_count + 1} - {status}")
+    log_event(f"跳转类型: {jump_type_name} ({event.jump_type})")
+    log_event(f"事件时间: {event.timestamp_ns} ns")
+    log_event(f"事件CPU: {event.cpu}")
+    log_event(f"事件PID: {event.pid}")
+    log_event("="*80)
+
+    # CFI 条目信息
+    log_event("\n📋 CFI 条目信息:")
+    log_event(f"  • 源地址(CFI表): 0x{event.src_addr:016x}")
+    log_event(f"  • 源函数地址: 0x{event.src_func_addr:016x}")
+    log_event(f"  • 目标地址(CFI表): 0x{event.cfi_dst_addr:016x}")
+    log_event(f"  • 源函数: {src_func_str}")
+    log_event(f"  • 目标函数: {dst_func_str}")
+
+    # 运行时信息
+    log_event("\n🔄 运行时信息:")
+    log_event(f"  • 运行时源偏移: 0x{event.src_offset:016x}")
+    log_event(f"  • 运行时目标偏移: 0x{event.dst_offset:016x}")
+    if event.expected_dst != 0:
+        log_event(f"  • 预期目标地址: 0x{event.expected_dst:016x}")
+    else:
+        log_event(f"  • 预期目标地址: (间接跳转无静态目标)")
+    log_event(f"  • 运行时指令指针(IP/RIP): 0x{event.runtime_ip:016x}")
+    log_event(f"  • 模块加载基址(module_base): 0x{event.module_base_addr:016x}")
+
+    # 指令信息
+    log_event("\n💻 指令信息 (来自CSV):")
+    log_event(f"  • 指令长度: {instr_len} 字节")
+    log_event(f"  • 指令内容: {instr_content}")
+    log_event(f"  • 指令字节: {instr_bytes}")
+    if instr_bytes and instr_bytes != '未知':
+        log_event(f"  • CSV第一个字节: {instr_bytes.split()[0]}")
+    else:
+        log_event(f"  • CSV第一个字节: 未知")
+
+    # 原始指令字节
+    insn_bytes = bytes(event.insn_bytes)
+    insn_hex = ' '.join([f"{b:02x}" for b in insn_bytes[:16]])
+    log_event(f"  • 原始第一个字节: 0x{insn_bytes[0]:02x} (注: 0xcc=INT3 是 uprobe 断点机制所致)")
+    log_event(f"  • 原始指令字节: {insn_hex}")
+
+    # 合成指令
+    if instr_bytes and instr_bytes != '未知' and instr_len > 1:
+        csv_first_byte = int(instr_bytes.split()[0], 16)
+        new_insn_bytes = [csv_first_byte] + list(insn_bytes[1:instr_len])
+        new_insn_hex = ' '.join([f"{b:02x}" for b in new_insn_bytes])
+        log_event(f"\n  🔧 合成指令 (CSV第一个字节 + 原始字节后{instr_len-1}字节):")
+        log_event(f"     指令字节: {new_insn_hex}")
+
+        # 反汇编合成指令
+        md = Cs(CS_ARCH_X86, CS_MODE_64)
+        md.detail = True
+        for insn in md.disasm(bytes(new_insn_bytes), event.src_offset):
+            log_event(f"     反汇编结果: {insn.mnemonic} {insn.op_str}")
+            if insn.mnemonic.startswith(('j', 'call')):
+                if len(insn.operands) > 0:
+                    op = insn.operands[0]
+                    if op.type == 1:  # 立即数
+                        target_offset = op.imm
+                        target_abs = base + target_offset
+                        log_event(f"         目标偏移: 0x{target_offset:x}")
+                        log_event(f"         目标绝对地址: 0x{target_abs:x}")
+                        if target_abs == event.expected_dst:
+                            log_event(f"         ✓ 与CFI预期目标一致")
+                        else:
+                            log_event(f"         ✗ 与CFI预期目标不一致 (预期: 0x{event.expected_dst:x})")
+            break
+    elif instr_bytes and instr_bytes != '未知' and instr_len == 1:
+        log_event(f"\n  🔧 单字节指令: {instr_bytes}")
+
+    # 根据 CSV 第一字节计算目标地址
+    log_event("\n🎯 【根据 CSV 第一字节计算目标地址】")
+    computed_target = 0
+    comparison_result = "未计算"
+    opcode = csv_opcode if csv_opcode else (insn_bytes[0] if instr_len > 0 else 0)
+
+    if opcode:
+        log_event(f"  • 使用的操作码: 0x{opcode:02x}")
+        # 间接跳转/调用
+        if opcode == 0xFF:
+            if len(insn_bytes) >= 2:
+                modrm = insn_bytes[1]
+                mod = (modrm >> 6) & 3
+                rm = modrm & 7
+                if mod == 3:  # 寄存器间接
+                    reg_names = {
+                        0: 'rax', 1: 'rcx', 2: 'rdx', 3: 'rbx',
+                        4: 'rsp', 5: 'rbp', 6: 'rsi', 7: 'rdi'
+                    }
+                    reg_name = reg_names.get(rm, 'unknown')
+                    reg_map = {
+                        'rax': event.reg_rax, 'rcx': event.reg_rcx, 'rdx': event.reg_rdx,
+                        'rbx': event.reg_rbx, 'rsp': event.reg_rsp, 'rbp': event.reg_rbp,
+                        'rsi': event.reg_rsi, 'rdi': event.reg_rdi
+                    }
+                    computed_target = reg_map.get(reg_name, 0)
+                    log_event(f"  • 间接跳转/调用目标 ({reg_name}): 0x{computed_target:016x}")
+                else:
+                    log_event(f"  • 间接跳转/调用: 内存操作数 (ModRM=0x{modrm:02x})，暂不支持解析")
+                    computed_target = 0
+            else:
+                computed_target = event.reg_rax
+                log_event(f"  • 间接跳转/调用目标 (RAX fallback): 0x{computed_target:016x}")
+
+            if computed_target:
+                if event.expected_dst == 0:
+                    module_end = base + 0x1000000
+                    in_module = base <= computed_target < module_end
+                    comparison_result = "✓ 在模块内" if in_module else "✗ 超出模块范围"
+                else:
+                    match = computed_target == event.expected_dst
+                    comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
+            else:
+                comparison_result = "✗ 无效目标"
+        # 返回指令
+        elif opcode in (0xC3, 0xC2, 0xCB, 0xCA):
+            if event.dst_offset != 0:
+                computed_target = event.ret_addr          # 使用 ret_addr
+                if event.expected_dst == 0:
+                    module_end = base + 0x1000000
+                    in_module = base <= computed_target < module_end
+                    comparison_result = "✓ 在模块内" if in_module else "✗ 超出模块范围"
+                else:
+                    match = computed_target == event.expected_dst
+                    comparison_result = "✓ 一致" if match else f"✗ 不一致 (差值 0x{abs(computed_target - event.expected_dst):x})"
+                log_event(f"  • 返回地址: 0x{computed_target:016x}")
+            else:
+                log_event(f"  • dst_offset 无效，无法计算返回地址")
+        else:
+            comparison_result = "✗ 未知操作码"
+        log_event(f"  🎯 最终计算结果: {comparison_result}")
+    else:
+        log_event("  • 无法获取操作码")
+
+    # 寄存器状态
+    log_event("\n📝 寄存器状态:")
+    log_event(f"  • RAX: 0x{event.reg_rax:016x} (返回值/间接跳转目标)")
+    log_event(f"  • RCX: 0x{event.reg_rcx:016x}")
+    log_event(f"  • RDX: 0x{event.reg_rdx:016x}")
+    log_event(f"  • RBX: 0x{event.reg_rbx:016x}")
+    log_event(f"  • RSP: 0x{event.reg_rsp:016x} (栈指针)")
+    log_event(f"  • RBP: 0x{event.reg_rbp:016x} (帧指针)")
+    log_event(f"  • RSI: 0x{event.reg_rsi:016x}")
+    log_event(f"  • RDI: 0x{event.reg_rdi:016x}")
+
+    # 显示保存的 RAX 值
+    log_event(f"  • 保存的 RAX (trace_rax): 0x{event.saved_rax_val:016x}")
+    log_event(f"  • 保存的 RAX (trace_rsp): 0x{event.saved_rsp_val:016x}")
+    # 跳转分析
+    log_event("\n🔍 跳转分析:")
+    if event.jump_type in [4, 5]:
+        log_event(f"  • 间接跳转指令")
+        log_event(f"  • RAX中的目标: 0x{event.reg_rax:016x}")
+        log_event(f"  • CFI预期目标: 0x{event.expected_dst:016x}")
+        if event.expected_dst != 0:
+            if event.reg_rax == event.expected_dst:
+                log_event(f"    └─ ✓ 目标匹配")
+            else:
+                log_event(f"    └─ ✗ 目标不匹配 (差值: 0x{event.reg_rax - event.expected_dst:x})")
+        else:
+            in_module = base <= event.reg_rax < base + 0x1000000
+            log_event(f"    └─ 目标是否在模块内: {'是' if in_module else '否'}")
+    elif event.jump_type == 3:
+        log_event(f"  • 返回指令")
+        log_event(f"  • 返回地址: 0x{event.ret_addr:016x}")
+        log_event(f"  • 模块范围: [0x{base:016x}, 0x{base + 0x1000000:016x}]")
+
+    # 验证结果
+    log_event("\n✅ 验证结果:")
+    if event.is_correct:
+        log_event(f"  ✓ 此跳转符合CFI规则")
+    else:
+        log_event(f"  ✗ 此跳转违反CFI规则")
+        log_event(f"  🔴 可能的原因:")
+        if event.jump_type in [4, 5] and event.expected_dst != 0 and event.reg_rax != event.expected_dst:
+            log_event(f"     • 间接跳转目标与预期不符")
+        elif event.jump_type in [4, 5] and event.expected_dst == 0:
+            if event.reg_rax < base or event.reg_rax >= base + 0x1000000:
+                log_event(f"     • 间接跳转目标超出模块范围")
+        elif event.jump_type == 3:
+            log_event(f"     • 返回地址异常")
+
+    # ========================================
+    # Call-Site Sensitivity & Origin Sensitivity
+    # ========================================
+    actual_target = event.reg_rax if event.jump_type in (4, 5) else event.ret_addr
+    actual_target_offset = actual_target - event.module_base_addr if actual_target else 0
+    cs_hash = event.call_stack_hash
+    ptr_origin = event.ptr_origin
+
+    method = CFI_METHOD_CONFIG.get(event.src_addr, 1) if CFI_MODE == 'hybrid' else \
+             (1 if CFI_MODE == 'enforce' else 0)
+
+    method_names = {0: "无(无上下文)", 1: "调用点敏感(CS)", 2: "起源敏感(Origin)"}
+    method_name = method_names.get(method, "未知")
+
+    # ---- Display CS/Origin Info ----
+    log_event(f"\n🔐 上下文敏感CFI ({CFI_MODE}模式, 方法={method_name}):")
+    log_event(f"  • 调用栈哈希(CS): 0x{cs_hash:016x}")
+    log_event(f"  • 指针起源(Origin): 0x{ptr_origin:016x}")
+
+    if CFI_MODE == 'train':
+        # ---- Training mode: record observations ----
+        if cs_hash != 0 and event.jump_type in (4, 5):
+            cs_key = (cs_hash, event.src_addr)
+            if cs_key not in cs_allowed_targets:
+                cs_allowed_targets[cs_key] = set()
+            cs_allowed_targets[cs_key].add(actual_target_offset)
+            log_event(f"  📝 CS训练: 记录 (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x}) → 0x{actual_target_offset:x}"
+                  f" [集合大小={len(cs_allowed_targets[cs_key])}]")
+
+        if ptr_origin != 0:
+            if ptr_origin not in origin_allowed_targets:
+                origin_allowed_targets[ptr_origin] = set()
+            origin_allowed_targets[ptr_origin].add(actual_target_offset)
+            # Also update Python-side pointer origin map from event
+            if event.jump_type in (4, 5) and event.reg_rbx != 0:
+                ptr_origin_map_py[event.reg_rbx] = ptr_origin
+            log_event(f"  📝 Origin训练: origin=0x{ptr_origin:x} → 0x{actual_target_offset:x}"
+                  f" [集合大小={len(origin_allowed_targets[ptr_origin])}]")
+
+    elif CFI_MODE in ('enforce', 'hybrid'):
+        # ---- Enforcement mode: check against trained sets ----
+        cs_violation = False
+        origin_violation = False
+
+        if method in (0, 1):  # none or call-site sensitivity
+            if cs_hash != 0 and event.jump_type in (4, 5):
+                cs_key = (cs_hash, event.src_addr)
+                cs_set = cs_allowed_targets.get(cs_key, set())
+                if cs_set and actual_target_offset not in cs_set:
+                    cs_violation = True
+                    log_event(f"  🔴 CS违规: (hash=0x{cs_hash:x}, offset=0x{event.src_addr:x})")
+                    log_event(f"     实际目标(偏移) 0x{actual_target_offset:x} (绝对) 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(cs_set)[:5]]} 中")
+                elif cs_set:
+                    log_event(f"  ✓ CS校验通过: 目标在训练集中 ({len(cs_set)} 个合法)")
+                else:
+                    log_event(f"  ⚠️ CS: 无训练数据，跳过检查")
+
+        if method in (0, 2):  # none or origin sensitivity
+            if ptr_origin != 0:
+                origin_set = origin_allowed_targets.get(ptr_origin, set())
+                if origin_set and actual_target_offset not in origin_set:
+                    origin_violation = True
+                    log_event(f"  🔴 Origin违规: origin=0x{ptr_origin:x}")
+                    log_event(f"     实际目标(偏移) 0x{actual_target_offset:x} (绝对) 0x{actual_target:x} 不在训练集 {[hex(t) for t in list(origin_set)[:5]]} 中")
+                elif origin_set:
+                    log_event(f"  ✓ Origin校验通过: 目标与起源绑定 ({len(origin_set)} 个合法)")
+                else:
+                    log_event(f"  ⚠️ Origin: 无训练数据，跳过检查")
+
+        if cs_violation or origin_violation:
+            log_event(f"  🛑 上下文敏感CFI违规! 终止进程")
+            os._exit(1)
+
+    log_event("\n" + "-"*80)
+    event_count += 1
+
+    # ---- 记录 CFI 事件到 CSV ----
+    global cfi_csv_writer
+    if cfi_csv_writer is not None:
+        cfi_csv_writer.writerow({
+            'event_id': event_count,
+            'timestamp_ns': event.timestamp_ns,
+            'pid': event.pid,
+            'cpu': event.cpu,
+            'jump_type': event.jump_type,
+            'jump_type_name': jump_type_name,
+            'src_func': src_func_str,
+            'dst_func': dst_func_str,
+            'src_instr': cfi_info.get('instr_content', ''),
+            'src_offset': f'0x{event.src_offset:x}',
+            'src_func_addr': f'0x{event.src_func_addr:x}',
+            'cfi_dst_addr': f'0x{event.cfi_dst_addr:x}',
+            'reg_rax': f'0x{event.reg_rax:x}',
+            'reg_rcx': f'0x{event.reg_rcx:x}',
+            'reg_rdx': f'0x{event.reg_rdx:x}',
+            'reg_rbx': f'0x{event.reg_rbx:x}',
+            'reg_rsp': f'0x{event.reg_rsp:x}',
+            'reg_rbp': f'0x{event.reg_rbp:x}',
+            'reg_rsi': f'0x{event.reg_rsi:x}',
+            'reg_rdi': f'0x{event.reg_rdi:x}',
+            'ret_addr': f'0x{event.ret_addr:x}',
+            'saved_rax_val': f'0x{event.saved_rax_val:x}',
+            'saved_rsp_val': f'0x{event.saved_rsp_val:x}',
+            'is_correct': event.is_correct,
+            'call_stack_hash': f'0x{event.call_stack_hash:x}',
+            'ptr_origin': f'0x{event.ptr_origin:x}',
+        })
+
+def handle_df1_layer_event(cpu, data, size):
+    global layer_event_count
+    event = b["dfi_layer_events"].event(data)
+    func_name = event.func_name.decode('utf-8', errors='ignore').split('\x00')[0].strip()
+
+    layer_label = {1: "L1 (call/jmp target)", 2: "L2 (deref ptr)", 3: "L3 (ptr load)"}
+    label = layer_label.get(event.layer, f"L{event.layer}")
+
+    log_event(f"\n{'='*70}")
+    log_event(f"[三层DFI保护] {label}  site_id={event.site_id}  func={func_name}")
+    log_event(f"{'='*70}")
+    log_event(f"  📍 指令偏移:      0x{event.inst_offset:016x}")
+
+    # reg_value: for type 0/1 = register snapshot; for type 2/3 = value read from memory
+    if event.reg_value != 0:
+        log_event(f"  📝 寄存器/内存值:  0x{event.reg_value:016x}")
+    else:
+        log_event(f"  📝 寄存器/内存值:  0x0000000000000000 (读取失败或为空)")
+
+    # target_addr: computed target address
+    if event.target_addr != 0:
+        log_event(f"  🎯 间接跳转目标:  0x{event.target_addr:016x}")
+        if event.layer == 1:
+            log_event(f"      ✅ 目标地址 = 寄存器值 (DIRECT)")
+        elif event.layer == 2:
+            log_event(f"      🔗 *(寄存器/内存值) → 目标地址")
+        elif event.layer == 3:
+            log_event(f"      🔍 **(内存) → 目标地址")
+    else:
+        log_event(f"  🎯 间接跳转目标:  (计算失败或无效)")
+
+    log_event(f"  ⏱️  时间戳:       {event.timestamp} ns")
+    log_event(f"  💻 CPU:           {event.cpu}")
+    log_event(f"  🆔 PID:           {event.pid}")
+    log_event(f"{'─'*70}")
+    layer_event_count += 1
+
+    # ---- 记录数据流到 CSV ----
+    global dfi_csv_writer, dfi_site_meta
+    if dfi_csv_writer is not None:
+        meta = dfi_site_meta.get((event.site_id, event.layer), {})
+        instr_type = meta.get('instr_type', 0)
+
+        dfi_csv_writer.writerow({
+            'event_id': layer_event_count,
+            'timestamp_ns': event.timestamp,
+            'pid': event.pid,
+            'cpu': event.cpu,
+            'site_id': event.site_id,
+            'layer': event.layer,
+            'func_name': func_name,
+            'inst_offset': f'0x{event.inst_offset:x}',
+            'reg_value': f'0x{event.reg_value:x}' if event.reg_value else '0x0',
+            'target_addr': f'0x{event.target_addr:x}' if event.target_addr else '0x0',
+            'instr_type': instr_type,
+            'instr_type_name': LAYER_INSTR_TYPE_NAMES.get(instr_type, 'UNKNOWN'),
+        })
+
+def get_module_base_from_maps(so_name):
+    """从 /proc/self/maps 中获取共享库的加载基址"""
+    with open('/proc/self/maps', 'r') as f:
+        for line in f:
+            if so_name in line:
+                start_addr = int(line.split('-')[0], 16)
+                return start_addr
+    return None
+
+def main():
+    global b, event_count, violation_count, base, cfi_lookup, layer_event_count
+    global cs_allowed_targets, cs_training_rounds
+    global origin_allowed_targets, ptr_origin_map_py
+    global CFI_MODE, CFI_METHOD_CONFIG
+
+    parser = argparse.ArgumentParser(description='CFI/DFI Monitor with Call-Site & Origin Sensitivity')
+    parser.add_argument('-m', '--mode', default='train', choices=['train', 'enforce', 'hybrid'],
+                        help='CFI mode: train (收集数据), enforce (强制执行), hybrid (自适应混合)')
+    parser.add_argument('-o', '--output', default='cfi_runtime_record',
+                        help='输出文件前缀 (默认: cfi_runtime_record)')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='在终端显示详细事件（默认仅写入日志文件）')
+    parser.add_argument('-n', '--iterations', type=int, default=3,
+                        help='test_all() 执行次数，0=无限循环 (默认: 3)')
+    parser.add_argument('--so', default=None,
+                        help='共享库 .so 文件路径 (默认: build/test.so)')
+    parser.add_argument('--entry', default='test_all',
+                        help='入口函数符号名 (默认: test_all)')
+    parser.add_argument('--param', type=int, default=0,
+                        help='传给入口函数的整数参数 (默认: 0，用于 run_attack(N))')
+    parser.add_argument('--csv', default=None,
+                        help='跳转分析 CSV 路径 (默认: build/test_jump_analysis.csv)')
+    args = parser.parse_args()
+
+    if os.geteuid() != 0:
+        print("Run with sudo!")
+        sys.exit(1)
+    CFI_MODE = args.mode
+    global verbose
+    verbose = args.verbose
+
+    event_count = 0
+    layer_event_count = 0
+    violation_count = 0
+    cfi_lookup = {}
+    cs_allowed_targets = {}
+    cs_training_rounds = 0
+    origin_allowed_targets = {}
+    ptr_origin_map_py = {}
+    CFI_METHOD_CONFIG = {}
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_build_dir = os.path.join(script_dir, '..', 'build', 'test')
+    output_dir = os.path.join(script_dir, '..', 'output')
+
+    if CFI_MODE in ('enforce', 'hybrid'):
+        try:
+            with open(os.path.join(output_dir, 'cfi_training_data.json'), 'r') as f:
+                data = json.load(f)
+                cs_allowed_targets = {ast.literal_eval(k): set(v) for k, v in data['cs_allowed_targets'].items()}
+                origin_allowed_targets = {int(k): set(v) for k, v in data['origin_allowed_targets'].items()}
+            print("✅ 已加载历史训练数据")
+        except Exception:
+            print("⚠️ 未找到训练数据，请先运行 --mode train")
+
+    so_name = args.so if args.so else os.path.join(default_build_dir, "test.so")
+    so_path = os.path.abspath(so_name)
+    if not os.path.exists(so_path):
+        print(f"错误：找不到 {so_path}")
+        return
+
+    # 初始化数据流/CFI 事件记录器
+    init_dataflow_recorders(args.output, script_dir)
+
+    print(f"\n{'='*60}")
+    print(f"CFI 模式: {CFI_MODE.upper()}")
+    print(f"{'='*60}")
+
+    # 解析三层 DFI 链
+    print("\n📊 解析三层 DFI 数据流链...")
+    # 从 .so 路径推导 build 目录（如 build/attack/attack.so → build/attack/）
+    build_dir = os.path.dirname(so_path)
+    layer_chains, func_bases = parse_df1_layer_chains(build_dir)
+    print(f"✅ 发现 {len(layer_chains)} 个基于寄存器的间接跳转站点")
+    for chain in layer_chains:
+        save_level = chain.get('save_level')
+        save_offset = chain.get('save_offset')
+        print(f"   • {chain['func']} @ 0x{chain['jump_addr']:x}  寄存器={chain['reg']}  "
+              f"[首次内存读取/保存层 = L{save_level} @ offset=0x{save_offset:x}]")
+        for layer in chain['layers']:
+            itype_names = {0: "DIRECT", 1: "DEREF", 2: "RIP_REL", 3: "RBP_REL"}
+            itname = itype_names.get(layer.get('instr_type', 0), "?")
+            mark = " ⭐(保存点)" if (save_offset is not None and layer['offset'] == save_offset) else ""
+            print(f"      L{layer['level']}: 0x{layer['def_addr']:x} (offset=0x{layer['offset']:x}) "
+                  f"type={itname} extra=0x{layer.get('extra',0):x} len={layer.get('instr_len',0)} "
+                  f"deref={layer.get('need_deref',0)} "
+                  f"→ {layer['instr']}{mark}")
+
+    # ---- 填充全局 site_meta，供 CSV 记录回调使用 ----
+    global dfi_site_meta
+    dfi_site_meta.clear()
+    for site_id, chain in enumerate(layer_chains):
+        for lyr in chain['layers']:
+            key = (site_id, lyr['level'])
+            dfi_site_meta[key] = {
+                'instr_type': lyr.get('instr_type', 0),
+                'reg': chain['reg'],
+                'func_name': chain['func'],
+            }
+
+    # 解析 CFI 表
+    csv_path = args.csv if args.csv else os.path.join(default_build_dir, "test_jump_analysis.csv")
+    table = parse_cfi_table(csv_path)
+    for entry in table:
+        cfi_lookup[entry['src_addr']] = entry
+
+    # ---- Compute EC stats for hybrid strategy ----
+    if CFI_MODE == 'hybrid':
+        print(f"\n📊 自适应混合策略 EC 分析...")
+        ec_stats, CFI_METHOD_CONFIG = compute_ec_stats(table, cs_allowed_targets, origin_allowed_targets)
+        n_none = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 0)
+        n_cs = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 1)
+        n_origin = sum(1 for v in CFI_METHOD_CONFIG.values() if v == 2)
+        print(f"  策略分配: 无上下文={n_none}, 调用点敏感={n_cs}, 起源敏感={n_origin}")
+        for src, method in CFI_METHOD_CONFIG.items():
+            ec = ec_stats.get(src, {})
+            method_names = {0: "无", 1: "CS", 2: "Origin"}
+            print(f"  0x{src:x}: EC(static={ec.get('static_ec',0)}, cs={ec.get('cs_ec',0)}, "
+                  f"origin={ec.get('origin_ec',0)}) -> {method_names.get(method, '?')}")
+
+    # 从 CSV 中获取入口函数的静态偏移（用于验证模块基址）
+    entry_symbol = args.entry
+    static_offset = None
+    for entry_row in table:
+        if entry_row['src_func'].decode() == entry_symbol:
+            static_offset = entry_row['src_func_addr']
+            break
+    if static_offset is None:
+        print(f"警告：无法从 CSV 中找到 {entry_symbol} 函数起始地址，跳过静态偏移验证")
+    else:
+        print(f"入口函数 {entry_symbol} 静态偏移: 0x{static_offset:x}")
+
+    # 加载 BPF 程序
+    print("\n加载BPF程序...")
+    b = BPF(text=get_bpf_text())
+
+    # 计算模块基址
+    lib = ctypes.CDLL(so_path)
+    func_addr = ctypes.cast(getattr(lib, entry_symbol), ctypes.c_void_p).value
+    so_basename = os.path.basename(so_path)
+    base = get_module_base_from_maps(so_basename)
+    print(f"检测到 {so_basename} 基址: 0x{base:x}")
+
+    b["module_base"][ctypes.c_uint64(0)] = ctypes.c_uint64(base)
+
+    # 加载 CFI 规则
+    for entry in table:
+        offset = ctypes.c_uint64(entry['src_addr'])
+        cfi = CfiEntry(**{k: v for k, v in entry.items() if k in [f[0] for f in CfiEntry._fields_]})
+        b["cfi_map"][offset] = cfi
+
+    # 打开 perf buffers
+    b["jump_events"].open_perf_buffer(handle_jump_event)
+    b["dfi_layer_events"].open_perf_buffer(handle_df1_layer_event)
+
+    # ---- Attach Origin Sensitivity probes ----
+    print("\n🔗 挂载起源敏感 (Origin Sensitivity) 指针赋值探针...")
+    origin_probes_attached = 0
+    # Attach trace_ptr_store on key function entry points where pointers are assigned
+    for chain in layer_chains:
+        if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:
+            continue  # skip RET sites for origin tracking
+        sym_name = chain['func'].split('@')[0]
+        for layer in chain['layers']:
+            if layer['level'] in (2, 3) and layer.get('instr_type') in (1, 2, 3):
+                # These are the data-read layers — the L2/L3 that perform memory reads
+                # We attach trace_ptr_store to capture origin of function pointer
+                try:
+                    b.attach_uprobe(name=so_path, sym=sym_name,
+                                    sym_off=layer['offset'], fn_name="trace_ptr_store")
+                    origin_probes_attached += 1
+                    print(f"  ✓ Origin探针: {sym_name}+0x{layer['offset']:x} ({layer['instr']})")
+                except Exception:
+                    pass
+    print(f"  共挂载 {origin_probes_attached} 个起源敏感探针")
+
+    # 加载三层 DFI 配置并挂载 uprobes
+    print("\n🔗 挂载三层 DFI 数据流保护 + CFI 校验 uprobes...")
+    attached = {}  # (sym_name, sym_off) -> fn_name，处理 L2/L3 同偏移冲突
+
+    for site_id, chain in enumerate(layer_chains):
+        if chain['reg'] == 'rsp' and chain['layers'][0]['instr_type'] == 4:   # RET 站点
+            l1 = chain['layers'][0]
+            sym = chain['func'].split('@')[0]
+            b.attach_uprobe(name=so_path, sym=sym, sym_off=0, fn_name="trace_ret_target")
+            b.attach_uprobe(name=so_path, sym=sym, sym_off=l1['offset'], fn_name="trace_all_jumps")
+            print(f"  ✓ RET site#{site_id}: {sym}+0x0 (函数开头保存返回地址) + 0x{l1['offset']:x} (跳转时校验)")
+            continue
+        reg_idx = REG_TO_IDX.get(chain['reg'], 0)
+        func = chain['func']
+        sym_name = func.split('@')[0]
+        save_level = chain.get('save_level', 2)
+        save_offset = chain.get('save_offset')
+
+        for layer in chain['layers']:
+            level = layer['level']
+            def_addr = layer['def_addr']
+            sym_off = layer['offset']
+            addr_key = (sym_name, sym_off)
+
+            if level == 1:
+                fn_name = "trace_df1_l1"
+            elif level == 2:
+                fn_name = "trace_df1_l2"
+            else:
+                fn_name = "trace_df1_l3"
+
+            if level != 1 and addr_key in attached:
+                existing_fn = attached[addr_key]
+                if (level == 3 and existing_fn == "trace_df1_l2") or \
+                   (level == 2 and existing_fn == "trace_df1_l3"):
+                    print(f"  ⚠️ 跳过重复挂载: {sym_name}+0x{sym_off:x} (L{level}, 已挂载 {existing_fn})")
+                    continue
+
+            meta = DfiLayerMeta()
+            meta.site_id = site_id
+            meta.reg_sel = reg_idx
+            meta.instr_type = layer.get('instr_type', 0)
+            meta.extra = layer.get('extra', 0)
+            meta.instr_len = layer.get('instr_len', 0)
+            meta.need_deref = layer.get('need_deref', 0)
+            meta.save_target_to_saved_rax = 1 if (save_offset is not None and sym_off == save_offset) else 0
+            fn_bytes = chain['func'].encode('utf-8')[:63]
+            meta.func_name = fn_bytes
+
+            cfg_key = ctypes.c_uint64(def_addr)
+            if level == 1:
+                b["dfi_l1_cfg"][cfg_key] = meta
+            elif level == 2:
+                b["dfi_l2_cfg"][cfg_key] = meta
+            else:
+                b["dfi_l3_cfg"][cfg_key] = meta
+
+            try:
+                b.attach_uprobe(name=so_path, sym=sym_name, sym_off=sym_off, fn_name=fn_name)
+                if level != 1:
+                    attached[addr_key] = fn_name
+                save_tag = " +SAVE(首次内存读取)" if (save_offset is not None and sym_off == save_offset) else ""
+                tag = {1: "DFI+L1(实际目标)", 2: "DFI+L2", 3: "DFI+L3"}.get(level, f"L{level}")
+                print(f"  ✓ site#{site_id} {tag}{save_tag}: {sym_name}+0x{sym_off:x}  ({layer['instr']})")
+            except Exception as e:
+                print(f"  ✗ site#{site_id} L{level}: {sym_name}+0x{sym_off:x} 挂载失败 ({e})")
+
+            if level == 1:
+                try:
+                    b.attach_uprobe(name=so_path, sym=sym_name, sym_off=sym_off, fn_name="trace_all_jumps")
+                    print(f"  ✓ site#{site_id} CFI:     {sym_name}+0x{sym_off:x}  (trace_all_jumps)")
+                except Exception as e:
+                    print(f"  ✗ site#{site_id} CFI:     {sym_name}+0x{sym_off:x}  ({e})")
+
+    # 触发函数
+    iterations = args.iterations
+    entry_param = args.param
+    entry_func = getattr(lib, entry_symbol)
+    trigger_done = threading.Event()
+
+    def trigger():
+        if iterations == 0:
+            while not trigger_done.is_set():
+                try:
+                    entry_func(entry_param) if entry_param else entry_func()
+                except Exception:
+                    pass
+                time.sleep(1)
+        else:
+            for i in range(iterations):
+                if trigger_done.is_set():
+                    break
+                try:
+                    if entry_param:
+                        entry_func(entry_param)
+                    else:
+                        entry_func()
+                except Exception as e:
+                    print(f"  [!] {entry_symbol} 第{i+1}轮异常: {e}")
+                time.sleep(0.5)
+            trigger_done.set()
+
+    threading.Thread(target=trigger, daemon=True).start()
+
+    mode_label = {"train": "训练模式 (收集CS/Origin数据)", "enforce": "强制执行模式", "hybrid": "自适应混合模式"}
+    iter_label = f"{iterations} 次" if iterations > 0 else "无限循环"
+    print(f"\n=== CFI 监控已启动（{CFI_MODE}: {mode_label.get(CFI_MODE, CFI_MODE)}）===")
+    print(f"执行次数: {iter_label}")
+    if verbose:
+        print("详细模式: 事件将打印到终端")
+    else:
+        print("静默模式: 事件仅写入日志文件 (使用 -v 开启终端输出)")
+    print(f"事件日志: output/{args.output}_events.log")
+    print("按 Ctrl+C 停止\n")
+
+    last_report = 0
+    try:
+        while not trigger_done.is_set():
+            b.perf_buffer_poll(timeout=100)
+            total = event_count + layer_event_count
+            if total > 0 and total - last_report >= 10:
+                sys.stdout.write(f"\r  CFI: {event_count} | DFI: {layer_event_count} | 违规: {violation_count}  ")
+                sys.stdout.flush()
+                last_report = total
+        # 触发完成后等待缓冲写入
+        sys.stdout.write("\r" + " " * 70 + "\r")
+        print("触发完成，等待缓冲事件写入...")
+        b.perf_buffer_poll(timeout=500)
+        time.sleep(0.5)
+    except KeyboardInterrupt:
+        sys.stdout.write("\r" + " " * 70 + "\r")
+        print("\n监控已停止")
+        trigger_done.set()
+    finally:
+        # 关闭数据流/CFI 事件记录器
+        close_dataflow_recorders()
+        print(f"✅ 数据流记录已保存")
+
+        if CFI_MODE == 'train':
+            try:
+                training_data = {
+                    'cs_allowed_targets': {str(k): list(v) for k, v in cs_allowed_targets.items()},
+                    'origin_allowed_targets': {str(k): list(v) for k, v in origin_allowed_targets.items()}
+                }
+                with open(os.path.join(output_dir, 'cfi_training_data.json'), 'w') as f:
+                    json.dump(training_data, f, indent=2)
+                print("✅ 训练数据已保存到 cfi_training_data.json")
+            except Exception as e:
+                print(f"⚠️ 训练数据保存失败: {e}")
+
+        print(f"\n=== 最终统计 ===")
+        print(f"- CFI模式: {CFI_MODE}")
+        print(f"- CFI规则数: {len(table)}")
+        print(f"- 处理事件数: {event_count}")
+        print(f"- CFI违规数: {violation_count}")
+        print(f"- 三层DFI事件数: {layer_event_count}")
+        if event_count > 0:
+            violation_rate = (violation_count / event_count) * 100
+            print(f"- 违规率: {violation_rate:.2f}%")
+        print(f"\n--- 上下文敏感统计 ---")
+        print(f"- CS训练条目数: {len(cs_allowed_targets)}")
+        total_cs_targets = sum(len(v) for v in cs_allowed_targets.values())
+        print(f"- CS目标总数: {total_cs_targets}")
+        print(f"- Origin训练条目数: {len(origin_allowed_targets)}")
+        total_origin_targets = sum(len(v) for v in origin_allowed_targets.values())
+        print(f"- Origin目标总数: {total_origin_targets}")
+        # Print per-ICT EC summary for CS
+        if cs_allowed_targets:
+            print(f"\n  Call-Site敏感 EC 统计 (前10):")
+            cs_items = sorted(cs_allowed_targets.items(),
+                            key=lambda x: len(x[1]), reverse=True)[:10]
+            for (rh, so), targets in cs_items:
+                print(f"    offset=0x{so:x} hash=0x{rh:x} EC={len(targets)} "
+                      f"targets={[hex(t) for t in list(targets)[:3]]}{'...' if len(targets) > 3 else ''}")
+        if origin_allowed_targets:
+            print(f"\n  Origin敏感 EC 统计 (前10):")
+            origin_items = sorted(origin_allowed_targets.items(),
+                                key=lambda x: len(x[1]), reverse=True)[:10]
+            for origin, targets in origin_items:
+                print(f"    origin=0x{origin:x} EC={len(targets)} "
+                      f"targets={[hex(t) for t in list(targets)[:3]]}{'...' if len(targets) > 3 else ''}")
+
+if __name__ == "__main__":
+    main()

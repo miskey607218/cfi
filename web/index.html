@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFI/DFI 融合监控 — 基于 eBPF 的运行时安全</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Navigation                              -->
+<!-- ═══════════════════════════════════════ -->
+<header class="navbar">
+  <a href="/" class="logo">
+    <span class="icon">&#128737;</span> CFI/DFI Monitor
+  </a>
+  <nav>
+    <a href="/" class="active">首页</a>
+    <a href="/dashboard">控制面板</a>
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub &#8599;</a>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Hero                                    -->
+<!-- ═══════════════════════════════════════ -->
+<section class="hero">
+  <h1>CFI/DFI 融合监控系统</h1>
+  <p class="subtitle">
+    基于 eBPF uprobe 的运行时安全监控 — 同步监督控制流完整性（CFI）、
+    记录数据流（DFI）、并支持攻击场景模拟与检测验证
+  </p>
+  <div class="badge-row">
+    <span class="badge-tag">eBPF uprobe</span>
+    <span class="badge-tag">x86-64</span>
+    <span class="badge-tag">Python + C</span>
+    <span class="badge-tag">Control Flow Integrity</span>
+    <span class="badge-tag">Data Flow Integrity</span>
+    <span class="badge-tag">Attack Simulation</span>
+  </div>
+  <div class="btn-row">
+    <a href="/dashboard" class="btn btn-primary">&#9889; 打开控制面板</a>
+    <a href="https://github.com" class="btn btn-outline" target="_blank" rel="noopener">&#9733; GitHub</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Features                                -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section">
+  <h2>核心能力</h2>
+  <p class="section-desc">三大模块协同工作，覆盖运行时安全监控的完整链路</p>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feat-icon">&#128737;</div>
+      <h3>CFI 控制流校验</h3>
+      <p>
+        实时检测间接调用/跳转/返回指令的目标地址是否合法。
+        支持三级等价类缩小：全地址空间 → 静态函数头集合 →
+        调用点敏感 (Call-Site) → 起源敏感 (Origin)。
+        违规行为可配置为 SIGKILL 强制终止。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#128200;</div>
+      <h3>DFI 三层数据流追踪</h3>
+      <p>
+        L3（指针加载）→ L2（解引用）→ L1（间接跳转执行），
+        逐层记录寄存器值与内存地址，完整还原函数指针从数据段
+        到间接跳转的全链路传播过程。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#9889;</div>
+      <h3>攻击场景模拟</h3>
+      <p>
+        内置 7 种 CFI 违规攻击：栈溢出覆写函数指针、返回地址劫持、
+        vtable 破坏、堆溢出、双重指针劫持等。
+        SAFE/ATTACK 双模式，通过 Web 前端一键执行并实时查看检测结果。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#127758;</div>
+      <h3>Web 可视化面板</h3>
+      <p>
+        Chart.js 动态图表（跳转类型饼图、DFI 层柱状图、正确率时间线），
+        CFI 事件表（搜索/过滤/分页），DFI 数据流链卡片。
+        攻击控制台支持异步编译、执行、结果轮询。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#128269;</div>
+      <h3>静态数据流分析</h3>
+      <p>
+        解析 objdump 反汇编，构建基本块 CFG，迭代求解 reaching definitions，
+        为每个间接跳转站点生成 def-use 链，识别跨函数/未定义的数据流路径。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#9881;</div>
+      <h3>灵活运行模式</h3>
+      <p>
+        <b>Train</b> — 收集正常行为基线数据 &nbsp;
+        <b>Enforce</b> — 强制校验，违规立即终止 &nbsp;
+        <b>Hybrid</b> — 自适应策略，根据等价类大小动态选择方法
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Architecture                            -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border); max-width:100%; padding-left:0; padding-right:0;">
+  <div style="max-width:1100px; margin:0 auto; padding:0 32px;">
+    <h2>系统架构</h2>
+    <p class="section-desc">编译 → 静态分析 → eBPF 运行时监控 → 数据可视化 完整流水线</p>
+
+    <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; font-family:monospace; font-size:12px; line-height:1.8; color:var(--fg-dim);">
+      <span style="color:var(--fg-bright);font-weight:700;">Pipeline:</span><br>
+      <span style="color:var(--accent);">gcc</span> test.c/attack.c &rarr; .so <br>
+      &nbsp;&#x2514; <span style="color:var(--accent);">objdump -d</span> &rarr; .txt <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--accent2);">transformToCsv.py</span> &rarr; jump_analysis.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--accent2);">dataflow_analysis.py</span> &rarr; register_dfi_*.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--bad);">dfi_monitor.py</span> (eBPF uprobes) &rarr; output/*.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--info);">server.py</span> &rarr; Web Dashboard
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Project Archive                        -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section">
+  <h2>项目档案</h2>
+  <p class="section-desc">完整的测试场景覆盖与攻击场景分类</p>
+
+  <h3 style="font-size:15px;color:var(--fg-bright);margin-bottom:10px;">test.c — 17 种正常间接跳转场景</h3>
+  <div style="overflow-x:auto;margin-bottom:24px;">
+    <table class="archive-table">
+      <thead>
+        <tr><th>#</th><th>场景</th><th>跳转模式</th><th>关键指令</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>01</td><td>全局函数指针调用</td><td>GOT 间接</td><td style="font-family:monospace;font-size:11px">call *ptr(%rip)</td></tr>
+        <tr><td>02</td><td>局部函数指针调用</td><td>寄存器间接</td><td style="font-family:monospace;font-size:11px">call *%rax</td></tr>
+        <tr><td>03</td><td>函数指针表调用</td><td>数组索引间接</td><td style="font-family:monospace;font-size:11px">mov array(,%rax,8),%rax &rarr; call *%rax</td></tr>
+        <tr><td>04</td><td>栈上函数指针</td><td>RBP 相对寻址</td><td style="font-family:monospace;font-size:11px">mov -N(%rbp),%rax &rarr; call *%rax</td></tr>
+        <tr><td>05</td><td>vtable 模拟</td><td>结构体成员</td><td style="font-family:monospace;font-size:11px">mov OFFSET(%rax),%rax &rarr; call *%rax</td></tr>
+        <tr><td>06</td><td>回调函数指针传参</td><td>参数寄存器</td><td style="font-family:monospace;font-size:11px">call *%rdi</td></tr>
+        <tr><td>07</td><td>间接跳转（尾调用）</td><td>jmp 间接</td><td style="font-family:monospace;font-size:11px">jmp *%rax</td></tr>
+        <tr><td>08</td><td>带返回值的间接调用</td><td>rax 覆盖验证</td><td style="font-family:monospace;font-size:11px">call *%rax (rax=retval)</td></tr>
+        <tr><td>09</td><td>多参数间接调用</td><td>三参数调用</td><td style="font-family:monospace;font-size:11px">call *%rax (rdi/rsi/rdx)</td></tr>
+        <tr><td>10</td><td>volatile 强制内存路径</td><td>栈加载</td><td style="font-family:monospace;font-size:11px">栈 &rarr; mov &rarr; call *%rax</td></tr>
+        <tr><td>11</td><td>条件选择间接调用</td><td>jcc + 间接</td><td style="font-family:monospace;font-size:11px">if-else fptr &rarr; call *%rax</td></tr>
+        <tr><td>12</td><td>switch-case 分发</td><td>跳转表风格</td><td style="font-family:monospace;font-size:11px">多路分支 fptr</td></tr>
+        <tr><td>13</td><td>LEA 计算目标地址</td><td>lea + 间接</td><td style="font-family:monospace;font-size:11px">lea target(%rip),%rax &rarr; call *%rax</td></tr>
+        <tr><td>14</td><td>嵌套返回链</td><td>多层 call/ret</td><td style="font-family:monospace;font-size:11px">返回地址栈追踪</td></tr>
+        <tr><td>15</td><td>双重指针间接调用</td><td>两级解引用</td><td style="font-family:monospace;font-size:11px">mov (%rax),%rax &rarr; call *%rax</td></tr>
+        <tr><td>16</td><td>函数返回指针再调用</td><td>跨调用数据流</td><td style="font-family:monospace;font-size:11px">rax 由上层 call 定义</td></tr>
+        <tr><td>17</td><td>嵌套结构体函数指针</td><td>多层 struct</td><td style="font-family:monospace;font-size:11px">深层成员访问</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-size:15px;color:var(--fg-bright);margin-bottom:10px;">attack.c — 7 种 CFI 攻击场景</h3>
+  <div style="overflow-x:auto;">
+    <table class="archive-table">
+      <thead>
+        <tr><th>#</th><th>攻击名称</th><th>攻击原理</th><th>违规 CFI 类型</th><th>严重度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>01</td><td>全局指针劫持</td><td>setup 设置合法指针 → ATTACK 篡改为 evil → call 时 saved≠rax</td><td>INDIRECT_CALL</td><td><span style="color:#dc2626;font-weight:600;">HIGH</span></td></tr>
+        <tr><td>02</td><td>双重指针劫持</td><td>通过二级指针间接修改最终调用目标</td><td>INDIRECT_CALL</td><td><span style="color:#d97706;font-weight:600;">MEDIUM</span></td></tr>
+        <tr><td>03</td><td>条件分支劫持</td><td>攻击者控制分支条件，走入持有非法指针的路径</td><td>INDIRECT_CALL</td><td><span style="color:#d97706;font-weight:600;">MEDIUM</span></td></tr>
+        <tr><td>04</td><td>结构体函数指针替换</td><td>模拟 vtable 破坏：结构体 action 成员被篡改</td><td>INDIRECT_CALL</td><td><span style="color:#dc2626;font-weight:600;">HIGH</span></td></tr>
+        <tr><td>05</td><td>返回指针劫持</td><td>函数返回合法指针后，攻击者替换再调用</td><td>INDIRECT_CALL</td><td><span style="color:#dc2626;font-weight:600;">HIGH</span></td></tr>
+        <tr><td>06</td><td>堆回调替换</td><td>malloc 后的函数指针被篡改</td><td>INDIRECT_CALL</td><td><span style="color:#dc2626;font-weight:600;">HIGH</span></td></tr>
+        <tr><td>07</td><td>函数指针表投毒</td><td>初始化表后篡改某一槽位</td><td>INDIRECT_CALL</td><td><span style="color:#d97706;font-weight:600;">MEDIUM</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Quick Start                             -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section" style="background:#fff; border-top:1px solid var(--border); max-width:100%; padding-left:0; padding-right:0;">
+  <div style="max-width:1100px; margin:0 auto; padding:0 32px;">
+    <h2>快速开始</h2>
+    <p class="section-desc">三步启动监控系统</p>
+
+    <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; font-family:monospace; font-size:13px; line-height:1.7;">
+      <span style="color:var(--fg-dim);"># 1. 安装依赖</span><br>
+      <span style="color:var(--accent);">pip install bcc capstone</span><br><br>
+      <span style="color:var(--fg-dim);"># 2. 一键运行正常测试</span><br>
+      <span style="color:var(--accent);">./run.sh</span> train demo 3<br><br>
+      <span style="color:var(--fg-dim);"># 3. 启动 Web 面板</span><br>
+      <span style="color:var(--accent);">python3 src/server.py</span><br>
+      <span style="color:var(--fg-dim);"># &rarr; 浏览器打开 http://localhost:8080</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Footer                                  -->
+<!-- ═══════════════════════════════════════ -->
+<footer class="footer">
+  CFI/DFI 融合监控 &copy; 2026 &nbsp;|&nbsp;
+  <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> &nbsp;|&nbsp;
+  基于 eBPF &amp; Python 构建
+</footer>
+
+</body>
+</html>

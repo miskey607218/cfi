@@ -1,0 +1,522 @@
+﻿function,address,instruction,src_regs(USE),dst_regs(DEF),indirect_call,indirect_jump,is_ret,indirect_type,indirect_severity,dfi_violation,violation_reason
+_init,0x1000,endbr64,-,-,No,No,No,-,none,OK,none
+_init,0x1004,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_init,0x1008,"mov 0x2fb1(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+_init,0x100f,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+_init,0x1012,je 1016 <_init+0x16>,-,-,No,No,No,-,none,OK,none
+_init,0x1014,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1008; indirect call reg_based target rax L2: terminal (param) at _init
+_init,0x1016,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_init,0x101a,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+.plt,0x1020,push 0x2fca(%rip),-,rsp,No,No,No,-,none,OK,none
+.plt,0x1026,jmp *0x2fcc(%rip),-,-,No,Yes,No,got_based,low,OK,none
+.plt,0x102c,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+.plt,0x1030,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1034,push $0x0,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1039,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x103e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1040,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1044,push $0x1,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1049,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x104e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1050,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1054,push $0x2,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1059,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x105e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1060,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1064,push $0x3,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1069,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x106e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1070,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1074,push $0x4,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1079,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x107e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1080,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1084,push $0x5,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1089,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x108e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x1090,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1094,push $0x6,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1099,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x109e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10a0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10a4,push $0x7,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10a9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10ae,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10b0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10b4,push $0x8,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10b9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10be,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10c0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10c4,push $0x9,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10c9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10ce,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10d0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10d4,push $0xa,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10d9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10de,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10e0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10e4,push $0xb,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10e9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10ee,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+.plt,0x10f0,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x10f4,push $0xc,-,rsp,No,No,No,-,none,OK,none
+.plt,0x10f9,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x10fe,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+__cxa_finalize@plt,0x1100,endbr64,-,-,No,No,No,-,none,OK,none
+__cxa_finalize@plt,0x1104,jmp *0x2ed6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+__cxa_finalize@plt,0x110a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+free@plt,0x1110,endbr64,-,-,No,No,No,-,none,OK,none
+free@plt,0x1114,jmp *0x2ee6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+free@plt,0x111a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+puts@plt,0x1120,endbr64,-,-,No,No,No,-,none,OK,none
+puts@plt,0x1124,jmp *0x2ede(%rip),-,-,No,Yes,No,got_based,low,OK,none
+puts@plt,0x112a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_03@plt,0x1130,endbr64,-,-,No,No,No,-,none,OK,none
+attack_03@plt,0x1134,jmp *0x2ed6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_03@plt,0x113a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_07@plt,0x1140,endbr64,-,-,No,No,No,-,none,OK,none
+attack_07@plt,0x1144,jmp *0x2ece(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_07@plt,0x114a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_01@plt,0x1150,endbr64,-,-,No,No,No,-,none,OK,none
+attack_01@plt,0x1154,jmp *0x2ec6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_01@plt,0x115a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_05@plt,0x1160,endbr64,-,-,No,No,No,-,none,OK,none
+attack_05@plt,0x1164,jmp *0x2ebe(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_05@plt,0x116a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+run_attack@plt,0x1170,endbr64,-,-,No,No,No,-,none,OK,none
+run_attack@plt,0x1174,jmp *0x2eb6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+run_attack@plt,0x117a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+__stack_chk_fail@plt,0x1180,endbr64,-,-,No,No,No,-,none,OK,none
+__stack_chk_fail@plt,0x1184,jmp *0x2eae(%rip),-,-,No,Yes,No,got_based,low,OK,none
+__stack_chk_fail@plt,0x118a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+printf@plt,0x1190,endbr64,-,-,No,No,No,-,none,OK,none
+printf@plt,0x1194,jmp *0x2ea6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+printf@plt,0x119a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+malloc@plt,0x11a0,endbr64,-,-,No,No,No,-,none,OK,none
+malloc@plt,0x11a4,jmp *0x2e9e(%rip),-,-,No,Yes,No,got_based,low,OK,none
+malloc@plt,0x11aa,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_04@plt,0x11b0,endbr64,-,-,No,No,No,-,none,OK,none
+attack_04@plt,0x11b4,jmp *0x2e96(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_04@plt,0x11ba,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_02@plt,0x11c0,endbr64,-,-,No,No,No,-,none,OK,none
+attack_02@plt,0x11c4,jmp *0x2e8e(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_02@plt,0x11ca,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+attack_06@plt,0x11d0,endbr64,-,-,No,No,No,-,none,OK,none
+attack_06@plt,0x11d4,jmp *0x2e86(%rip),-,-,No,Yes,No,got_based,low,OK,none
+attack_06@plt,0x11da,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11e0,"lea 0x2e89(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11e7,"lea 0x2e82(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11ee,"cmp %rdi,%rax","rdi,rax",-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11f1,je 1208 <deregister_tm_clones+0x28>,-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11f3,"mov 0x2da6(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11fa,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11fd,je 1208 <deregister_tm_clones+0x28>,-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x11ff,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x11f3; indirect jump reg_based target rax L2: terminal (param) at deregister_tm_clones
+deregister_tm_clones,0x1201,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1208,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+deregister_tm_clones,0x1209,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x1210,"lea 0x2e59(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+register_tm_clones,0x1217,"lea 0x2e52(%rip),%rsi",-,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x121e,"sub %rdi,%rsi","rdi,rsi",rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x1221,"mov %rsi,%rax",rsi,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x1224,"shr $0x3f,%rsi",rsi,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x1228,"sar $0x3,%rax",rax,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x122c,"add %rax,%rsi","rax,rsi",rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x122f,"sar $1,%rsi",rsi,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x1232,je 1248 <register_tm_clones+0x38>,-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x1234,"mov 0x2d95(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x123b,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+register_tm_clones,0x123e,je 1248 <register_tm_clones+0x38>,-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x1240,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x1234; indirect jump reg_based target rax L2: terminal (param) at register_tm_clones
+register_tm_clones,0x1242,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x1248,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+register_tm_clones,0x1249,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1250,endbr64,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1254,"cmpb $0x0,0x2e15(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x125b,jne 1288 <__do_global_dtors_aux+0x38>,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x125d,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x125e,"cmpq $0x0,0x2d7a(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1266,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1269,je 1277 <__do_global_dtors_aux+0x27>,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x126b,"mov 0x2df6(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1272,call 1100 <__cxa_finalize@plt>,-,rax,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1277,call 11e0 <deregister_tm_clones>,-,rax,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x127c,"movb $0x1,0x2ded(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1283,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1284,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+__do_global_dtors_aux,0x1285,nopl (%rax),-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1288,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+__do_global_dtors_aux,0x1289,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+frame_dummy,0x1290,endbr64,-,-,No,No,No,-,none,OK,none
+frame_dummy,0x1294,jmp 1210 <register_tm_clones>,-,-,No,No,No,-,none,OK,none
+legit_a,0x1299,endbr64,-,-,No,No,No,-,none,OK,none
+legit_a,0x129d,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+legit_a,0x129e,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+legit_a,0x12a1,"lea 0xd58(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+legit_a,0x12a8,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+legit_a,0x12ab,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+legit_a,0x12b0,nop,-,-,No,No,No,-,none,OK,none
+legit_a,0x12b1,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+legit_a,0x12b2,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+legit_b,0x12b3,endbr64,-,-,No,No,No,-,none,OK,none
+legit_b,0x12b7,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+legit_b,0x12b8,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+legit_b,0x12bb,"lea 0xd4a(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+legit_b,0x12c2,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+legit_b,0x12c5,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+legit_b,0x12ca,nop,-,-,No,No,No,-,none,OK,none
+legit_b,0x12cb,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+legit_b,0x12cc,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+legit_c,0x12cd,endbr64,-,-,No,No,No,-,none,OK,none
+legit_c,0x12d1,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+legit_c,0x12d2,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+legit_c,0x12d5,"lea 0xd3c(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+legit_c,0x12dc,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+legit_c,0x12df,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+legit_c,0x12e4,nop,-,-,No,No,No,-,none,OK,none
+legit_c,0x12e5,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+legit_c,0x12e6,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+legit_calc,0x12e7,endbr64,-,-,No,No,No,-,none,OK,none
+legit_calc,0x12eb,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+legit_calc,0x12ec,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+legit_calc,0x12ef,"mov %edi,-0x4(%rbp)","rdi,rbp",-,No,No,No,-,none,OK,none
+legit_calc,0x12f2,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+legit_calc,0x12f5,"add $0x1,%eax",rax,rax,No,No,No,-,none,OK,none
+legit_calc,0x12f8,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+legit_calc,0x12f9,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+evil_x,0x12fa,endbr64,-,-,No,No,No,-,none,OK,none
+evil_x,0x12fe,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+evil_x,0x12ff,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+evil_x,0x1302,"lea 0xd1f(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+evil_x,0x1309,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+evil_x,0x130c,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+evil_x,0x1311,nop,-,-,No,No,No,-,none,OK,none
+evil_x,0x1312,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+evil_x,0x1313,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+evil_y,0x1314,endbr64,-,-,No,No,No,-,none,OK,none
+evil_y,0x1318,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+evil_y,0x1319,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+evil_y,0x131c,"lea 0xd2d(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+evil_y,0x1323,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+evil_y,0x1326,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+evil_y,0x132b,nop,-,-,No,No,No,-,none,OK,none
+evil_y,0x132c,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+evil_y,0x132d,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+a01_setup,0x132e,endbr64,-,-,No,No,No,-,none,OK,none
+a01_setup,0x1332,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+a01_setup,0x1333,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+a01_setup,0x1336,"mov 0x2c73(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+a01_setup,0x133d,"mov %rax,0x2d44(%rip)",rax,-,No,No,No,-,none,OK,none
+a01_setup,0x1344,nop,-,-,No,No,No,-,none,OK,none
+a01_setup,0x1345,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+a01_setup,0x1346,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_01,0x1347,endbr64,-,-,No,No,No,-,none,OK,none
+attack_01,0x134b,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_01,0x134c,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_01,0x134f,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_01,0x1353,"lea 0xd1b(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_01,0x135a,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_01,0x135d,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_01,0x1362,call 132e <a01_setup>,-,rax,No,No,No,-,none,OK,none
+attack_01,0x1367,"mov 0x2d1a(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_01,0x136e,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_01,0x1372,"mov 0x2d08(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_01,0x1378,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_01,0x137b,jne 1388 <attack_01+0x41>,-,-,No,No,No,-,none,OK,none
+attack_01,0x137d,"mov 0x2c34(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_01,0x1384,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_01,0x1388,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_01,0x138c,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1388; indirect call reg_based target rax L2: defined at 0x137d; indirect call reg_based target rax L3: terminal (param) at attack_01
+attack_01,0x138e,nop,-,-,No,No,No,-,none,OK,none
+attack_01,0x138f,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_01,0x1390,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_02,0x1391,endbr64,-,-,No,No,No,-,none,OK,none
+attack_02,0x1395,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_02,0x1396,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_02,0x1399,"sub $0x20,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_02,0x139d,"mov %fs:0x28,%rax",-,rax,No,No,No,-,none,OK,none
+attack_02,0x13a4,00,-,-,No,No,No,-,none,OK,none
+attack_02,0x13a6,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_02,0x13aa,"xor %eax,%eax",rax,rax,No,No,No,-,none,OK,none
+attack_02,0x13ac,"lea 0xcd9(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_02,0x13b3,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_02,0x13b6,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_02,0x13bb,"mov 0x2c06(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_02,0x13c2,"mov %rax,-0x20(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_02,0x13c6,"lea -0x20(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_02,0x13ca,"mov %rax,-0x18(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_02,0x13ce,"mov 0x2cac(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_02,0x13d4,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_02,0x13d7,jne 13e4 <attack_02+0x53>,-,-,No,No,No,-,none,OK,none
+attack_02,0x13d9,"mov 0x2bf8(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_02,0x13e0,"mov %rax,-0x20(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_02,0x13e4,"mov -0x18(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_02,0x13e8,"mov (%rax),%rax",rax,rax,No,No,No,-,none,OK,none
+attack_02,0x13eb,"mov %rax,-0x10(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_02,0x13ef,"mov -0x10(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_02,0x13f3,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x13ef; indirect call reg_based target rax L2: defined at 0x13e8; indirect call reg_based target rax L3: defined at 0x13e4; indirect call reg_based target rax L4: defined at 0x13c6; indirect call reg_based target rax L5: defined at 0x13bb; indirect call reg_based target rax L6: terminal (param) at attack_02
+attack_02,0x13f5,nop,-,-,No,No,No,-,none,OK,none
+attack_02,0x13f6,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_02,0x13fa,"sub %fs:0x28,%rax",rax,rax,No,No,No,-,none,OK,none
+attack_02,0x1401,00,-,-,No,No,No,-,none,OK,none
+attack_02,0x1403,je 140a <attack_02+0x79>,-,-,No,No,No,-,none,OK,none
+attack_02,0x1405,call 1180 <__stack_chk_fail@plt>,-,rax,No,No,No,-,none,OK,none
+attack_02,0x140a,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_02,0x140b,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_03,0x140c,endbr64,-,-,No,No,No,-,none,OK,none
+attack_03,0x1410,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_03,0x1411,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_03,0x1414,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_03,0x1418,"lea 0xc84(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_03,0x141f,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_03,0x1422,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_03,0x1427,"mov 0x2c53(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_03,0x142d,"mov %eax,-0xc(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_03,0x1430,"mov -0xc(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+attack_03,0x1433,"test %eax,%eax",rax,-,No,No,No,-,none,OK,none
+attack_03,0x1435,jne 1444 <attack_03+0x38>,-,-,No,No,No,-,none,OK,none
+attack_03,0x1437,"mov 0x2b72(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_03,0x143e,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_03,0x1442,jmp 144f <attack_03+0x43>,-,-,No,No,No,-,none,OK,none
+attack_03,0x1444,"mov 0x2b6d(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_03,0x144b,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_03,0x144f,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_03,0x1453,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x144f; indirect call reg_based target rax L2: defined at 0x1444; indirect call reg_based target rax L3: terminal (param) at attack_03
+attack_03,0x1455,nop,-,-,No,No,No,-,none,OK,none
+attack_03,0x1456,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_03,0x1457,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_04,0x1458,endbr64,-,-,No,No,No,-,none,OK,none
+attack_04,0x145c,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_04,0x145d,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_04,0x1460,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_04,0x1464,"lea 0xc50(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_04,0x146b,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_04,0x146e,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_04,0x1473,"movl $0x1,-0x8(%rbp)",rbp,-,No,No,No,-,none,OK,none
+attack_04,0x147a,"mov 0x2b2f(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_04,0x1481,"mov %rax,-0x10(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_04,0x1485,"mov 0x2bf5(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_04,0x148b,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_04,0x148e,jne 149b <attack_04+0x43>,-,-,No,No,No,-,none,OK,none
+attack_04,0x1490,"mov 0x2b41(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_04,0x1497,"mov %rax,-0x10(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_04,0x149b,"mov -0x10(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_04,0x149f,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x149b; indirect call reg_based target rax L2: defined at 0x1490; indirect call reg_based target rax L3: terminal (param) at attack_04
+attack_04,0x14a1,nop,-,-,No,No,No,-,none,OK,none
+attack_04,0x14a2,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_04,0x14a3,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+a05_get_ptr,0x14a4,endbr64,-,-,No,No,No,-,none,OK,none
+a05_get_ptr,0x14a8,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+a05_get_ptr,0x14a9,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+a05_get_ptr,0x14ac,"mov 0x2b15(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+a05_get_ptr,0x14b3,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+a05_get_ptr,0x14b4,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_05,0x14b5,endbr64,-,-,No,No,No,-,none,OK,none
+attack_05,0x14b9,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_05,0x14ba,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_05,0x14bd,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_05,0x14c1,"lea 0xc0c(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_05,0x14c8,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_05,0x14cb,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_05,0x14d0,call 14a4 <a05_get_ptr>,-,rax,No,No,No,-,none,OK,none
+attack_05,0x14d5,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_05,0x14d9,"mov 0x2ba1(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_05,0x14df,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_05,0x14e2,jne 14ef <attack_05+0x3a>,-,-,No,No,No,-,none,OK,none
+attack_05,0x14e4,"mov 0x2acd(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_05,0x14eb,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_05,0x14ef,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_05,0x14f3,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x14ef; indirect call reg_based target rax L2: defined at 0x14e4; indirect call reg_based target rax L3: terminal (param) at attack_05
+attack_05,0x14f5,nop,-,-,No,No,No,-,none,OK,none
+attack_05,0x14f6,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_05,0x14f7,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_06,0x14f8,endbr64,-,-,No,No,No,-,none,OK,none
+attack_06,0x14fc,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_06,0x14fd,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_06,0x1500,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_06,0x1504,"lea 0xbe2(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_06,0x150b,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_06,0x150e,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_06,0x1513,"mov $0x8,%edi",-,rdi,No,No,No,-,none,OK,none
+attack_06,0x1518,call 11a0 <malloc@plt>,-,rax,No,No,No,-,none,OK,none
+attack_06,0x151d,"mov %rax,-0x8(%rbp)","rax,rbp",-,No,No,No,-,none,OK,none
+attack_06,0x1521,"cmpq $0x0,-0x8(%rbp)",rbp,-,No,No,No,-,none,OK,none
+attack_06,0x1526,je 1566 <attack_06+0x6e>,-,-,No,No,No,-,none,OK,none
+attack_06,0x1528,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_06,0x152c,"mov 0x2a75(%rip),%rdx",-,rdx,No,No,No,-,none,OK,none
+attack_06,0x1533,"mov %rdx,(%rax)","rdx,rax",-,No,No,No,-,none,OK,none
+attack_06,0x1536,"mov 0x2b44(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_06,0x153c,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_06,0x153f,jne 154f <attack_06+0x57>,-,-,No,No,No,-,none,OK,none
+attack_06,0x1541,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_06,0x1545,"mov 0x2a8c(%rip),%rdx",-,rdx,No,No,No,-,none,OK,none
+attack_06,0x154c,"mov %rdx,(%rax)","rdx,rax",-,No,No,No,-,none,OK,none
+attack_06,0x154f,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_06,0x1553,"mov (%rax),%rax",rax,rax,No,No,No,-,none,OK,none
+attack_06,0x1556,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1553; indirect call reg_based target rax L2: defined at 0x154f; indirect call reg_based target rax L3: defined at 0x1518
+attack_06,0x1558,"mov -0x8(%rbp),%rax",rbp,rax,No,No,No,-,none,OK,none
+attack_06,0x155c,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_06,0x155f,call 1110 <free@plt>,-,rax,No,No,No,-,none,OK,none
+attack_06,0x1564,jmp 1567 <attack_06+0x6f>,-,-,No,No,No,-,none,OK,none
+attack_06,0x1566,nop,-,-,No,No,No,-,none,OK,none
+attack_06,0x1567,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_06,0x1568,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+a07_init_table,0x1569,endbr64,-,-,No,No,No,-,none,OK,none
+a07_init_table,0x156d,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+a07_init_table,0x156e,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+a07_init_table,0x1571,"mov 0x2a38(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+a07_init_table,0x1578,"mov %rax,0x2b11(%rip)",rax,-,No,No,No,-,none,OK,none
+a07_init_table,0x157f,"mov 0x2a42(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+a07_init_table,0x1586,"mov %rax,0x2b0b(%rip)",rax,-,No,No,No,-,none,OK,none
+a07_init_table,0x158d,"mov 0x2a14(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+a07_init_table,0x1594,"mov %rax,0x2b05(%rip)",rax,-,No,No,No,-,none,OK,none
+a07_init_table,0x159b,nop,-,-,No,No,No,-,none,OK,none
+a07_init_table,0x159c,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+a07_init_table,0x159d,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+attack_07,0x159e,endbr64,-,-,No,No,No,-,none,OK,none
+attack_07,0x15a2,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+attack_07,0x15a3,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+attack_07,0x15a6,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+attack_07,0x15aa,"lea 0xb57(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_07,0x15b1,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+attack_07,0x15b4,call 1120 <puts@plt>,-,rax,No,No,No,-,none,OK,none
+attack_07,0x15b9,call 1569 <a07_init_table>,-,rax,No,No,No,-,none,OK,none
+attack_07,0x15be,"movl $0x1,-0x4(%rbp)",rbp,-,No,No,No,-,none,OK,none
+attack_07,0x15c5,"mov 0x2ab5(%rip),%eax",-,rax,No,No,No,-,none,OK,none
+attack_07,0x15cb,"cmp $0x1,%eax",rax,-,No,No,No,-,none,OK,none
+attack_07,0x15ce,jne 15de <attack_07+0x40>,-,-,No,No,No,-,none,OK,none
+attack_07,0x15d0,"mov 0x29e1(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_07,0x15d7,"mov %rax,0x2aba(%rip)",rax,-,No,No,No,-,none,OK,none
+attack_07,0x15de,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+attack_07,0x15e1,cltq,-,-,No,No,No,-,none,OK,none
+attack_07,0x15e3,"lea 0x0(,%rax,8),%rdx",-,-,No,No,No,-,none,OK,none
+attack_07,0x15eb,"lea 0x2a9e(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+attack_07,0x15f2,"mov (%rdx,%rax,1),%rax",-,-,No,No,No,-,none,OK,none
+attack_07,0x15f6,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x15eb; indirect call reg_based target rax L2: terminal (param) at attack_07
+attack_07,0x15f8,nop,-,-,No,No,No,-,none,OK,none
+attack_07,0x15f9,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+attack_07,0x15fa,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+run_attack,0x15fb,endbr64,-,-,No,No,No,-,none,OK,none
+run_attack,0x15ff,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+run_attack,0x1600,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+run_attack,0x1603,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+run_attack,0x1607,"mov %edi,-0x4(%rbp)","rdi,rbp",-,No,No,No,-,none,OK,none
+run_attack,0x160a,"movl $0x1,0x2a6c(%rip)",-,-,No,No,No,-,none,OK,none
+run_attack,0x1611,00,-,-,No,No,No,-,none,OK,none
+run_attack,0x1614,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_attack,0x1617,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_attack,0x1619,"lea 0xb08(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x1620,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_attack,0x1623,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x1628,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x162d,"cmpl $0x7,-0x4(%rbp)",rbp,-,No,No,No,-,none,OK,none
+run_attack,0x1631,ja 1688 <run_attack+0x8d>,-,-,No,No,No,-,none,OK,none
+run_attack,0x1633,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_attack,0x1636,"lea 0x0(,%rax,4),%rdx",-,-,No,No,No,-,none,OK,none
+run_attack,0x163e,"lea 0xb33(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x1645,"mov (%rdx,%rax,1),%eax",-,-,No,No,No,-,none,OK,none
+run_attack,0x1648,cltq,-,-,No,No,No,-,none,OK,none
+run_attack,0x164a,"lea 0xb27(%rip),%rdx",-,rdx,No,No,No,-,none,OK,none
+run_attack,0x1651,"add %rdx,%rax","rdx,rax",rax,No,No,No,-,none,OK,none
+run_attack,0x1654,notrack jmp *%rax,rax,-,No,No,No,-,none,OK,none
+run_attack,0x1657,call 1150 <attack_01@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x165c,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x165e,call 11c0 <attack_02@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x1663,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x1665,call 1130 <attack_03@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x166a,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x166c,call 11b0 <attack_04@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x1671,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x1673,call 1160 <attack_05@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x1678,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x167a,call 11d0 <attack_06@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x167f,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x1681,call 1140 <attack_07@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x1686,jmp 16a1 <run_attack+0xa6>,-,-,No,No,No,-,none,OK,none
+run_attack,0x1688,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_attack,0x168b,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_attack,0x168d,"lea 0xab6(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x1694,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_attack,0x1697,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x169c,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x16a1,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_attack,0x16a4,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_attack,0x16a6,"lea 0xaaa(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x16ad,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_attack,0x16b0,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_attack,0x16b5,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_attack,0x16ba,nop,-,-,No,No,No,-,none,OK,none
+run_attack,0x16bb,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+run_attack,0x16bc,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+run_safe,0x16bd,endbr64,-,-,No,No,No,-,none,OK,none
+run_safe,0x16c1,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+run_safe,0x16c2,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+run_safe,0x16c5,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+run_safe,0x16c9,"mov %edi,-0x4(%rbp)","rdi,rbp",-,No,No,No,-,none,OK,none
+run_safe,0x16cc,"movl $0x0,0x29aa(%rip)",-,-,No,No,No,-,none,OK,none
+run_safe,0x16d3,00,-,-,No,No,No,-,none,OK,none
+run_safe,0x16d6,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_safe,0x16d9,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_safe,0x16db,"lea 0xab6(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x16e2,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_safe,0x16e5,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x16ea,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x16ef,"cmpl $0x7,-0x4(%rbp)",rbp,-,No,No,No,-,none,OK,none
+run_safe,0x16f3,ja 174a <run_safe+0x8d>,-,-,No,No,No,-,none,OK,none
+run_safe,0x16f5,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_safe,0x16f8,"lea 0x0(,%rax,4),%rdx",-,-,No,No,No,-,none,OK,none
+run_safe,0x1700,"lea 0xacd(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x1707,"mov (%rdx,%rax,1),%eax",-,-,No,No,No,-,none,OK,none
+run_safe,0x170a,cltq,-,-,No,No,No,-,none,OK,none
+run_safe,0x170c,"lea 0xac1(%rip),%rdx",-,rdx,No,No,No,-,none,OK,none
+run_safe,0x1713,"add %rdx,%rax","rdx,rax",rax,No,No,No,-,none,OK,none
+run_safe,0x1716,notrack jmp *%rax,rax,-,No,No,No,-,none,OK,none
+run_safe,0x1719,call 1150 <attack_01@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x171e,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x1720,call 11c0 <attack_02@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x1725,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x1727,call 1130 <attack_03@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x172c,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x172e,call 11b0 <attack_04@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x1733,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x1735,call 1160 <attack_05@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x173a,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x173c,call 11d0 <attack_06@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x1741,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x1743,call 1140 <attack_07@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x1748,jmp 1763 <run_safe+0xa6>,-,-,No,No,No,-,none,OK,none
+run_safe,0x174a,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_safe,0x174d,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_safe,0x174f,"lea 0x9f4(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x1756,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_safe,0x1759,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x175e,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x1763,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+run_safe,0x1766,"mov %eax,%esi",rax,rsi,No,No,No,-,none,OK,none
+run_safe,0x1768,"lea 0xa47(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x176f,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+run_safe,0x1772,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+run_safe,0x1777,call 1190 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+run_safe,0x177c,nop,-,-,No,No,No,-,none,OK,none
+run_safe,0x177d,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+run_safe,0x177e,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+test_all,0x177f,endbr64,-,-,No,No,No,-,none,OK,none
+test_all,0x1783,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+test_all,0x1784,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+test_all,0x1787,"sub $0x10,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+test_all,0x178b,"movl $0x1,-0x4(%rbp)",rbp,-,No,No,No,-,none,OK,none
+test_all,0x1792,jmp 17a2 <test_all+0x23>,-,-,No,No,No,-,none,OK,none
+test_all,0x1794,"mov -0x4(%rbp),%eax",rbp,rax,No,No,No,-,none,OK,none
+test_all,0x1797,"mov %eax,%edi",rax,rdi,No,No,No,-,none,OK,none
+test_all,0x1799,call 1170 <run_attack@plt>,-,rax,No,No,No,-,none,OK,none
+test_all,0x179e,"addl $0x1,-0x4(%rbp)",-,rbp,No,No,No,-,none,OK,none
+test_all,0x17a2,"cmpl $0x7,-0x4(%rbp)",rbp,-,No,No,No,-,none,OK,none
+test_all,0x17a6,jle 1794 <test_all+0x15>,-,-,No,No,No,-,none,OK,none
+test_all,0x17a8,nop,-,-,No,No,No,-,none,OK,none
+test_all,0x17a9,nop,-,-,No,No,No,-,none,OK,none
+test_all,0x17aa,leave,rbp,"rsp,rbp",No,No,No,-,none,OK,none
+test_all,0x17ab,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+_fini,0x17ac,endbr64,-,-,No,No,No,-,none,OK,none
+_fini,0x17b0,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_fini,0x17b4,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_fini,0x17b8,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none

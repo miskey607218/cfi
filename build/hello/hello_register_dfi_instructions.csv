@@ -1,0 +1,81 @@
+﻿function,address,instruction,src_regs(USE),dst_regs(DEF),indirect_call,indirect_jump,is_ret,indirect_type,indirect_severity,dfi_violation,violation_reason
+_init,0x1000,endbr64,-,-,No,No,No,-,none,OK,none
+_init,0x1004,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_init,0x1008,"mov 0x2fc1(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+_init,0x100f,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+_init,0x1012,je 1016 <_init+0x16>,-,-,No,No,No,-,none,OK,none
+_init,0x1014,call *%rax,rax,rax,Yes,No,No,reg_based,high,WARNING,indirect call reg_based target rax L1: defined at 0x1008; indirect call reg_based target rax L2: terminal (param) at _init
+_init,0x1016,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_init,0x101a,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+.plt,0x1020,push 0x2fca(%rip),-,rsp,No,No,No,-,none,OK,none
+.plt,0x1026,jmp *0x2fcc(%rip),-,-,No,Yes,No,got_based,low,OK,none
+.plt,0x102c,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+.plt,0x1030,endbr64,-,-,No,No,No,-,none,OK,none
+.plt,0x1034,push $0x0,-,rsp,No,No,No,-,none,OK,none
+.plt,0x1039,jmp 1020 <_init+0x20>,-,-,No,No,No,-,none,OK,none
+.plt,0x103e,"xchg %ax,%ax",rax,rax,No,No,No,-,none,OK,none
+__cxa_finalize@plt,0x1040,endbr64,-,-,No,No,No,-,none,OK,none
+__cxa_finalize@plt,0x1044,jmp *0x2f96(%rip),-,-,No,Yes,No,got_based,low,OK,none
+__cxa_finalize@plt,0x104a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+printf@plt,0x1050,endbr64,-,-,No,No,No,-,none,OK,none
+printf@plt,0x1054,jmp *0x2fa6(%rip),-,-,No,Yes,No,got_based,low,OK,none
+printf@plt,0x105a,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1060,"lea 0x2fa9(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1067,"lea 0x2fa2(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+deregister_tm_clones,0x106e,"cmp %rdi,%rax","rdi,rax",-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1071,je 1088 <deregister_tm_clones+0x28>,-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1073,"mov 0x2f4e(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+deregister_tm_clones,0x107a,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x107d,je 1088 <deregister_tm_clones+0x28>,-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x107f,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x1073; indirect jump reg_based target rax L2: terminal (param) at deregister_tm_clones
+deregister_tm_clones,0x1081,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+deregister_tm_clones,0x1088,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+deregister_tm_clones,0x1089,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x1090,"lea 0x2f79(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+register_tm_clones,0x1097,"lea 0x2f72(%rip),%rsi",-,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x109e,"sub %rdi,%rsi","rdi,rsi",rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x10a1,"mov %rsi,%rax",rsi,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x10a4,"shr $0x3f,%rsi",rsi,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x10a8,"sar $0x3,%rax",rax,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x10ac,"add %rax,%rsi","rax,rsi",rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x10af,"sar $1,%rsi",rsi,rsi,No,No,No,-,none,OK,none
+register_tm_clones,0x10b2,je 10c8 <register_tm_clones+0x38>,-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x10b4,"mov 0x2f1d(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+register_tm_clones,0x10bb,"test %rax,%rax",rax,-,No,No,No,-,none,OK,none
+register_tm_clones,0x10be,je 10c8 <register_tm_clones+0x38>,-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x10c0,jmp *%rax,rax,-,No,Yes,No,reg_based,high,WARNING,indirect jump reg_based target rax L1: defined at 0x10b4; indirect jump reg_based target rax L2: terminal (param) at register_tm_clones
+register_tm_clones,0x10c2,"nopw 0x0(%rax,%rax,1)",-,-,No,No,No,-,none,OK,none
+register_tm_clones,0x10c8,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+register_tm_clones,0x10c9,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10d0,endbr64,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10d4,"cmpb $0x0,0x2f35(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10db,jne 1108 <__do_global_dtors_aux+0x38>,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10dd,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10de,"cmpq $0x0,0x2efa(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10e6,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10e9,je 10f7 <__do_global_dtors_aux+0x27>,-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10eb,"mov 0x2f16(%rip),%rdi",-,rdi,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10f2,call 1040 <__cxa_finalize@plt>,-,rax,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10f7,call 1060 <deregister_tm_clones>,-,rax,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x10fc,"movb $0x1,0x2f0d(%rip)",-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1103,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1104,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+__do_global_dtors_aux,0x1105,nopl (%rax),-,-,No,No,No,-,none,OK,none
+__do_global_dtors_aux,0x1108,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+__do_global_dtors_aux,0x1109,nopl 0x0(%rax),-,-,No,No,No,-,none,OK,none
+frame_dummy,0x1110,endbr64,-,-,No,No,No,-,none,OK,none
+frame_dummy,0x1114,jmp 1090 <register_tm_clones>,-,-,No,No,No,-,none,OK,none
+main,0x1119,endbr64,-,-,No,No,No,-,none,OK,none
+main,0x111d,push %rbp,rbp,rsp,No,No,No,-,none,OK,none
+main,0x111e,"mov %rsp,%rbp",rsp,rbp,No,No,No,-,none,OK,none
+main,0x1121,"lea 0xed8(%rip),%rax",-,rax,No,No,No,-,none,OK,none
+main,0x1128,"mov %rax,%rdi",rax,rdi,No,No,No,-,none,OK,none
+main,0x112b,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+main,0x1130,call 1050 <printf@plt>,-,rax,No,No,No,-,none,OK,none
+main,0x1135,"mov $0x0,%eax",-,rax,No,No,No,-,none,OK,none
+main,0x113a,pop %rbp,rsp,rbp,No,No,No,-,none,OK,none
+main,0x113b,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none
+_fini,0x113c,endbr64,-,-,No,No,No,-,none,OK,none
+_fini,0x1140,"sub $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_fini,0x1144,"add $0x8,%rsp",rsp,rsp,No,No,No,-,none,OK,none
+_fini,0x1148,ret,rsp,rsp,No,Yes,Yes,ret,high,OK,none

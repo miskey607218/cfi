@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFI/DFI 融合监控 — 基于 eBPF 的运行时安全</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Navigation                              -->
+<!-- ═══════════════════════════════════════ -->
+<header class="navbar">
+  <a href="/" class="logo">
+    <span class="icon">&#128737;</span> CFI/DFI Monitor
+  </a>
+  <nav>
+    <a href="/" class="active">首页</a>
+    <a href="/dashboard">控制面板</a>
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub &#8599;</a>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Hero                                    -->
+<!-- ═══════════════════════════════════════ -->
+<section class="hero">
+  <h1>CFI/DFI 融合监控系统</h1>
+  <p class="subtitle">
+    基于 eBPF uprobe 的运行时安全监控 — 同步监督控制流完整性（CFI）、
+    记录数据流（DFI）、并支持攻击场景模拟与检测验证
+  </p>
+  <div class="badge-row">
+    <span class="badge-tag">eBPF uprobe</span>
+    <span class="badge-tag">x86-64</span>
+    <span class="badge-tag">Python + C</span>
+    <span class="badge-tag">Control Flow Integrity</span>
+    <span class="badge-tag">Data Flow Integrity</span>
+    <span class="badge-tag">Attack Simulation</span>
+  </div>
+  <div class="btn-row">
+    <a href="/dashboard" class="btn btn-primary">&#9889; 打开控制面板</a>
+    <a href="https://github.com" class="btn btn-outline" target="_blank" rel="noopener">&#9733; GitHub</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Features                                -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section">
+  <h2>核心能力</h2>
+  <p class="section-desc">三大模块协同工作，覆盖运行时安全监控的完整链路</p>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feat-icon">&#128737;</div>
+      <h3>CFI 控制流校验</h3>
+      <p>
+        实时检测间接调用/跳转/返回指令的目标地址是否合法。
+        支持三级等价类缩小：全地址空间 → 静态函数头集合 →
+        调用点敏感 (Call-Site) → 起源敏感 (Origin)。
+        违规行为可配置为 SIGKILL 强制终止。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#128200;</div>
+      <h3>DFI 三层数据流追踪</h3>
+      <p>
+        L3（指针加载）→ L2（解引用）→ L1（间接跳转执行），
+        逐层记录寄存器值与内存地址，完整还原函数指针从数据段
+        到间接跳转的全链路传播过程。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#9889;</div>
+      <h3>攻击场景模拟</h3>
+      <p>
+        内置 7 种 CFI 违规攻击：栈溢出覆写函数指针、返回地址劫持、
+        vtable 破坏、堆溢出、双重指针劫持等。
+        SAFE/ATTACK 双模式，通过 Web 前端一键执行并实时查看检测结果。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#127758;</div>
+      <h3>Web 可视化面板</h3>
+      <p>
+        Chart.js 动态图表（跳转类型饼图、DFI 层柱状图、正确率时间线），
+        CFI 事件表（搜索/过滤/分页），DFI 数据流链卡片。
+        攻击控制台支持异步编译、执行、结果轮询。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#128269;</div>
+      <h3>静态数据流分析</h3>
+      <p>
+        解析 objdump 反汇编，构建基本块 CFG，迭代求解 reaching definitions，
+        为每个间接跳转站点生成 def-use 链，识别跨函数/未定义的数据流路径。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">&#9881;</div>
+      <h3>灵活运行模式</h3>
+      <p>
+        <b>Train</b> — 收集正常行为基线数据 &nbsp;
+        <b>Enforce</b> — 强制校验，违规立即终止 &nbsp;
+        <b>Hybrid</b> — 自适应策略，根据等价类大小动态选择方法
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Architecture                            -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border); max-width:100%; padding-left:0; padding-right:0;">
+  <div style="max-width:1100px; margin:0 auto; padding:0 32px;">
+    <h2>系统架构</h2>
+    <p class="section-desc">编译 → 静态分析 → eBPF 运行时监控 → 数据可视化 完整流水线</p>
+
+    <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; font-family:monospace; font-size:12px; line-height:1.8; color:var(--fg-dim);">
+      <span style="color:var(--fg-bright);font-weight:700;">Pipeline:</span><br>
+      <span style="color:var(--accent);">gcc</span> test.c/attack.c &rarr; .so <br>
+      &nbsp;&#x2514; <span style="color:var(--accent);">objdump -d</span> &rarr; .txt <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--accent2);">transformToCsv.py</span> &rarr; jump_analysis.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--accent2);">dataflow_analysis.py</span> &rarr; register_dfi_*.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--bad);">dfi_monitor.py</span> (eBPF uprobes) &rarr; output/*.csv <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x2514; <span style="color:var(--info);">server.py</span> &rarr; Web Dashboard
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Features & Usage                       -->
+<!-- ═══════════════════════════════════════ -->
+	<section class="section">
+	  <h2>功能与使用</h2>
+	  <p class="section-desc">Web 控制面板操作流程</p>
+
+	  <div class="features">
+	    <div class="feature-card">
+	      <div class="feat-icon">&#128269;</div>
+	      <h3>1. 选择测试程序</h3>
+	      <p>从下拉框选择程序：<b>test.c</b>（正常间接跳转）、<b>dispatch.c</b>（函数指针分发）、<b>attack.c</b>（攻击场景），或上传自定义 .c 文件。</p>
+	    </div>
+	    <div class="feature-card">
+	      <div class="feat-icon">&#9881;</div>
+	      <h3>2. 选择运行模式</h3>
+	      <p><b>安全模式</b> — 正确率固定 100%，违规数固定 0，验证不误报。<br><b>攻击模式</b> — 真实检测，违规立即终止进程并告警。</p>
+	    </div>
+	    <div class="feature-card">
+	      <div class="feat-icon">&#9654;</div>
+	      <h3>3. 执行与监控</h3>
+	      <p>编译 → objdump 反汇编 → 跳转指令分析 → 数据流 def-use 链 → eBPF uprobe 监控 → 结果展示。</p>
+	    </div>
+	    <div class="feature-card">
+	      <div class="feat-icon">&#128200;</div>
+	      <h3>4. 查看分析结果</h3>
+	      <p>CFI 事件表（含 RAX vs saved_rax 比对）、寄存器指令追踪、反汇编查看、跳转类型饼图、DFI 层柱状图。</p>
+	    </div>
+	  </div>
+	</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Quick Start                             -->
+<!-- ═══════════════════════════════════════ -->
+<section class="section" style="background:#fff; border-top:1px solid var(--border); max-width:100%; padding-left:0; padding-right:0;">
+  <div style="max-width:1100px; margin:0 auto; padding:0 32px;">
+    <h2>快速开始</h2>
+    <p class="section-desc">三步启动监控系统</p>
+
+    <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; font-family:monospace; font-size:13px; line-height:1.7;">
+      <span style="color:var(--fg-dim);"># 1. 安装依赖</span><br>
+      <span style="color:var(--accent);">pip install bcc capstone</span><br><br>
+      <span style="color:var(--fg-dim);"># 2. 一键运行正常测试</span><br>
+      <span style="color:var(--accent);">./run.sh</span> train demo 3<br><br>
+      <span style="color:var(--fg-dim);"># 3. 启动 Web 面板</span><br>
+      <span style="color:var(--accent);">python3 src/server.py</span><br>
+      <span style="color:var(--fg-dim);"># &rarr; 浏览器打开 http://localhost:8080</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Footer                                  -->
+<!-- ═══════════════════════════════════════ -->
+<footer class="footer">
+  CFI/DFI 融合监控 &copy; 2026 &nbsp;|&nbsp;
+  <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> &nbsp;|&nbsp;
+  基于 eBPF &amp; Python 构建
+</footer>
+
+</body>
+</html>

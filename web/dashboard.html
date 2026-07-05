@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>控制面板 — CFI/DFI Attack Monitor</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Top Bar                                 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="topbar">
+  <a href="/" class="back-link">&larr; 返回首页</a>
+  <h1>&#128737; CFI/DFI 控制面板</h1>
+  <span class="status" id="status">加载中...</span>
+  <span class="status" id="program-name" style="color:var(--accent);font-weight:600">test.c (demo)</span>
+  <div class="topbar-right">
+    <button class="refresh-btn" onclick="refreshAll()">&#8635; 刷新</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  Main: Monitor (left) + Panel (right)   -->
+<!-- ═══════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ── Left: Monitoring ── -->
+  <div class="col-monitor">
+
+    <!-- Attack detection alert (hidden by default) -->
+    <div id="attack-alert" style="display:none;margin-bottom:14px;padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.6"></div>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>跳转类型分布</h3>
+        <div class="chart-wrap"><canvas id="chart-jt"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>DFI 层事件分布</h3>
+        <div class="chart-wrap"><canvas id="chart-layer"></canvas></div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('cfi')">CFI 事件表</button>
+      <button class="tab-btn" onclick="switchTab('register')">寄存器指令追踪</button>
+      <button class="tab-btn" onclick="switchTab('disasm')">反汇编</button>
+    </div>
+
+    <div class="tab-content active" id="tab-cfi">
+      <div class="toolbar">
+        <input type="text" id="cfi-search" placeholder="搜索函数名..." oninput="loadCfiEvents(0)">
+        <select id="cfi-type-filter" onchange="loadCfiEvents(0)">
+          <option value="">全部类型</option>
+          <option value="3">RET</option>
+          <option value="4">INDIRECT_CALL</option>
+          <option value="5">INDIRECT_JMP</option>
+        </select>
+        <select id="cfi-correct-filter" onchange="loadCfiEvents(0)">
+          <option value="">全部</option>
+          <option value="1">&#10003; 正确</option>
+          <option value="0">&#10007; 违规</option>
+        </select>
+      </div>
+      <div class="table-wrap"><table id="cfi-table"></table></div>
+      <div class="pagination" id="cfi-pager"></div>
+    </div>
+
+    <div class="tab-content" id="tab-register">
+      <div id="register-detail"></div>
+    </div>
+
+    <div class="tab-content" id="tab-disasm">
+      <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
+        <select id="disasm-func-select" onchange="jumpDisasmFunc()" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px">
+          <option value="">选择函数...</option>
+        </select>
+        <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" id="disasm-highlight" checked onchange="renderDisasmPanel()"> 高亮间接跳转
+        </label>
+        <span style="font-size:11px;color:var(--fg-dim)" id="disasm-stats"></span>
+      </div>
+      <div id="disasm-panel" style="max-height:70vh;overflow-y:auto;background:#fafafa;border:1px solid var(--border);border-radius:var(--radius);font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px;line-height:1.5">
+        <div style="padding:16px;color:var(--fg-dim);text-align:center">点击程序运行后查看反汇编...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right: Control Panels ── -->
+  <div class="col-attack">
+
+    <!-- Attack/Safe Panel -->
+    <div class="attack-panel">
+      <h2><span class="icon">&#9889;</span> 执行控制</h2>
+
+      <!-- Program selector -->
+      <div class="attack-controls">
+        <label style="font-size:12px;color:var(--fg-dim)">测试程序</label>
+        <select id="program-select" onchange="onProgramChange()" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff">
+          <option value="">加载中...</option>
+        </select>
+        <div class="iter-selector">
+          <input type="hidden" id="attack-iterations" value="1">
+        </div>
+      </div>
+
+      <!-- Mode toggle: SAFE / ATTACK -->
+      <div class="attack-controls" style="display:flex;gap:8px">
+        <label id="mode-safe-label" style="flex:1;text-align:center;padding:8px;border-radius:6px;cursor:pointer;background:var(--good);color:#fff;font-size:13px;font-weight:600">
+          <input type="radio" name="run-mode" value="safe" checked onchange="onModeChange()" style="display:none">&#128737; 安全模式
+        </label>
+        <label id="mode-attack-label" style="flex:1;text-align:center;padding:8px;border-radius:6px;cursor:pointer;background:var(--border);color:var(--fg);font-size:13px">
+          <input type="radio" name="run-mode" value="attack" onchange="onModeChange()" style="display:none">&#128481; 攻击模式
+        </label>
+      </div>
+
+      <!-- Attack list (shown in ATTACK mode) -->
+      <div class="attack-list" id="attack-list-container" style="display:none">
+        <div id="attack-list"><p style="color:var(--fg-dim);font-size:12px">加载中...</p></div>
+      </div>
+
+      <!-- Run Button -->
+      <div class="attack-controls">
+        <button class="run-btn" style="background:var(--accent);color:#fff" id="run-btn" onclick="triggerRun()">
+          &#9654; 运行
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Import Panel -->
+    <div class="attack-panel">
+      <h2><span class="icon">&#128193;</span> 导入程序</h2>
+      <p style="font-size:11px;color:var(--fg-dim);margin-bottom:12px">
+        上传 .c 源文件进行自动分析（编译 → objdump → 跳转分析 → DFI → 监控）
+      </p>
+      <input type="file" id="import-file" accept=".c" style="display:none" onchange="handleImportFile(event)">
+      <button class="run-btn" style="background:var(--accent);color:#fff;width:100%;margin-bottom:6px"
+              onclick="document.getElementById('import-file').click()">
+        &#128193; 选择 .c 文件
+      </button>
+      <span id="import-filename" style="font-size:11px;color:var(--fg-dim)"></span>
+      <div id="import-results" style="margin-top:8px"></div>
+      <div style="font-size:10px;color:var(--fg-dim);margin-top:4px">
+        上传 .c 源文件 → 自动编译为 .so → objdump 反汇编 → 跳转分析 → DFI 数据流分析 → eBPF 运行时监控（需 sudo 启动 server）
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/charts.js"></script>
+<script src="js/main.js"></script>
+<script src="js/attacks.js"></script>
+</body>
+</html>
